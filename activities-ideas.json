@@ -1,0 +1,233 @@
+{
+  "version": "0.1",
+  "activities": [
+    {
+      "id": "person-start",
+      "content": [
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "type": "title",
+              "text": "Think of a friend you haven't heard from in a while."
+            },
+            {
+              "type": "title",
+              "text": "Think of a family member."
+            },
+            {
+              "type": "title",
+              "text": "Think of someone you used to work with."
+            },
+          ]
+        },
+        {
+          "type": "input/entity-lookup",
+          "entity": {
+            "type": "person",
+            "name": "${this.value}"
+          },
+          "field": "person"
+        }
+      ],
+      "actions": [
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "person"
+            "name": "${field.person.name}",
+          }
+        },
+        {
+          "type": "goto-activity",
+          "goto": {
+            "type": "choice",
+            "choices": [
+              {
+                "id": "reflect-on-person",
+                "context": {
+                  "person": "${field.person}"
+                }
+              },
+              {
+                "id": "google-person",
+                "weight": "rare",
+                "context": {
+                  "person": "${field.person}"
+                }
+              }
+            ]
+          } 
+        }
+      ]
+    },
+    {
+      "id": "reflect-on-person",
+      "default-context": {
+        "person": {
+          "type": "random-entity",
+          "entity-type": "person"
+        }
+      },
+      "content": {
+        {
+          "type": "title",
+          "text": "Reflect on: ${context.person.name}"
+        },
+        {
+          "type": "input/multi",
+          "field": "content"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "reflection",
+            "content": "${field.content}",
+            "relations": {
+              "person": "${context.person}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "google-person",
+      "weight": "rare",
+      "default-context": {
+        "person": {
+          "type": "random-entity",
+          "entity-type": "person"
+        }
+      },
+      "content": {
+        {
+          "type": "title",
+          "text": "Google ${context.person.name} 👀"
+        },
+        {
+          "type": "link",
+          "url": "https://google.com/search?q=${context.person.name}"
+          "text": "${context.person.name}"
+        }
+      },
+    },
+    {
+      "id": "selfie",
+      "content": {
+        {
+          "type": "title",
+          "text": "Take a selfie!"
+        },
+        {
+          "type": "input/photo",
+          "field": "photo"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "selfie",
+            "photo": "${field.photo}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "journal-now",
+      "content": {
+        {
+          "type": "title",
+          "text": "What's going on at this very moment?"
+        },
+        {
+          "type": "input/multi",
+          "field": "content"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "journal",
+            "content": "${field.content}",
+          }
+        }
+      ]
+    },
+    {
+      "id": "journal-looking-forward",
+      "conditions": [
+        "time-of-day": ["morning"],
+      ],
+      "content": {
+        {
+          "type": "title",
+          "text": "What are you looking forward to today?"
+        },
+        {
+          "type": "input/multi",
+          "field": "content"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "journal",
+            "content": "${field.content}",
+          }
+        }
+      ]
+    },
+    {
+      "id": "journal-best-thing",
+      "conditions": [
+        "time-of-day": ["afternoon", "evening"],
+      ],
+      "content": {
+        {
+          "type": "title",
+          "text": "What's the best thing that happened so far today?"
+        },
+        {
+          "type": "input/multi",
+          "field": "content"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "journal",
+            "content": "${field.content}",
+          }
+        }
+      ]
+    },
+    {
+      "id": "journal-grateful-for",
+      "content": {
+        {
+          "type": "title",
+          "text": "What are you grateful for?"
+        },
+        {
+          "type": "input/multi",
+          "field": "content"
+        }
+      },
+      "actions": [ 
+        {
+          "type": "create-entity",
+          "entity": {
+            "type": "journal",
+            "content": "${field.content}",
+          }
+        }
+      ]
+    }
+  ]
+}

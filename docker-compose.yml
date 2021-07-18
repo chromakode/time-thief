@@ -1,0 +1,13 @@
+version: "2"
+services:
+  node:
+    image: "node:18"
+    user: "node"
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    command: "npm start"

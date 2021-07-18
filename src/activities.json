@@ -1,0 +1,151 @@
+{
+  "version": "0.1",
+  "config": {
+    "timeNames": {
+      "0": "night",
+      "7": "morning",
+      "12": "afternoon",
+      "18": "evening",
+      "21": "night"
+    }
+  },
+  "activities": [
+    {
+      "id": "selfie",
+      "content": [
+        {
+          "type": "title",
+          "text": "Take a selfie!"
+        },
+        {
+          "type": "input/photo",
+          "field": "photo"
+        }
+      ],
+      "entity": {
+        "type": "selfie",
+        "photo": "${field.photo}",
+        "capture": "user"
+      }
+    },
+    {
+      "id": "photo",
+      "content": [
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "type": "title",
+              "text": "Take a photo of where you are."
+            },
+            {
+              "type": "title",
+              "text": "Take a photo of someone you're with."
+            },
+            {
+              "type": "title",
+              "text": "Take a photo of the sky."
+            }
+          ]
+        },
+        {
+          "type": "input/photo",
+          "field": "photo",
+          "capture": "environment"
+        }
+      ],
+      "entity": {
+        "type": "photo",
+        "photo": "${field.photo}",
+        "title": "${activity.title}"
+      }
+    },
+    {
+      "id": "journal-now",
+      "content": [
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "type": "title",
+              "text": "What's going on at this very moment?"
+            },
+            {
+              "type": "title",
+              "text": "What's on your mind?"
+            },
+            {
+              "type": "title",
+              "text": "How did you get here?"
+            }
+          ]
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
+      "id": "journal-looking-forward",
+      "conditions": {
+        "timeOfDay": ["morning"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What are you looking forward to today?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
+      "id": "journal-best-thing",
+      "conditions": {
+        "timeOfDay": ["afternoon", "evening"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What's the best thing that happened so far today?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
+      "id": "journal-grateful-for",
+      "content": [
+        {
+          "type": "title",
+          "text": "What are you grateful for?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    }
+  ]
+}
