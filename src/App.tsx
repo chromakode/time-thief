@@ -117,7 +117,12 @@ contentComponents.set(
 
 contentComponents.set(
   'input/photo',
-  function PhotoInput({ entityDoc, field, saveAttachment }: ComponentProps) {
+  function PhotoInput({
+    entityDoc,
+    field,
+    capture,
+    saveAttachment,
+  }: ComponentProps) {
     const inputRef = useRef<HTMLInputElement>(null)
 
     const storedImage = entityDoc._attachments?.[field]
@@ -146,7 +151,7 @@ contentComponents.set(
             ref={inputRef}
             type="file"
             accept="image/*"
-            capture="environment"
+            capture={capture}
             onChange={handleChange}
             hidden
           />
