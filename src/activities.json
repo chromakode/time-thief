@@ -19,13 +19,13 @@
         },
         {
           "type": "input/photo",
-          "field": "photo"
+          "field": "photo",
+          "capture": "user"
         }
       ],
       "entity": {
         "type": "selfie",
-        "photo": "${field.photo}",
-        "capture": "user"
+        "photo": "${field.photo}"
       }
     },
     {
