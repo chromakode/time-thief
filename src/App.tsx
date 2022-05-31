@@ -246,10 +246,11 @@ function RemainingTime({ endTime, ...props }: { endTime: number } & BoxProps) {
       clearInterval(interval)
     }
   })
-  const remainingMinutes = Math.round((endTime - now) / (60 * 1000))
+  const remainingSeconds = Math.round((endTime - now) / 1000)
+  const remainingMinutes = Math.round(remainingSeconds / 60)
   return (
     <Text textStyle="title" {...props}>
-      {remainingMinutes}m
+      {remainingSeconds > 60 ? `${remainingMinutes}m` : `${remainingSeconds}s`}
     </Text>
   )
 }
