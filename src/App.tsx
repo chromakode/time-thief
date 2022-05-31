@@ -12,7 +12,6 @@ import {
   Center,
   Flex,
   Text,
-  Spacer,
   InputGroup,
   IconButton,
   SimpleGrid,
@@ -256,7 +255,7 @@ function RemainingTime({ endTime, ...props }: { endTime: number } & BoxProps) {
 const MotionBox = motion<Omit<BoxProps, 'transition' | 'onDragEnd'>>(Box)
 
 function App() {
-  const { activities, seed, endTime, timeOfDay } = useActivities()
+  const { activities, seed, endTime } = useActivities()
   const { ref, width = 0 } = useResizeObserver()
   const [page, setPage] = useState(0)
   const dragControls = useDragControls()
