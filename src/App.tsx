@@ -106,6 +106,7 @@ contentComponents.set(
           variant="filled"
           defaultValue={storedValue}
           onChange={handleChange}
+          sx={{ touchAction: 'pan-y' }}
         />
       </Flex>
     )
@@ -342,6 +343,7 @@ function App() {
             px="8"
             alignItems="center"
             justifyContent="space-around"
+            sx={{ touchAction: 'none' }}
           >
             <RemainingTime endTime={endTime} justifySelf="start" />
             <HStack justifySelf="center">
