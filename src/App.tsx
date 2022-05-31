@@ -262,9 +262,7 @@ function App() {
   const finishSwipe = useAnimation()
 
   function handleStartDrag(event: React.TouchEvent) {
-    console.log('arst')
     dragControls.start(event)
-    event.preventDefault()
   }
 
   const canMoveLeft = page > 0
