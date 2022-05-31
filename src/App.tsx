@@ -336,7 +336,7 @@ function App() {
               {activities.map((activity, idx) => (
                 <Activity
                   w={width}
-                  key={idx}
+                  key={`${seed}-${idx}-${activity.id}`}
                   activity={activity}
                   seed={seed}
                   idx={idx}
