@@ -105,6 +105,7 @@ contentComponents.set(
           h="full"
           variant="filled"
           fontSize="xl"
+          resize="none"
           defaultValue={storedValue}
           onChange={handleChange}
           sx={{ touchAction: 'pan-y' }}
