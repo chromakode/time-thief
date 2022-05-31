@@ -48,7 +48,7 @@ function useActivities(): ActivityState {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setActivityState(activities.chooseActivities())
-    }, Date.now() - activityState.endTime)
+    }, activityState.endTime - Date.now())
     return () => {
       clearTimeout(timeout)
     }
