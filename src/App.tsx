@@ -276,7 +276,7 @@ function App() {
   const finishSwipe = useAnimation()
 
   useEffect(() => {
-    window.screen.orientation.lock('natural')
+    window.screen.orientation.lock('natural').catch(() => {})
   }, [])
 
   function handleStartDrag(event: React.TouchEvent) {
