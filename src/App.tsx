@@ -20,7 +20,7 @@ import { motion, useAnimation, useDragControls } from 'framer-motion'
 import useResizeObserver from 'use-resize-observer'
 import PouchDB from 'pouchdb'
 import { Provider as PouchProvider, useDoc, usePouch } from 'use-pouchdb'
-import { MdCamera } from 'react-icons/md'
+import { MdArticle, MdCamera } from 'react-icons/md'
 import '@fontsource/roboto-flex/variable-full.css'
 import './App.css'
 
@@ -399,13 +399,13 @@ function App() {
                 />
               ))}
             </HStack>
-            <Box
-              w="24px"
-              h="24px"
-              borderRadius="4"
-              transform="rotate(45deg)"
-              bg="primary.600"
+            <IconButton
+              icon={<MdArticle />}
+              aria-label="View log"
+              color="primary.600"
               justifySelf="end"
+              variant="ghost"
+              fontSize="3xl"
             />
           </SimpleGrid>
         </VStack>
