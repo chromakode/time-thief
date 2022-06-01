@@ -371,6 +371,7 @@ function App() {
             flexShrink="0"
             columns={3}
             h="10vh"
+            minH="12"
             w="full"
             px="8"
             alignItems="center"
