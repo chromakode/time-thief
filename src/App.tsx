@@ -93,7 +93,7 @@ contentComponents.set(
       }
     }, [entityDoc._rev, entityDoc.title, save, text])
     return (
-      <Center h="20vh" px="4">
+      <Center h="20vh" px="4" flexShrink="0">
         <Heading textStyle="title">{text}</Heading>
       </Center>
     )
@@ -156,8 +156,12 @@ contentComponents.set(
       }
     }
     return (
-      <VStack px="4" flex="1">
-        <Box flex="1">{imageURL && <Image src={imageURL} />}</Box>
+      <VStack px="4" flex="1" spacing="4">
+        <Flex flexGrow="1" flexBasis="0" overflow="hidden" alignItems="center">
+          {imageURL && (
+            <Image src={imageURL} borderRadius="4" h="full" w="full" />
+          )}
+        </Flex>
         <InputGroup w="auto" onClick={handleClick}>
           <input
             ref={inputRef}
@@ -248,7 +252,7 @@ function Activity({
   }
 
   return (
-    <VStack w="full" h="full" flexShrink="0" {...props}>
+    <VStack w="full" h="full" flexShrink="0" overflow="hidden" {...props}>
       {content}
     </VStack>
   )
@@ -364,6 +368,7 @@ function App() {
             </HStack>
           </MotionBox>
           <SimpleGrid
+            flexShrink="0"
             columns={3}
             h="10vh"
             w="full"
