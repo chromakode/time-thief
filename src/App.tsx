@@ -19,7 +19,12 @@ import {
 import { motion, useAnimation, useDragControls } from 'framer-motion'
 import useResizeObserver from 'use-resize-observer'
 import PouchDB from 'pouchdb'
-import { Provider as PouchProvider, useDoc, usePouch } from 'use-pouchdb'
+import {
+  Provider as PouchProvider,
+  useAllDocs,
+  useDoc,
+  usePouch,
+} from 'use-pouchdb'
 import { MdArticle, MdCamera } from 'react-icons/md'
 import '@fontsource/roboto-flex/variable-full.css'
 import './App.css'
@@ -270,11 +275,33 @@ function RemainingTime({
   )
 }
 
+function Log() {
+  const { rows } = useAllDocs({ include_docs: true })
+  // TODO: use content component system to render log
+  return (
+    <VStack align="flex-start" h="full" overflowY="scroll">
+      {rows.map((row) => {
+        const entity = row.doc as any
+        return (
+          <Box>
+            {entity.created}
+            <Text textStyle="title" textAlign="left">
+              {entity.title}
+            </Text>
+            <Text>{entity.content}</Text>
+          </Box>
+        )
+      })}
+    </VStack>
+  )
+}
+
 const MotionBox = motion<Omit<BoxProps, 'transition' | 'onDragEnd'>>(Box)
 
 function App() {
   const [{ activities, seed }, remainingSeconds] = useActivities()
   const { ref, width = 0 } = useResizeObserver()
+  const [showingLog, setShowingLog] = useState(false)
   const [page, setPage] = useState(0)
   const dragControls = useDragControls()
   const finishSwipe = useAnimation()
@@ -400,15 +427,30 @@ function App() {
               ))}
             </HStack>
             <IconButton
+              zIndex={100}
               icon={<MdArticle />}
               aria-label="View log"
-              color="primary.600"
               justifySelf="end"
-              variant="ghost"
+              variant={showingLog ? 'solid' : 'ghost'}
               fontSize="3xl"
+              onClick={() => {
+                setShowingLog(!showingLog)
+              }}
             />
           </SimpleGrid>
         </VStack>
+        <MotionBox
+          position="absolute"
+          left="0"
+          top="0"
+          w="full"
+          h="full"
+          bg="primary.50"
+          animate={{ y: showingLog ? 0 : '100vh' }}
+          transition={{ type: 'tween', duration: 0.25 }}
+        >
+          {showingLog && <Log />}
+        </MotionBox>
       </ChakraProvider>
     </PouchProvider>
   )
