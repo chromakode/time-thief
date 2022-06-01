@@ -392,6 +392,10 @@ function App() {
                   bg={idx === page ? 'primary.600' : 'transparent'}
                   borderWidth={idx === page ? 0 : '3px'}
                   borderColor="primary.600"
+                  // TODO: a11y
+                  onClick={() => {
+                    setPage(idx)
+                  }}
                 />
               ))}
             </HStack>
