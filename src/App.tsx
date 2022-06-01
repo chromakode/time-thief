@@ -39,22 +39,34 @@ interface ActivityState {
 
 const _db = new PouchDB('entities')
 
-function useActivities(): ActivityState {
+function useActivities(): [ActivityState, number] {
+  const [now, setNow] = useState(() => Date.now())
   const [activities] = useState(() => new Activities(activityData))
   const [activityState, setActivityState] = useState<ActivityState>(() =>
     activities.chooseActivities(),
   )
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setActivityState(activities.chooseActivities())
-    }, activityState.endTime - Date.now())
+    let timeout: number
+    function tick() {
+      timeout = window.setTimeout(() => {
+        const now = Date.now()
+        if (now > activityState.endTime) {
+          setActivityState(activities.chooseActivities())
+        }
+        setNow(now)
+        tick()
+      }, Math.max(500, 1000 - (Date.now() % 1000)))
+    }
+    tick()
     return () => {
       clearTimeout(timeout)
     }
-  }, [activities, activityState.endTime])
+  }, [activities, activityState])
 
-  return activityState
+  const remainingSeconds = Math.round((activityState.endTime - now) / 1000)
+
+  return [activityState, remainingSeconds]
 }
 
 // TODO: per component type types
@@ -242,17 +254,10 @@ function Activity({
   )
 }
 
-function RemainingTime({ endTime, ...props }: { endTime: number } & BoxProps) {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now())
-    }, 1000)
-    return () => {
-      clearInterval(interval)
-    }
-  })
-  const remainingSeconds = Math.round((endTime - now) / 1000)
+function RemainingTime({
+  remainingSeconds,
+  ...props
+}: { remainingSeconds: number } & BoxProps) {
   const remainingMinutes = Math.round(remainingSeconds / 60)
   return (
     <Text textStyle="title" {...props}>
@@ -264,7 +269,7 @@ function RemainingTime({ endTime, ...props }: { endTime: number } & BoxProps) {
 const MotionBox = motion<Omit<BoxProps, 'transition' | 'onDragEnd'>>(Box)
 
 function App() {
-  const { activities, seed, endTime } = useActivities()
+  const [{ activities, seed }, remainingSeconds] = useActivities()
   const { ref, width = 0 } = useResizeObserver()
   const [page, setPage] = useState(0)
   const dragControls = useDragControls()
@@ -357,7 +362,10 @@ function App() {
             justifyContent="space-around"
             sx={{ touchAction: 'none' }}
           >
-            <RemainingTime endTime={endTime} justifySelf="start" />
+            <RemainingTime
+              remainingSeconds={remainingSeconds}
+              justifySelf="start"
+            />
             <HStack justifySelf="center">
               {range(activities.length).map((idx) => (
                 <Box
