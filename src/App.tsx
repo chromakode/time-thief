@@ -287,6 +287,17 @@ function App() {
   const canMoveRight = page < activities.length - 1
   const baseOffset = -page * width
 
+  useEffect(() => {
+    setPage(0)
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+  }, [seed])
+
+  useEffect(() => {
+    finishSwipe.start({ x: -page * width })
+  }, [finishSwipe, page, width])
+
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
   return (
@@ -338,7 +349,6 @@ function App() {
                 newPage--
               }
               setPage(newPage)
-              finishSwipe.start({ x: -newPage * width })
             }}
           >
             <HStack h="full" spacing={0}>
