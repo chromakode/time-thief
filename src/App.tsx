@@ -270,6 +270,10 @@ function App() {
   const dragControls = useDragControls()
   const finishSwipe = useAnimation()
 
+  useEffect(() => {
+    window.screen.orientation.lock('natural')
+  }, [])
+
   function handleStartDrag(event: React.TouchEvent) {
     dragControls.start(event)
   }
