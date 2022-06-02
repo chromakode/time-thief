@@ -77,6 +77,14 @@
             {
               "type": "title",
               "text": "How did you get here?"
+            },
+            {
+              "type": "title",
+              "text": "How are you feeling?"
+            },
+            {
+              "type": "title",
+              "text": "What will you do in the next hour?"
             }
           ]
         },
