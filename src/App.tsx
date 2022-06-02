@@ -319,15 +319,20 @@ function App() {
   const canMoveRight = page < activities.length - 1
   const baseOffset = -page * width
 
-  useEffect(() => {
-    setPage({ page: 0 })
+  function blur() {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
+  }
+
+  useEffect(() => {
+    setPage({ page: 0 })
+    blur()
   }, [seed])
 
   useEffect(() => {
     finishSwipe.start({ x: -pageUpdate.page * width })
+    blur()
   }, [finishSwipe, pageUpdate, width])
 
   // FIXME: ignore multiple touch drags
