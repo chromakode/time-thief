@@ -111,6 +111,46 @@
       }
     },
     {
+      "id": "journal-tonight",
+      "conditions": {
+        "timeOfDay": ["morning, afternoon"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What are you going to do this evening?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
+      "id": "journal-tomorrow",
+      "conditions": {
+        "timeOfDay": ["evening, night"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What would you like to accomplish tomorrow?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
       "id": "journal-best-thing",
       "conditions": {
         "timeOfDay": ["afternoon", "evening"]
