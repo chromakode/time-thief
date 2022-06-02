@@ -17,7 +17,8 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react'
 import { motion, useAnimation, useDragControls } from 'framer-motion'
-import useResizeObserver from 'use-resize-observer'
+import usePrevious from '@react-hook/previous'
+import useSize from '@react-hook/size'
 import PouchDB from 'pouchdb'
 import {
   Provider as PouchProvider,
@@ -300,9 +301,11 @@ const MotionBox = motion<Omit<BoxProps, 'transition' | 'onDragEnd'>>(Box)
 
 function App() {
   const [{ activities, seed }, remainingSeconds] = useActivities()
-  const { ref, width = 0 } = useResizeObserver()
+  const ref = useRef<HTMLDivElement>(null)
+  const [width = 0] = useSize(ref)
   const [showingLog, setShowingLog] = useState(false)
   const [pageUpdate, setPage] = useState({ page: 0 })
+  const previousPage = usePrevious(pageUpdate.page)
   const dragControls = useDragControls()
   const finishSwipe = useAnimation()
 
@@ -328,8 +331,10 @@ function App() {
 
   useEffect(() => {
     finishSwipe.start({ x: -pageUpdate.page * width })
-    blur()
-  }, [finishSwipe, pageUpdate, width])
+    if (pageUpdate.page !== previousPage) {
+      blur()
+    }
+  }, [finishSwipe, pageUpdate, previousPage, width])
 
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
