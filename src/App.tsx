@@ -302,7 +302,7 @@ function App() {
   const [{ activities, seed }, remainingSeconds] = useActivities()
   const { ref, width = 0 } = useResizeObserver()
   const [showingLog, setShowingLog] = useState(false)
-  const [page, setPage] = useState(0)
+  const [pageUpdate, setPage] = useState({ page: 0 })
   const dragControls = useDragControls()
   const finishSwipe = useAnimation()
 
@@ -314,20 +314,21 @@ function App() {
     dragControls.start(event)
   }
 
+  const page = pageUpdate.page
   const canMoveLeft = page > 0
   const canMoveRight = page < activities.length - 1
   const baseOffset = -page * width
 
   useEffect(() => {
-    setPage(0)
+    setPage({ page: 0 })
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
   }, [seed])
 
   useEffect(() => {
-    finishSwipe.start({ x: -page * width })
-  }, [finishSwipe, page, width])
+    finishSwipe.start({ x: -pageUpdate.page * width })
+  }, [finishSwipe, pageUpdate, width])
 
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
@@ -379,7 +380,7 @@ function App() {
               } else if (movingLeft && canMoveLeft) {
                 newPage--
               }
-              setPage(newPage)
+              setPage({ page: newPage })
             }}
           >
             <HStack h="full" spacing={0}>
@@ -421,7 +422,7 @@ function App() {
                   borderColor="primary.600"
                   // TODO: a11y
                   onClick={() => {
-                    setPage(idx)
+                    setPage({ page: idx })
                   }}
                 />
               ))}
