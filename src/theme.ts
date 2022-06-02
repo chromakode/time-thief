@@ -29,6 +29,7 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
         background: 'primary.50',
         color: 'primary.600',
         height: '100%',
+        overflow: 'hidden',
       },
     },
   },
