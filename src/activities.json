@@ -85,6 +85,14 @@
             {
               "type": "title",
               "text": "What will you do in the next hour?"
+            },
+            {
+              "type": "title",
+              "text": "What are you grateful for?"
+            },
+            {
+              "type": "title",
+              "text": "What could be going better?"
             }
           ]
         },
@@ -167,23 +175,6 @@
         {
           "type": "title",
           "text": "What's the best thing that happened so far today?"
-        },
-        {
-          "type": "input/multi-line",
-          "field": "content"
-        }
-      ],
-      "entity": {
-        "type": "journal",
-        "content": "${field.content}"
-      }
-    },
-    {
-      "id": "journal-grateful-for",
-      "content": [
-        {
-          "type": "title",
-          "text": "What are you grateful for?"
         },
         {
           "type": "input/multi-line",
