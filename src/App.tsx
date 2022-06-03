@@ -286,7 +286,7 @@ function Log() {
   const { rows } = useAllDocs({ include_docs: true })
   // TODO: use content component system to render log
   return (
-    <VStack align="flex-start" h="full" overflowY="scroll">
+    <VStack align="flex-start" h="full" overflowY="scroll" padding="4">
       {rows.map((row) => {
         const entity = row.doc as any
         return (
@@ -459,7 +459,8 @@ function App() {
           w="full"
           h="full"
           bg="primary.50"
-          animate={{ y: showingLog ? 0 : '100vh' }}
+          boxShadow={showingLog ? 'dark-lg' : 'none'}
+          animate={{ y: showingLog ? 0 : '101vh' }}
           transition={{ type: 'tween', duration: 0.25 }}
         >
           {showingLog && <Log />}
