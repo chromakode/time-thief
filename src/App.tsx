@@ -165,7 +165,13 @@ contentComponents.set(
       <VStack px="4" flex="1" spacing="4">
         <Flex flexGrow="1" flexBasis="0" overflow="hidden" alignItems="center">
           {imageURL && (
-            <Image src={imageURL} borderRadius="4" h="full" w="full" />
+            <Image
+              src={imageURL}
+              borderRadius="4"
+              h="full"
+              w="full"
+              objectFit="contain"
+            />
           )}
         </Flex>
         <InputGroup w="auto" onClick={handleClick}>
