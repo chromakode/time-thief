@@ -40,6 +40,16 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
       fontVariationSettings: '"GRAD" -18',
       textAlign: 'center',
     },
+    brand: {
+      fontWeight: 650,
+      fontVariationSettings: '"GRAD" 150, "slnt" -8, "YOPQ" 40',
+      textTransform: 'capitalize',
+    },
+    brandStraight: {
+      fontWeight: 650,
+      fontVariationSettings: '"GRAD" 150, "YOPQ" 40',
+      textTransform: 'capitalize',
+    },
   },
   components: {
     Textarea: {

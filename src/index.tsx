@@ -1,13 +1,24 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import PouchDB from 'pouchdb'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { Provider as PouchProvider } from 'use-pouchdb'
+import theme from './theme'
+import { ChakraProvider } from '@chakra-ui/react'
+import './devUtils'
+
+export const _db = new PouchDB('entities')
 
 const root = createRoot(document.getElementById('root')!)
 root.render(
   <React.StrictMode>
-    <App />
+    <PouchProvider pouchdb={_db}>
+      <ChakraProvider theme={theme}>
+        <App />
+      </ChakraProvider>
+    </PouchProvider>
   </React.StrictMode>,
 )
 

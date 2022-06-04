@@ -1,7 +1,6 @@
 import {
   Box,
   BoxProps,
-  ChakraProvider,
   HStack,
   IconButton,
   SimpleGrid,
@@ -10,21 +9,20 @@ import {
 } from '@chakra-ui/react'
 import '@fontsource/roboto-flex/variable-full.css'
 import useSize from '@react-hook/size'
+import 'focus-visible/dist/focus-visible'
 import { useDragControls } from 'framer-motion'
 import { range } from 'lodash'
-import PouchDB from 'pouchdb'
 import React, { useEffect, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
-import { Provider as PouchProvider } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from './Activities'
+
 import activityData from './activities.json'
 import './App.css'
 import Activity from './components/Activity'
 import Carousel from './components/Carousel'
+import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
-import theme from './theme'
-import './App.css'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -33,8 +31,6 @@ interface ActivityState {
   endTime: number
   timeOfDay: string
 }
-
-const _db = new PouchDB('entities')
 
 function useActivities(): [ActivityState, number] {
   const [now, setNow] = useState(() => Date.now())
@@ -85,6 +81,7 @@ function App() {
   const [page, setPage] = useState(0)
   const dragControls = useDragControls()
   const [showingLog, setShowingLog] = useState(false)
+  const { showingIntro } = useShowingIntro()
 
   function handleStartDrag(event: React.TouchEvent) {
     dragControls.start(event)
@@ -109,95 +106,93 @@ function App() {
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
   return (
-    <PouchProvider pouchdb={_db}>
-      <ChakraProvider theme={theme}>
-        <VStack
-          ref={ref}
-          w="100vw"
-          h="full"
-          spacing="4"
-          overflow="hidden"
-          onTouchStart={handleStartDrag}
+    <>
+      <IntroModal />
+      <VStack
+        ref={ref}
+        w="100vw"
+        h="full"
+        spacing="4"
+        overflow="hidden"
+        opacity={showingIntro ? '0' : '1'}
+        onTouchStart={handleStartDrag}
+      >
+        <Carousel
+          width={width}
+          page={page}
+          onPageChange={handlePageChange}
+          dragControls={dragControls}
         >
-          <Carousel
-            width={width}
-            page={page}
-            onPageChange={handlePageChange}
-            dragControls={dragControls}
-          >
-            {activities.map((activity, idx) => (
-              <Activity
-                w={width}
-                key={`${seed}-${idx}-${activity.id}`}
-                activity={activity}
-                seed={seed}
-                idx={idx}
+          {activities.map((activity, idx) => (
+            <Activity
+              w={width}
+              key={`${seed}-${idx}-${activity.id}`}
+              activity={activity}
+              seed={seed}
+              idx={idx}
+            />
+          ))}
+        </Carousel>
+        <SimpleGrid
+          flexShrink="0"
+          columns={3}
+          h="10vh"
+          minH="12"
+          w="full"
+          px="8"
+          alignItems="center"
+          justifyContent="space-around"
+          sx={{ touchAction: 'none' }}
+        >
+          <RemainingTime
+            remainingSeconds={remainingSeconds}
+            justifySelf="start"
+          />
+          <HStack justifySelf="center">
+            {range(activities.length).map((idx) => (
+              <Box
+                key={idx}
+                w="14px"
+                h="14px"
+                borderRadius="full"
+                bg={idx === page ? 'primary.600' : 'transparent'}
+                borderWidth={idx === page ? 0 : '3px'}
+                borderColor="primary.600"
+                // TODO: a11y
+                onClick={() => {
+                  setPage(idx)
+                }}
               />
             ))}
-          </Carousel>
-          <SimpleGrid
-            flexShrink="0"
-            columns={3}
-            h="10vh"
-            minH="12"
-            w="full"
-            px="8"
-            alignItems="center"
-            justifyContent="space-around"
-            sx={{ touchAction: 'none' }}
-          >
-            <RemainingTime
-              remainingSeconds={remainingSeconds}
-              justifySelf="start"
-            />
-            <HStack justifySelf="center">
-              {range(activities.length).map((idx) => (
-                <Box
-                  key={idx}
-                  w="14px"
-                  h="14px"
-                  borderRadius="full"
-                  bg={idx === page ? 'primary.600' : 'transparent'}
-                  borderWidth={idx === page ? 0 : '3px'}
-                  borderColor="primary.600"
-                  // TODO: a11y
-                  onClick={() => {
-                    setPage(idx)
-                  }}
-                />
-              ))}
-            </HStack>
-            <IconButton
-              zIndex={100}
-              icon={<MdArticle />}
-              aria-label="View log"
-              justifySelf="end"
-              variant={showingLog ? 'solid' : 'ghost'}
-              fontSize="3xl"
-              onClick={() => {
-                setShowingLog(!showingLog)
-              }}
-            />
-          </SimpleGrid>
-        </VStack>
-        <MotionBox
-          position="absolute"
-          left="0"
-          top="0"
-          w="full"
-          h="full"
-          bg="primary.50"
-          boxShadow={showingLog ? 'dark-lg' : 'none'}
-          animate={{ y: showingLog ? 0 : '101vh' }}
-          transition={{ type: 'tween', duration: 0.25 }}
-        >
-          {showingLog && <Log />}
-        </MotionBox>
-      </ChakraProvider>
-    </PouchProvider>
+          </HStack>
+          <IconButton
+            zIndex={100}
+            icon={<MdArticle />}
+            aria-label="View log"
+            justifySelf="end"
+            variant={showingLog ? 'solid' : 'ghost'}
+            fontSize="3xl"
+            onClick={() => {
+              setShowingLog(!showingLog)
+            }}
+          />
+        </SimpleGrid>
+      </VStack>
+      <MotionBox
+        position="absolute"
+        left="0"
+        top="0"
+        w="full"
+        h="full"
+        bg="primary.50"
+        boxShadow={showingLog ? 'dark-lg' : 'none'}
+        animate={{ y: showingLog ? 0 : '101vh' }}
+        transition={{ type: 'tween', duration: 0.25 }}
+      >
+        {showingLog && <Log />}
+      </MotionBox>
+    </>
   )
 }
-
-_db.allDocs({ include_docs: true }).then((ds) => console.log(ds.rows))
 
 export default App

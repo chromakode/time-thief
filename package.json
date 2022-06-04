@@ -16,6 +16,7 @@
     "@types/pouchdb": "^6.4.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
+    "focus-visible": "^5.2.0",
     "framer-motion": "^6.3.3",
     "lodash": "^4.17.21",
     "node": "^17.7.2",
