@@ -82,15 +82,15 @@ export function IntroModal() {
             future.
           </Text>
           <VStack my="2" align="flex-start">
-            <HStack spacing="3">
-              <Text>️💡️</Text>
-              <Text>Redirect boredom into creativity.</Text>
+            <HStack spacing="4">
+              <Text>🕑</Text>
+              <Text>Every 15 minutes, you'll get new prompts.</Text>
             </HStack>
-            <HStack spacing="3">
-              <Text>📸</Text>
-              <Text>Capture spontaneous moments.</Text>
+            <HStack spacing="4">
+              <Text>✌️</Text>
+              <Text>All done? There's nothing else to do but wait.</Text>
             </HStack>
-            <HStack spacing="3">
+            <HStack spacing="4">
               <Text>🔒</Text>
               <Text>Data is stored privately on your device.</Text>
             </HStack>

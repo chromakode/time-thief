@@ -70,6 +70,13 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
         focusBorderColor: 'primary.600',
       },
     },
+    Modal: {
+      baseStyle: ({ colorMode }: StyleFunctionProps) => ({
+        dialog: {
+          bg: colorMode === 'dark' ? 'primary.8t 00' : 'white',
+        },
+      }),
+    },
   },
 })
 
