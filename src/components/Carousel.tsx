@@ -47,7 +47,7 @@ export default function Carousel({
       dragDirectionLock
       dragControls={dragControls}
       onDragEnd={(ev, { point, offset, velocity }) => {
-        const velocityThreshold = 10000
+        const velocityThreshold = 5000
         const posThreshold = width / 3
         const swipe = Math.abs(offset.x) * velocity.x
 
