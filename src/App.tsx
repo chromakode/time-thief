@@ -188,6 +188,7 @@ function App() {
         boxShadow={showingLog ? 'dark-lg' : 'none'}
         animate={{ y: showingLog ? 0 : '101vh' }}
         transition={{ type: 'tween', duration: 0.25 }}
+        initial={false}
       >
         {showingLog && <Log />}
       </MotionBox>
