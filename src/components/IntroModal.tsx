@@ -70,7 +70,7 @@ export function IntroModal() {
           >
             <Text fontSize="4xl">⚠️</Text>
             <Text fontWeight="bold" color="primary.500" textAlign="center">
-              This device is engaged in a <br />
+              This device is engaging in a <br />
               heist of your attention.
             </Text>
           </HStack>
