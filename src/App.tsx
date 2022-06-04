@@ -5,6 +5,7 @@ import {
   IconButton,
   SimpleGrid,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react'
 import '@fontsource/roboto-flex/variable-full.css'
@@ -75,6 +76,7 @@ function RemainingTime({
 }
 
 function App() {
+  const { colorMode } = useColorMode()
   const [{ activities, seed }, remainingSeconds] = useActivities()
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
@@ -155,9 +157,12 @@ function App() {
                 w="14px"
                 h="14px"
                 borderRadius="full"
-                bg={idx === page ? 'primary.600' : 'transparent'}
-                borderWidth={idx === page ? 0 : '3px'}
-                borderColor="primary.600"
+                borderWidth={idx === page ? '7px' : '3px'}
+                borderColor={
+                  colorMode === 'dark' ? 'primary.200' : 'primary.600'
+                }
+                transitionProperty="border"
+                transitionDuration="200ms"
                 // TODO: a11y
                 onClick={() => {
                   setPage(idx)
@@ -184,7 +189,7 @@ function App() {
         top="0"
         w="full"
         h="full"
-        bg="primary.50"
+        bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
         boxShadow={showingLog ? 'dark-lg' : 'none'}
         animate={{ y: showingLog ? 0 : '101vh' }}
         transition={{ type: 'tween', duration: 0.25 }}

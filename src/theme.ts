@@ -1,8 +1,10 @@
 import { extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
+import { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   config: {
-    useSystemColorMode: false,
+    initialColorMode: 'light',
+    useSystemColorMode: true,
   },
   colors: {
     primary: {
@@ -24,14 +26,14 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
     heading: 'Roboto FlexVariable',
   },
   styles: {
-    global: {
+    global: ({ colorMode }: StyleFunctionProps) => ({
       'html, body, #root': {
-        background: 'primary.50',
-        color: 'primary.600',
+        background: colorMode === 'dark' ? 'primary.800' : 'primary.50',
+        color: colorMode === 'dark' ? 'primary.100' : 'primary.600',
         height: '100%',
         overflow: 'hidden',
       },
-    },
+    }),
   },
   textStyles: {
     title: {
@@ -54,12 +56,15 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   components: {
     Textarea: {
       variants: {
-        filled: {
-          bg: 'rgba(0, 0, 0, .04)',
+        filled: ({ colorMode }: StyleFunctionProps) => ({
+          bg:
+            colorMode === 'dark'
+              ? 'rgba(255, 255, 255, .06)'
+              : 'rgba(0, 0, 0, .04)',
           _hover: {
-            bg: 'rgba(0, 0, 0, .04)',
+            bg: null,
           },
-        },
+        }),
       },
       defaultProps: {
         focusBorderColor: 'primary.600',
