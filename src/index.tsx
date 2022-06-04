@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals'
 import { Provider as PouchProvider } from 'use-pouchdb'
 import theme from './theme'
 import { ChakraProvider } from '@chakra-ui/react'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration'
+
 import './devUtils'
 
 export const _db = new PouchDB('entities')
@@ -21,6 +23,8 @@ root.render(
     </PouchProvider>
   </React.StrictMode>,
 )
+
+serviceWorkerRegistration.register()
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
