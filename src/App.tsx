@@ -210,6 +210,9 @@ function App() {
             onClick={() => {
               setShowingLog(!showingLog)
             }}
+            borderRadius="full"
+            size="lg"
+            mr="-2"
             {...logLongPressProps}
           />
         </SimpleGrid>
