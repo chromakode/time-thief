@@ -13,7 +13,7 @@ import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
 import { useDragControls } from 'framer-motion'
 import { range } from 'lodash'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
 import Activities, { ActivityDefinition } from './Activities'
 
@@ -63,6 +63,32 @@ function useActivities(): [ActivityState, number] {
   return [activityState, remainingSeconds]
 }
 
+function useLongPress(onLongPress: () => void, duration = 5000) {
+  const timeoutRef = useRef<number | undefined>()
+  const callbackRef = useRef<() => void>(onLongPress)
+
+  callbackRef.current = onLongPress
+
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      window.clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
+  const onPointerDown = useCallback(() => {
+    timeoutRef.current = window.setTimeout(() => {
+      callbackRef.current()
+    }, duration)
+  }, [duration])
+
+  const onPointerUp = useCallback(() => {
+    window.clearTimeout(timeoutRef.current)
+  }, [])
+
+  return { onPointerDown, onPointerUp }
+}
+
 function RemainingTime({
   remainingSeconds,
   ...props
@@ -84,6 +110,10 @@ function App() {
   const dragControls = useDragControls()
   const [showingLog, setShowingLog] = useState(false)
   const { showingIntro } = useShowingIntro()
+
+  const logLongPressProps = useLongPress(() => {
+    localStorage['syncEndpoint'] = window.prompt('sync endpoint')
+  })
 
   function handleStartDrag(event: React.TouchEvent) {
     dragControls.start(event)
@@ -180,6 +210,7 @@ function App() {
             onClick={() => {
               setShowingLog(!showingLog)
             }}
+            {...logLongPressProps}
           />
         </SimpleGrid>
       </VStack>
