@@ -1,4 +1,4 @@
-import { _db } from './'
+import { _db } from '..'
 
 declare global {
   interface Window {

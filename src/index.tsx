@@ -9,7 +9,7 @@ import theme from './theme'
 import { ChakraProvider } from '@chakra-ui/react'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
-import './devUtils'
+import './utils/devUtils'
 
 export const _db = new PouchDB('entities')
 

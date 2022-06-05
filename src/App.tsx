@@ -13,7 +13,7 @@ import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
 import { useDragControls } from 'framer-motion'
 import { range } from 'lodash'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
 import Activities, { ActivityDefinition } from './Activities'
 
@@ -24,6 +24,7 @@ import Carousel from './components/Carousel'
 import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
+import useLongPress from './utils/useLongPress'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -61,32 +62,6 @@ function useActivities(): [ActivityState, number] {
   const remainingSeconds = Math.round((activityState.endTime - now) / 1000)
 
   return [activityState, remainingSeconds]
-}
-
-function useLongPress(onLongPress: () => void, duration = 5000) {
-  const timeoutRef = useRef<number | undefined>()
-  const callbackRef = useRef<() => void>(onLongPress)
-
-  callbackRef.current = onLongPress
-
-  useEffect(() => {
-    return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      window.clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
-  const onPointerDown = useCallback(() => {
-    timeoutRef.current = window.setTimeout(() => {
-      callbackRef.current()
-    }, duration)
-  }, [duration])
-
-  const onPointerUp = useCallback(() => {
-    window.clearTimeout(timeoutRef.current)
-  }, [])
-
-  return { onPointerDown, onPointerUp }
 }
 
 function RemainingTime({
