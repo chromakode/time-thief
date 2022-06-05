@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
@@ -28,6 +29,7 @@ export function useShowingIntro() {
 }
 
 export function IntroModal() {
+  const { colorMode } = useColorMode()
   const { showingIntro, closeIntro } = useShowingIntro()
   return (
     <Modal isOpen={showingIntro} onClose={closeIntro} isCentered>
@@ -69,7 +71,11 @@ export function IntroModal() {
             py="3"
           >
             <Text fontSize="4xl">⚠️</Text>
-            <Text fontWeight="bold" color="primary.500" textAlign="center">
+            <Text
+              fontWeight="bold"
+              color={colorMode === 'dark' ? 'primary.200' : 'primary.500'}
+              textAlign="center"
+            >
               This device is engaging in a <br />
               heist of your attention.
             </Text>
