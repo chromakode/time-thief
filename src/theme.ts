@@ -73,7 +73,7 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
     Modal: {
       baseStyle: ({ colorMode }: StyleFunctionProps) => ({
         dialog: {
-          bg: colorMode === 'dark' ? 'primary.8t 00' : 'white',
+          bg: colorMode === 'dark' ? 'primary.800' : 'white',
         },
       }),
     },
