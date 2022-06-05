@@ -3,7 +3,6 @@ import { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   config: {
-    initialColorMode: 'light',
     useSystemColorMode: true,
   },
   colors: {
