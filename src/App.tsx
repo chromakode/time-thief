@@ -105,7 +105,10 @@ function App() {
   }
 
   const logLongPressProps = useLongPress(() => {
-    localStorage['syncEndpoint'] = window.prompt('sync endpoint')
+    localStorage['syncEndpoint'] = window.prompt(
+      'sync endpoint',
+      localStorage['syncEndpoint'] ?? '',
+    )
   })
 
   function handleStartDrag(event: React.TouchEvent) {
