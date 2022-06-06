@@ -185,23 +185,6 @@
         "type": "journal",
         "content": "${field.content}"
       }
-    },
-    {
-      "id": "journal-name-app",
-      "content": [
-        {
-          "type": "title",
-          "text": "What should this app be called?"
-        },
-        {
-          "type": "input/multi-line",
-          "field": "content"
-        }
-      ],
-      "entity": {
-        "type": "journal",
-        "content": "${field.content}"
-      }
     }
   ]
 }
