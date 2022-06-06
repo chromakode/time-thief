@@ -68,7 +68,7 @@ function RemainingTime({
   remainingSeconds,
   ...props
 }: { remainingSeconds: number } & BoxProps) {
-  const remainingMinutes = Math.round(remainingSeconds / 60)
+  const remainingMinutes = Math.ceil(remainingSeconds / 60)
   return (
     <Text textStyle="title" {...props}>
       {remainingSeconds > 60 ? `${remainingMinutes}m` : `${remainingSeconds}s`}
