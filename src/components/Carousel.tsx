@@ -1,6 +1,7 @@
 import { HStack } from '@chakra-ui/react'
+import usePrevious from '@react-hook/previous'
 import { DragControls, useAnimation } from 'framer-motion'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import MotionBox from './MotionBox'
 
 export default function Carousel({
@@ -17,6 +18,8 @@ export default function Carousel({
   children: React.ReactNode
 }) {
   const slidePage = useAnimation()
+  const previousPage = usePrevious(page)
+  const previousWidth = usePrevious(width)
 
   const pageCount = React.Children.count(children)
   const canMoveLeft = page > 0
@@ -24,8 +27,13 @@ export default function Carousel({
   const baseOffset = -page * width
 
   useEffect(() => {
-    slidePage.start({ x: -page * width })
-  }, [slidePage, page, width])
+    if (page === previousPage && width === previousWidth) {
+      return
+    }
+    const method =
+      previousPage === undefined || width !== previousWidth ? 'set' : 'start'
+    slidePage[method]({ x: -page * width })
+  }, [slidePage, page, previousPage, width, previousWidth])
 
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility

@@ -25,6 +25,7 @@ import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
 import useLongPress from './utils/useLongPress'
+import useLocationHash from './utils/useLocationHash'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -81,10 +82,28 @@ function App() {
   const [{ activities, seed }, remainingSeconds] = useActivities()
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
-  const [page, setPage] = useState(0)
   const dragControls = useDragControls()
   const [showingLog, setShowingLog] = useState(false)
   const { showingIntro } = useShowingIntro()
+  const locationHash = useLocationHash()
+
+  const locationHashPage = parseInt(locationHash.substring(1))
+  const page =
+    Number.isInteger(locationHashPage) &&
+    locationHashPage > 0 &&
+    locationHashPage < activities.length
+      ? locationHashPage
+      : 0
+
+  function setPage(nextPage: number) {
+    window.location.hash = nextPage.toString()
+  }
+
+  function blur() {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+  }
 
   const logLongPressProps = useLongPress(() => {
     localStorage['syncEndpoint'] = window.prompt('sync endpoint')
@@ -98,17 +117,6 @@ function App() {
     setPage(page)
     blur()
   }
-
-  function blur() {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur()
-    }
-  }
-
-  useEffect(() => {
-    setPage(0)
-    blur()
-  }, [seed])
 
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
@@ -124,22 +132,24 @@ function App() {
         opacity={showingIntro ? '0' : '1'}
         onTouchStart={handleStartDrag}
       >
-        <Carousel
-          width={width}
-          page={page}
-          onPageChange={handlePageChange}
-          dragControls={dragControls}
-        >
-          {activities.map((activity, idx) => (
-            <Activity
-              w={width}
-              key={`${seed}-${idx}-${activity.id}`}
-              activity={activity}
-              seed={seed}
-              idx={idx}
-            />
-          ))}
-        </Carousel>
+        {width !== 0 && (
+          <Carousel
+            width={width}
+            page={page}
+            onPageChange={handlePageChange}
+            dragControls={dragControls}
+          >
+            {activities.map((activity, idx) => (
+              <Activity
+                w={width}
+                key={`${seed}-${idx}-${activity.id}`}
+                activity={activity}
+                seed={seed}
+                idx={idx}
+              />
+            ))}
+          </Carousel>
+        )}
         <SimpleGrid
           flexShrink="0"
           columns={3}
