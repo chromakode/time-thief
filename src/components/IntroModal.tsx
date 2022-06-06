@@ -12,20 +12,34 @@ import {
   useColorMode,
   VStack,
 } from '@chakra-ui/react'
+import create from 'zustand'
 import React, { useCallback } from 'react'
 import { useDoc, usePouch } from 'use-pouchdb'
 
+const useStore = create<{
+  localShowing: boolean
+  show: () => void
+  hide: () => void
+}>((set) => ({
+  localShowing: false,
+  show: () => set(() => ({ localShowing: true })),
+  hide: () => set(() => ({ localShowing: false })),
+}))
+
 export function useShowingIntro() {
+  const store = useStore()
   const db = usePouch()
   const { doc: config, loading } = useDoc('config', {}, { introSeen: false })
 
-  const showingIntro = !loading && config?.introSeen === false
+  const showingIntro =
+    store.localShowing || (!loading && config?.introSeen === false)
 
   const closeIntro = useCallback(() => {
     db.put({ ...config, introSeen: true })
-  }, [config, db])
+    store.hide()
+  }, [config, db, store])
 
-  return { showingIntro, closeIntro }
+  return { showingIntro, closeIntro, showIntro: store.show }
 }
 
 export function IntroModal() {

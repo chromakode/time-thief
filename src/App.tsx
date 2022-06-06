@@ -16,7 +16,6 @@ import { range } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
 import Activities, { ActivityDefinition } from './Activities'
-
 import activityData from './activities.json'
 import './App.css'
 import Activity from './components/Activity'
@@ -24,8 +23,8 @@ import Carousel from './components/Carousel'
 import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
-import useLongPress from './utils/useLongPress'
 import useLocationHash from './utils/useLocationHash'
+import useLongPress from './utils/useLongPress'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -83,8 +82,8 @@ function App() {
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
   const dragControls = useDragControls()
-  const [showingLog, setShowingLog] = useState(false)
-  const { showingIntro } = useShowingIntro()
+  const [isShowingLog, setShowingLog] = useState(false)
+  const { showingIntro, showIntro } = useShowingIntro()
   const locationHash = useLocationHash()
 
   const locationHashPage = parseInt(locationHash.substring(1))
@@ -186,14 +185,14 @@ function App() {
             ))}
           </HStack>
           <IconButton
-            zIndex={100}
+            zIndex="overlay"
             icon={<MdArticle />}
             aria-label="View log"
             justifySelf="end"
-            variant={showingLog ? 'solid' : 'ghost'}
+            variant={isShowingLog ? 'solid' : 'ghost'}
             fontSize="3xl"
             onClick={() => {
-              setShowingLog(!showingLog)
+              setShowingLog(!isShowingLog)
             }}
             borderRadius="full"
             size="lg"
@@ -209,12 +208,12 @@ function App() {
         w="full"
         h="full"
         bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
-        boxShadow={showingLog ? 'dark-lg' : 'none'}
-        animate={{ y: showingLog ? 0 : '101vh' }}
+        boxShadow={isShowingLog ? 'dark-lg' : 'none'}
+        animate={{ y: isShowingLog ? 0 : '101vh' }}
         transition={{ type: 'tween', duration: 0.25 }}
         initial={false}
       >
-        {showingLog && <Log />}
+        {isShowingLog && <Log onShowAbout={showIntro} />}
       </MotionBox>
     </>
   )
