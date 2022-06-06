@@ -26,6 +26,9 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   },
   styles: {
     global: ({ colorMode }: StyleFunctionProps) => ({
+      body: {
+        WebkitTapHighlightColor: 'transparent',
+      },
       'html, body, #root': {
         background: colorMode === 'dark' ? 'primary.800' : 'primary.50',
         color: colorMode === 'dark' ? 'primary.100' : 'primary.600',
