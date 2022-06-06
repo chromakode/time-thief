@@ -1,7 +1,7 @@
 import { HStack } from '@chakra-ui/react'
 import usePrevious from '@react-hook/previous'
 import { DragControls, useAnimation } from 'framer-motion'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import MotionBox from './MotionBox'
 
 export default function Carousel({
