@@ -129,7 +129,7 @@
     {
       "id": "journal-tonight",
       "conditions": {
-        "timeOfDay": ["morning, afternoon"]
+        "timeOfDay": ["morning", "afternoon"]
       },
       "content": [
         {
@@ -149,7 +149,7 @@
     {
       "id": "journal-tomorrow",
       "conditions": {
-        "timeOfDay": ["evening, night"]
+        "timeOfDay": ["evening", "night"]
       },
       "content": [
         {
