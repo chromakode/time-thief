@@ -95,7 +95,9 @@ function App() {
       : 0
 
   function setPage(nextPage: number) {
-    window.location.hash = nextPage.toString()
+    const url = new URL(window.location.href)
+    url.hash = nextPage.toString()
+    window.location.replace(url.toString())
   }
 
   function blur() {
