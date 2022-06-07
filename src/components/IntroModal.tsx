@@ -84,14 +84,14 @@ export function IntroModal() {
             borderColor="primary.300"
             py="3"
           >
-            <Text fontSize="4xl">⚠️</Text>
+            <Text fontSize="4xl">🕵️</Text>
             <Text
               fontWeight="bold"
               color={colorMode === 'dark' ? 'primary.200' : 'primary.500'}
               textAlign="center"
             >
               This device is engaging in a <br />
-              heist of your attention.
+              heist of your attention!
             </Text>
           </HStack>
           <Text>
