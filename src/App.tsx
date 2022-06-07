@@ -13,7 +13,7 @@ import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
 import { useDragControls } from 'framer-motion'
 import { range } from 'lodash'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
 import Activities, { ActivityDefinition } from './Activities'
 import activityData from './activities.json'
@@ -23,7 +23,7 @@ import Carousel from './components/Carousel'
 import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
-import useLocationHash from './utils/useLocationHash'
+import useLocationURL from './utils/useLocationURL'
 import useLongPress from './utils/useLongPress'
 
 interface ActivityState {
@@ -76,29 +76,53 @@ function RemainingTime({
   )
 }
 
+function useRouter({ maxPages }: { maxPages: number }) {
+  const { url, pushURL, replaceURL } = useLocationURL()
+
+  const locationHashPage = parseInt(url.hash.substring(1))
+  const page =
+    Number.isInteger(locationHashPage) &&
+    locationHashPage > 0 &&
+    locationHashPage < maxPages
+      ? locationHashPage
+      : 0
+
+  const setPage = useCallback(
+    (nextPage: number) => {
+      const url = new URL(window.location.href)
+      url.hash = nextPage.toString()
+      replaceURL(url.toString())
+    },
+    [replaceURL],
+  )
+
+  const isShowingLog = url.pathname.substring(1) === 'log'
+  const setShowingLog = useCallback(
+    (newShowingLog: boolean) => {
+      if (newShowingLog) {
+        const url = new URL(window.location.href)
+        url.pathname = 'log'
+        pushURL(url.toString())
+      } else {
+        window.history.back()
+      }
+    },
+    [pushURL],
+  )
+
+  return { page, setPage, isShowingLog, setShowingLog }
+}
+
 function App() {
   const { colorMode } = useColorMode()
   const [{ activities, seed }, remainingSeconds] = useActivities()
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
   const dragControls = useDragControls()
-  const [isShowingLog, setShowingLog] = useState(false)
   const { showingIntro, showIntro } = useShowingIntro()
-  const locationHash = useLocationHash()
-
-  const locationHashPage = parseInt(locationHash.substring(1))
-  const page =
-    Number.isInteger(locationHashPage) &&
-    locationHashPage > 0 &&
-    locationHashPage < activities.length
-      ? locationHashPage
-      : 0
-
-  function setPage(nextPage: number) {
-    const url = new URL(window.location.href)
-    url.hash = nextPage.toString()
-    window.location.replace(url.toString())
-  }
+  const { page, setPage, isShowingLog, setShowingLog } = useRouter({
+    maxPages: activities.length,
+  })
 
   function blur() {
     if (document.activeElement instanceof HTMLElement) {
