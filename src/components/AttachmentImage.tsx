@@ -1,6 +1,6 @@
 import { Box, Image, ImageProps } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useDoc } from 'use-pouchdb'
 
 export default function AttachmentImage({
@@ -9,21 +9,24 @@ export default function AttachmentImage({
   ...props
 }: { docId: string; attachmentId: string } & ImageProps) {
   const ref = useRef<HTMLImageElement>(null)
-  const { isIntersecting } = useIntersectionObserver(ref)
+  const { isIntersecting } = useIntersectionObserver(ref, {
+    rootMargin: '500px 0px 500px 0px',
+  })
 
   const { doc, loading } = useDoc(docId, { attachments: true, binary: true })
   const srcRef = useRef<string>()
+  const [_, setDigest] = useState()
 
   const attachment = loading ? undefined : doc?._attachments[attachmentId]
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (attachment?.data && isIntersecting) {
       srcRef.current = URL.createObjectURL(attachment.data)
+      setDigest(attachment.digest)
     }
     return () => {
       if (srcRef.current) {
         URL.revokeObjectURL(srcRef.current)
-        srcRef.current = undefined
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
