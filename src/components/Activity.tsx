@@ -13,14 +13,7 @@ export default function Activity({
   // TODO: entity field mapping? or drop idea in favor of components controlling?
   const entityId = `${seed}-${idx}:${activity.entity.type}`
   const db = usePouch()
-  const { doc: entityDoc } = useDoc(
-    entityId,
-    {
-      attachments: true,
-      binary: true,
-    },
-    {},
-  )
+  const { doc: entityDoc } = useDoc(entityId, undefined, {})
   const entityDocExists = entityDoc?._rev !== ''
 
   const save = useCallback(

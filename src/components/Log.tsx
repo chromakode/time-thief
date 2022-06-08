@@ -37,7 +37,8 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
           {photos.map((entity) => (
             <AspectRatio key={entity._id} ratio={1}>
               <AttachmentImage
-                attachment={entity._attachments.photo}
+                docId={entity._id}
+                attachmentId="photo"
                 borderRadius="4"
               />
             </AspectRatio>
@@ -67,8 +68,6 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
   const { rows } = useAllDocs<any>({
     include_docs: true,
     descending: true,
-    attachments: true,
-    binary: true,
     limit: 100, // TODO paginate / virtualize list
   })
 
