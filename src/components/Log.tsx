@@ -40,6 +40,9 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
                 docId={entity._id}
                 attachmentId="photo"
                 borderRadius="4"
+                w="full"
+                h="full"
+                objectFit="cover"
               />
             </AspectRatio>
           ))}
