@@ -15,6 +15,7 @@ export default function AttachmentImage({
 
   const { doc, loading } = useDoc(docId, { attachments: true, binary: true })
   const srcRef = useRef<string>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setDigest] = useState()
 
   const attachment = loading ? undefined : doc?._attachments[attachmentId]
