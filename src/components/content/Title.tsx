@@ -15,7 +15,9 @@ export default function ContentTitle({
   }, [entityDoc._rev, entityDoc.title, save, text])
   return (
     <Center h="20vh" px="4" flexShrink="0">
-      <Heading textStyle="title">{text}</Heading>
+      <Heading textStyle="title" textAlign="center">
+        {text}
+      </Heading>
     </Center>
   )
 }

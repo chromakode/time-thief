@@ -12,7 +12,7 @@ window.devUtils = {
   },
 
   async clearConfig() {
-    const configDoc = await _db.get('config')
+    const configDoc = await _db.get('$config')
     await _db.remove(configDoc)
   },
 }

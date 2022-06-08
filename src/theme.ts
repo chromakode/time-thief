@@ -42,7 +42,6 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
       fontWeight: 600,
       fontStretch: '70%',
       fontVariationSettings: '"GRAD" -18',
-      textAlign: 'center',
     },
     brand: {
       fontWeight: 650,

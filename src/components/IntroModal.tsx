@@ -29,7 +29,7 @@ const useStore = create<{
 export function useShowingIntro() {
   const store = useStore()
   const db = usePouch()
-  const { doc: config, loading } = useDoc('config', {}, { introSeen: false })
+  const { doc: config, loading } = useDoc('$config', {}, { introSeen: false })
 
   const showingIntro =
     store.localShowing || (!loading && config?.introSeen === false)

@@ -1,6 +1,7 @@
 import { VStack, Flex, InputGroup, Image, IconButton } from '@chakra-ui/react'
 import { useRef, useMemo } from 'react'
 import { MdCamera } from 'react-icons/md'
+import AttachmentImage from '../AttachmentImage'
 import { ContentComponentProps } from '../contentComponents'
 
 export default function PhotoInput({
@@ -12,12 +13,6 @@ export default function PhotoInput({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const storedImage = entityDoc._attachments?.[field]
-
-  const imageURL = useMemo(
-    () => (storedImage ? URL.createObjectURL(storedImage.data) : null),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [storedImage?.digest],
-  )
 
   function handleClick() {
     inputRef.current?.click()
@@ -32,7 +27,13 @@ export default function PhotoInput({
   return (
     <VStack px="4" flex="1" spacing="4">
       <Flex flexGrow="1" flexBasis="0" overflow="hidden" alignItems="center">
-        {imageURL && <Image src={imageURL} borderRadius="4" maxH="full" />}
+        {storedImage && (
+          <AttachmentImage
+            attachment={storedImage}
+            borderRadius="4"
+            maxH="full"
+          />
+        )}
       </Flex>
       <InputGroup w="auto" onClick={handleClick}>
         <input

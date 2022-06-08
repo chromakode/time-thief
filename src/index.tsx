@@ -1,15 +1,18 @@
+import { ChakraProvider } from '@chakra-ui/react'
+import dayjs from 'dayjs'
+import calendar from 'dayjs/plugin/calendar'
+import PouchDB from 'pouchdb'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import PouchDB from 'pouchdb'
-import './index.css'
-import App from './App'
-import reportWebVitals from './reportWebVitals'
 import { Provider as PouchProvider } from 'use-pouchdb'
-import theme from './theme'
-import { ChakraProvider } from '@chakra-ui/react'
+import App from './App'
+import './index.css'
+import reportWebVitals from './reportWebVitals'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-
+import theme from './theme'
 import './utils/devUtils'
+
+dayjs.extend(calendar)
 
 export const _db = new PouchDB('entities')
 
