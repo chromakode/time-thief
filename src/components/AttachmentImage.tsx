@@ -1,9 +1,8 @@
 import { Box, Image, ImageProps } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useDoc, usePouch } from 'use-pouchdb'
-import PouchDB from 'pouchdb'
 import LRU from 'lru-cache'
+import { useEffect, useRef, useState } from 'react'
+import { usePouch } from 'use-pouchdb'
 
 const imgCache = new LRU({
   max: 100,
