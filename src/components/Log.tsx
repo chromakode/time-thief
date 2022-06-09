@@ -72,7 +72,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
   const { rows } = useAllDocs<any>({
     include_docs: true,
     descending: true,
-    limit: 100, // TODO paginate / virtualize list
+    limit: 500, // TODO paginate / virtualize list
   })
 
   const byDate = groupBy(
