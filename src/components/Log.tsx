@@ -75,8 +75,11 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
     limit: 500, // TODO paginate / virtualize list
   })
 
+  const beforeDate = dayjs().startOf('day')
   const byDate = groupBy(
-    rows.filter((row) => !row.id.startsWith('$')),
+    rows.filter(
+      (row) => !row.id.startsWith('$') && row.doc.created < beforeDate,
+    ),
     (row) => formatDate(row.doc?.created),
   )
 
