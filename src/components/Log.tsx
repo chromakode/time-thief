@@ -39,6 +39,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
               <AttachmentImage
                 docId={entity._id}
                 attachmentId="photo"
+                digest={entity._attachments['photo'].digest}
                 borderRadius="4"
                 w="full"
                 h="full"

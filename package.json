@@ -21,6 +21,7 @@
     "focus-visible": "^5.2.0",
     "framer-motion": "^6.3.3",
     "lodash": "^4.17.21",
+    "lru-cache": "^7.10.1",
     "node": "^17.7.2",
     "pouchdb": "^7.3.0",
     "react": "^18.0.0",

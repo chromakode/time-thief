@@ -22,12 +22,14 @@ export default function PhotoInput({
       saveAttachment(field, files[0])
     }
   }
+
   return (
     <VStack px="4" flex="1" spacing="4">
       <Flex flexGrow="1" flexBasis="0" overflow="hidden" alignItems="center">
         <AttachmentImage
           docId={entityDoc._id}
           attachmentId={field}
+          digest={entityDoc._attachments?.[field].digest}
           borderRadius="4"
           maxH="full"
         />
