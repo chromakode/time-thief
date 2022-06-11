@@ -2,7 +2,7 @@
   "version": "0.1",
   "config": {
     "timeNames": {
-      "0": "night",
+      "0": "sleep",
       "7": "morning",
       "12": "afternoon",
       "18": "evening",
@@ -175,6 +175,26 @@
         {
           "type": "title",
           "text": "What's the best thing that happened so far today?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal",
+        "content": "${field.content}"
+      }
+    },
+    {
+      "id": "journal-sleep",
+      "conditions": {
+        "timeOfDay": ["sleep"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What's keeping you up?"
         },
         {
           "type": "input/multi-line",
