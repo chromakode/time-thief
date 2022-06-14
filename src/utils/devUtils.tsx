@@ -7,6 +7,10 @@ declare global {
 }
 
 window.devUtils = {
+  get db() {
+    return _db
+  },
+
   async allDocs() {
     return _db.allDocs({ include_docs: true })
   },
