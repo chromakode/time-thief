@@ -1,7 +1,9 @@
 import { BoxProps, Spinner, VStack } from '@chakra-ui/react'
-import React, { useCallback } from 'react'
+import { debounce } from 'lodash'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useDoc, usePouch } from 'use-pouchdb'
 import { ActivityDefinition } from '../Activities'
+import deepTemplate from '../utils/deepTemplate'
 import contentComponents from './contentComponents'
 
 export default function Activity({
@@ -14,6 +16,9 @@ export default function Activity({
   const entityId = `${seed}-${idx}:${activity.entity.type}`
   const db = usePouch()
   const { doc: entityDoc } = useDoc(entityId, undefined, {})
+  const fieldsRef = useRef<{ [key: string]: any }>({})
+  const fields = fieldsRef.current
+  const [contextState, setContextState] = useState(() => ({}))
   const entityDocExists = entityDoc?._rev !== ''
 
   const save = useCallback(
@@ -27,6 +32,14 @@ export default function Activity({
       await db.put({ ...currentRev, ...updates, _id: entityId })
     },
     [db, entityDocExists, entityId],
+  )
+
+  const queueUpdate = useMemo(
+    () =>
+      debounce(() => {
+        save(fieldsRef.current)
+      }, 500),
+    [save],
   )
 
   const saveAttachment = useCallback(
@@ -43,7 +56,30 @@ export default function Activity({
     [save],
   )
 
-  const content = activity.content.map((item: any, idx: number) => {
+  const set = useCallback(
+    (updates: { [key: string]: any }, { dirty } = { dirty: true }) => {
+      fieldsRef.current = { ...fieldsRef.current, ...updates }
+      if (dirty) {
+        queueUpdate()
+      }
+    },
+    [queueUpdate],
+  )
+
+  const setContext = useCallback((updates: { [key: string]: any }) => {
+    setContextState((context) => ({ ...context, ...updates }))
+  }, [])
+
+  const templatedContent = useMemo(
+    () =>
+      deepTemplate(activity.content, {
+        field: fields,
+        context: contextState,
+      }),
+    [activity.content, fields, contextState],
+  )
+
+  const content = templatedContent.map((item: any, idx: number) => {
     const Component = contentComponents.get(item.type)
     if (!Component) {
       console.warn('Unknown component type:', item.type)
@@ -53,8 +89,11 @@ export default function Activity({
       <Component
         key={idx}
         {...item}
+        context={contextState}
+        spec={item}
         entityDoc={entityDoc}
-        save={save}
+        set={set}
+        setContext={setContext}
         saveAttachment={saveAttachment}
       />
     )

@@ -1,21 +1,20 @@
 import { Center, Heading } from '@chakra-ui/react'
-import { useEffect } from 'react'
-import { ContentComponentProps } from '../contentComponents'
+import { Ref, useEffect } from 'react'
+import {
+  ContentComponentProps,
+  ContentComponentRef,
+} from '../contentComponents'
 
-export default function ContentTitle({
-  entityDoc,
-  text,
-  save,
-}: ContentComponentProps) {
+export default function ContentTitle(
+  { entityDoc, text, set }: ContentComponentProps,
+  ref: Ref<ContentComponentRef>,
+) {
   useEffect(() => {
-    // FIXME: only set title of entity exists -- can we do this a better way, maybe using the entity field mapping?
-    if (entityDoc._rev && entityDoc.title !== text) {
-      save({ title: text })
-    }
-  }, [entityDoc._rev, entityDoc.title, save, text])
+    set({ title: text }, { dirty: false })
+  }, [entityDoc._rev, entityDoc.title, set, text])
   return (
     <Center h="20vh" px="4" flexShrink="0">
-      <Heading textStyle="title" textAlign="center">
+      <Heading textStyle="title" textAlign="center" whiteSpace="pre-wrap">
         {text}
       </Heading>
     </Center>

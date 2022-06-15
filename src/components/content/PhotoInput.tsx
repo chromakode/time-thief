@@ -1,15 +1,16 @@
 import { Flex, IconButton, InputGroup, VStack } from '@chakra-ui/react'
-import { useRef } from 'react'
+import { Ref, useRef } from 'react'
 import { MdCamera } from 'react-icons/md'
 import AttachmentImage from '../AttachmentImage'
-import { ContentComponentProps } from '../contentComponents'
+import {
+  ContentComponentProps,
+  ContentComponentRef,
+} from '../contentComponents'
 
-export default function PhotoInput({
-  entityDoc,
-  field,
-  capture,
-  saveAttachment,
-}: ContentComponentProps) {
+export default function PhotoInput(
+  { entityDoc, field, capture, saveAttachment }: ContentComponentProps,
+  ref: Ref<ContentComponentRef>,
+) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleClick() {

@@ -24,8 +24,7 @@
         }
       ],
       "entity": {
-        "type": "selfie",
-        "photo": "${field.photo}"
+        "type": "selfie"
       }
     },
     {
@@ -55,9 +54,7 @@
         }
       ],
       "entity": {
-        "type": "photo",
-        "photo": "${field.photo}",
-        "title": "${activity.title}"
+        "type": "photo"
       }
     },
     {
@@ -102,8 +99,7 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
       }
     },
     {
@@ -122,8 +118,7 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
       }
     },
     {
@@ -142,8 +137,7 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
       }
     },
     {
@@ -162,8 +156,7 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
       }
     },
     {
@@ -182,8 +175,7 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
       }
     },
     {
@@ -202,8 +194,70 @@
         }
       ],
       "entity": {
-        "type": "journal",
-        "content": "${field.content}"
+        "type": "journal"
+      }
+    },
+    {
+      "id": "people",
+      "content": [
+        {
+          "type": "steps",
+          "steps": [
+            [
+              {
+                "type": "choice",
+                "choices": [
+                  {
+                    "type": "title",
+                    "text": "Think of someone you spoke with yesterday."
+                  },
+                  {
+                    "type": "title",
+                    "text": "Think of a friend you haven't heard from in a while."
+                  },
+                  {
+                    "type": "title",
+                    "text": "Think of a family member."
+                  },
+                  {
+                    "type": "title",
+                    "text": "Think of someone you used to work with."
+                  },
+                  {
+                    "type": "title",
+                    "text": "Think of someone who inspires you."
+                  }
+                ]
+              },
+              {
+                "type": "input/entity-lookup",
+                "filter": {
+                  "type": "person",
+                  "field": "name"
+                },
+                "field": "person"
+              }
+            ],
+            [
+              {
+                "type": "choice",
+                "choices": [
+                  {
+                    "type": "title",
+                    "text": "Reflect on:\n${context.person.name}"
+                  }
+                ]
+              },
+              {
+                "type": "input/multi-line",
+                "field": "content"
+              }
+            ]
+          ]
+        }
+      ],
+      "entity": {
+        "type": "journal"
       }
     }
   ]
