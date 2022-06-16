@@ -10,7 +10,14 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { throttle } from 'lodash'
-import { Ref, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import {
+  Ref,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { MdSearch } from 'react-icons/md'
 import slugify from 'slugify'
 import { useFind, usePouch } from 'use-pouchdb'
@@ -114,6 +121,13 @@ export default function EntityLookup(
       setContext({ [field]: { ...selectedEntity, _input: input } })
     }
   }, [field, input, selectedEntity, set, setContext])
+
+  // Auto select first available option
+  useLayoutEffect(() => {
+    if (!selectedEntity && options.length) {
+      setSelectedId(options[0]._id)
+    }
+  }, [options, selectedEntity])
 
   useImperativeHandle(
     ref,
