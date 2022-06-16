@@ -72,8 +72,40 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
     },
   },
   components: {
-    Textarea: inputStyle,
-    Input: inputStyle,
+    Textarea: {
+      variants: {
+        filled: ({ colorMode }: StyleFunctionProps) => ({
+          bg:
+            colorMode === 'dark'
+              ? 'rgba(255, 255, 255, .06)'
+              : 'rgba(0, 0, 0, .04)',
+          _hover: {
+            bg: null,
+          },
+        }),
+      },
+      defaultProps: {
+        focusBorderColor: 'primary.600',
+      },
+    },
+    Input: {
+      variants: {
+        filled: ({ colorMode }: StyleFunctionProps) => ({
+          field: {
+            bg:
+              colorMode === 'dark'
+                ? 'rgba(255, 255, 255, .06)'
+                : 'rgba(0, 0, 0, .04)',
+            _hover: {
+              bg: null,
+            },
+          },
+        }),
+      },
+      defaultProps: {
+        focusBorderColor: 'primary.600',
+      },
+    },
     Modal: {
       baseStyle: ({ colorMode }: StyleFunctionProps) => ({
         dialog: {
