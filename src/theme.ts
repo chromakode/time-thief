@@ -1,23 +1,6 @@
 import { extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
 import { StyleFunctionProps } from '@chakra-ui/theme-tools'
 
-const inputStyle = {
-  variants: {
-    filled: ({ colorMode }: StyleFunctionProps) => ({
-      bg:
-        colorMode === 'dark'
-          ? 'rgba(255, 255, 255, .06)'
-          : 'rgba(0, 0, 0, .04)',
-      _hover: {
-        bg: null,
-      },
-    }),
-  },
-  defaultProps: {
-    focusBorderColor: 'primary.600',
-  },
-}
-
 const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   config: {
     useSystemColorMode: true,
