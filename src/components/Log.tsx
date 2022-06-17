@@ -12,6 +12,7 @@ import { MdInfo } from 'react-icons/md'
 import { useAllDocs } from 'use-pouchdb'
 import dayjs from 'dayjs'
 import AttachmentImage from './AttachmentImage'
+import Markdown from './content/Markdown'
 
 function formatDate(date: Date) {
   return dayjs(date).calendar(null, {
@@ -57,7 +58,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
                   {dayjs(entity.created).format('h:mm a')}
                 </Text>
                 <Heading as="h3" size="md" textStyle="title">
-                  {entity.title}
+                  <Markdown>{entity.title}</Markdown>
                 </Heading>
                 <Text fontSize="lg">{entity.content}</Text>
               </VStack>
