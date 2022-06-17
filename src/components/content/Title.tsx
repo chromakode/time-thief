@@ -1,5 +1,7 @@
 import { Center, Heading } from '@chakra-ui/react'
 import { Ref, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkSmartypants from 'remark-smartypants'
 import {
   ContentComponentProps,
   ContentComponentRef,
@@ -15,7 +17,9 @@ export default function ContentTitle(
   return (
     <Center h="20vh" px="4" flexShrink="0">
       <Heading textStyle="title" textAlign="center" whiteSpace="pre-wrap">
-        {text}
+        <ReactMarkdown remarkPlugins={[remarkSmartypants]}>
+          {text}
+        </ReactMarkdown>
       </Heading>
     </Center>
   )
