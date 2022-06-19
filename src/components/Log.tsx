@@ -1,5 +1,6 @@
 import {
   AspectRatio,
+  Box,
   Flex,
   Heading,
   IconButton,
@@ -95,7 +96,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
 
   // TODO: use content component system to render log
   return (
-    <>
+    <Box position="relative" h="full" overflowY="scroll">
       <IconButton
         position="absolute"
         top="4"
@@ -107,13 +108,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
         fontSize="2xl"
         onClick={onShowAbout}
       />
-      <VStack
-        align="flex-start"
-        h="full"
-        overflowY="scroll"
-        padding="4"
-        spacing="8"
-      >
+      <VStack align="flex-start" padding="4" spacing="8">
         {Object.entries(byDate).map(([dateText, rows]) => (
           <LogDay
             key={dateText}
@@ -122,6 +117,6 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
           />
         ))}
       </VStack>
-    </>
+    </Box>
   )
 }
