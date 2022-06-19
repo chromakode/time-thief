@@ -119,7 +119,7 @@ function App() {
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
   const dragControls = useDragControls()
-  const { showingIntro, showIntro } = useShowingIntro()
+  const { isShowingIntro, showIntro } = useShowingIntro()
   const { page, setPage, isShowingLog, setShowingLog } = useRouter({
     maxPages: activities.length,
   })
@@ -157,7 +157,7 @@ function App() {
         h="full"
         spacing="4"
         overflow="hidden"
-        opacity={showingIntro ? '0' : '1'}
+        opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
         onTouchStart={handleStartDrag}
       >
         {width !== 0 && (

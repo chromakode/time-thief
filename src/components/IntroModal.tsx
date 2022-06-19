@@ -31,7 +31,7 @@ export function useShowingIntro() {
   const db = usePouch()
   const { doc: config, loading } = useDoc('$config', {}, { introSeen: false })
 
-  const showingIntro =
+  const isShowingIntro =
     store.localShowing || (!loading && config?.introSeen === false)
 
   const closeIntro = useCallback(() => {
@@ -39,14 +39,14 @@ export function useShowingIntro() {
     store.hide()
   }, [config, db, store])
 
-  return { showingIntro, closeIntro, showIntro: store.show }
+  return { isShowingIntro, closeIntro, showIntro: store.show }
 }
 
 export function IntroModal() {
   const { colorMode } = useColorMode()
-  const { showingIntro, closeIntro } = useShowingIntro()
+  const { isShowingIntro, closeIntro } = useShowingIntro()
   return (
-    <Modal isOpen={showingIntro} onClose={closeIntro} isCentered>
+    <Modal isOpen={isShowingIntro} onClose={closeIntro} isCentered>
       <ModalOverlay />
       <ModalContent pb="4" mx="3">
         <ModalHeader
