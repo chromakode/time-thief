@@ -1,6 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import calendar from 'dayjs/plugin/calendar'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import PouchDB from 'pouchdb'
 import PouchFind from 'pouchdb-find'
 import React from 'react'
@@ -15,6 +16,7 @@ import './utils/devUtils'
 
 PouchDB.plugin(PouchFind)
 dayjs.extend(calendar)
+dayjs.extend(relativeTime)
 
 export const _db = new PouchDB('entities')
 

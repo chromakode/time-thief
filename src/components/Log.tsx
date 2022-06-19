@@ -1,8 +1,10 @@
 import {
   AspectRatio,
+  Flex,
   Heading,
   IconButton,
   SimpleGrid,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react'
@@ -28,11 +30,18 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
   const [photos, etc] = partition(chronoDocs, (doc) =>
     doc.hasOwnProperty('_attachments'),
   )
+  const startTime = dayjs(docs[0].created).endOf('day')
   return (
     <VStack align="flex-start" w="full" spacing="4">
-      <Heading as="h2" size="lg" textStyle="title">
-        {dateText}
-      </Heading>
+      <Flex dir="row" w="full" alignItems="center">
+        <Heading as="h2" size="lg" textStyle="title">
+          {dateText}{' '}
+        </Heading>
+        <Spacer />
+        {dayjs().diff(startTime, 'day') > 0 && (
+          <Text opacity=".75">{startTime.fromNow()}</Text>
+        )}
+      </Flex>
       <VStack align="flex-start" spacing="6" w="full">
         <SimpleGrid columns={2} spacing="1" w="full">
           {photos.map((entity) => (
