@@ -3,17 +3,22 @@ import {
   Box,
   Flex,
   Heading,
+  HStack,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   SimpleGrid,
   Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { groupBy, partition, reverse } from 'lodash'
-import React from 'react'
-import { MdInfo } from 'react-icons/md'
-import { useAllDocs } from 'use-pouchdb'
 import dayjs from 'dayjs'
+import { groupBy, partition, reverse } from 'lodash'
+import React, { useCallback } from 'react'
+import { MdInfo, MdMoreVert } from 'react-icons/md'
+import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
 import Markdown from './content/Markdown'
 
@@ -24,6 +29,39 @@ function formatDate(date: Date) {
     lastWeek: '[Last] dddd',
     sameElse: 'MMMM D, YYYY',
   })
+}
+
+function LogMenu({ entity }: { entity: any }) {
+  const db = usePouch()
+  const handleDelete = useCallback(() => {
+    db.remove(entity)
+  }, [db, entity])
+  return (
+    <Menu variant="logActions" placement="right" isLazy>
+      <MenuButton
+        as={IconButton}
+        aria-label="Actions"
+        icon={<MdMoreVert />}
+        variant="ghost"
+        size="xs"
+        fontSize="xl"
+        color="inherit"
+        opacity=".4"
+        _expanded={{
+          opacity: '1',
+          _dark: {
+            bg: 'primary.700',
+          },
+          _light: {
+            bg: 'primary.100',
+          },
+        }}
+      />
+      <MenuList minWidth="auto">
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+      </MenuList>
+    </Menu>
+  )
 }
 
 function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
@@ -64,9 +102,12 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
           .map((entity) => {
             return (
               <VStack key={entity._id} align="flex-start">
-                <Text whiteSpace="nowrap" width="16">
-                  {dayjs(entity.created).format('h:mm a')}
-                </Text>
+                <HStack spacing="1.5">
+                  <Text whiteSpace="nowrap" opacity=".75">
+                    {dayjs(entity.created).format('h:mm a')}
+                  </Text>
+                  <LogMenu entity={entity} />
+                </HStack>
                 <Heading as="h3" size="md" textStyle="title">
                   <Markdown>{entity.title}</Markdown>
                 </Heading>

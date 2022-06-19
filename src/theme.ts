@@ -96,6 +96,30 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
         },
       }),
     },
+    Menu: {
+      variants: {
+        logActions: ({ colorMode }: StyleFunctionProps) => ({
+          list: {
+            py: 0,
+            bg: colorMode === 'dark' ? 'primary.700' : 'primary.100',
+            borderWidth: 0,
+            boxShadow: 'none',
+          },
+          item: {
+            fontWeight: 'medium',
+            bg: 'transparent',
+            px: '.5rem',
+            py: 0,
+            _focus: {
+              bg: 'transparent',
+            },
+            _active: {
+              bg: 'transparent',
+            },
+          },
+        }),
+      },
+    },
   },
 })
 
