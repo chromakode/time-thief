@@ -37,7 +37,7 @@ function LogMenu({ entity }: { entity: any }) {
     db.remove(entity)
   }, [db, entity])
   return (
-    <Menu variant="logActions" placement="right" isLazy>
+    <Menu variant="logActions" placement="right" preventOverflow={false} isLazy>
       <MenuButton
         as={IconButton}
         aria-label="Actions"
