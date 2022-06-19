@@ -15,7 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import dayjs from 'dayjs'
-import { groupBy, partition, reverse } from 'lodash'
+import { groupBy, isEmpty, partition, reverse } from 'lodash'
 import React, { useCallback } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
@@ -149,15 +149,23 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
         fontSize="2xl"
         onClick={onShowAbout}
       />
-      <VStack align="flex-start" padding="4" spacing="8">
-        {Object.entries(byDate).map(([dateText, rows]) => (
-          <LogDay
-            key={dateText}
-            dateText={dateText}
-            docs={rows.map((row) => row.doc)}
-          />
-        ))}
-      </VStack>
+      {isEmpty(byDate) ? (
+        // TODO: an art would be nice here
+        <VStack fontSize="3xl" m="8" spacing="8" mt="20vh" align="flex-start">
+          <Text>After your first day, your journal will appear here. 🌟</Text>
+          <Text>Keep writing!</Text>
+        </VStack>
+      ) : (
+        <VStack align="flex-start" padding="4" spacing="8">
+          {Object.entries(byDate).map(([dateText, rows]) => (
+            <LogDay
+              key={dateText}
+              dateText={dateText}
+              docs={rows.map((row) => row.doc)}
+            />
+          ))}
+        </VStack>
+      )}
     </Box>
   )
 }
