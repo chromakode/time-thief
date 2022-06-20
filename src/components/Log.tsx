@@ -121,7 +121,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
 }
 
 export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
-  const { rows } = useAllDocs<any>({
+  const { rows, loading } = useAllDocs<any>({
     include_docs: true,
     descending: true,
     limit: 500, // TODO paginate / virtualize list
@@ -149,7 +149,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
         fontSize="2xl"
         onClick={onShowAbout}
       />
-      {isEmpty(byDate) ? (
+      {!loading && isEmpty(byDate) ? (
         // TODO: an art would be nice here
         <VStack fontSize="3xl" m="8" spacing="8" mt="20vh" align="flex-start">
           <Text>After your first day, your journal will appear here. 🌟</Text>
