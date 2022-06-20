@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import { groupBy, isEmpty, partition, reverse } from 'lodash'
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
@@ -121,35 +121,23 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
 }
 
 export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
-  const { rows, loading } = useAllDocs<any>({
+  const { rows, loading, update_seq } = useAllDocs<any>({
     include_docs: true,
     descending: true,
     limit: 500, // TODO paginate / virtualize list
+    update_seq: true,
   })
 
   const beforeDate = dayjs().startOf('day')
-  const byDate = groupBy(
-    rows.filter(
-      (row) => !row.id.startsWith('$') && row.doc.created < beforeDate,
-    ),
-    (row) => formatDate(row.doc?.created),
-  )
-
-  // TODO: use content component system to render log
-  return (
-    <Box position="relative" h="full" overflowY="scroll">
-      <IconButton
-        position="absolute"
-        top="4"
-        right="4"
-        zIndex="overlay"
-        aria-label="About this app"
-        icon={<MdInfo />}
-        variant="ghost"
-        fontSize="2xl"
-        onClick={onShowAbout}
-      />
-      {!loading && isEmpty(byDate) ? (
+  const logContent = useMemo(
+    () => {
+      const byDate = groupBy(
+        rows.filter(
+          (row) => !row.id.startsWith('$') && row.doc.created < beforeDate,
+        ),
+        (row) => formatDate(row.doc?.created),
+      )
+      return !loading && isEmpty(byDate) ? (
         // TODO: an art would be nice here
         <VStack fontSize="3xl" m="8" spacing="8" mt="20vh" align="flex-start">
           <Text>After your first day, your journal will appear here. 🌟</Text>
@@ -165,7 +153,27 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
             />
           ))}
         </VStack>
-      )}
+      )
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [beforeDate.toNow(), update_seq],
+  )
+
+  // TODO: use content component system to render log
+  return (
+    <Box className="scroller" position="relative" h="full" overflowY="scroll">
+      <IconButton
+        position="absolute"
+        top="4"
+        right="4"
+        zIndex="overlay"
+        aria-label="About this app"
+        icon={<MdInfo />}
+        variant="ghost"
+        fontSize="2xl"
+        onClick={onShowAbout}
+      />
+      {logContent}
     </Box>
   )
 }
