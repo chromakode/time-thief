@@ -9,7 +9,7 @@ import PouchDB from 'pouchdb'
 const thumbDB = new PouchDB('thumbnails')
 
 const THUMB_WIDTH = 1280
-const THUMB_KEY = `thumb-${THUMB_WIDTH}`
+const THUMB_KEY = `thumb-v1-${THUMB_WIDTH}`
 
 const imgCache = new LRU({
   max: 100,
@@ -48,7 +48,7 @@ async function getImg(
     const blob = (await db.getAttachment(docId, attachmentId)) as Blob
     const imgBitmap = await createImageBitmap(blob, {
       resizeWidth: THUMB_WIDTH,
-      resizeQuality: 'medium',
+      resizeQuality: 'high',
     })
     const canvas = document.createElement('canvas')
     canvas.width = imgBitmap.width
