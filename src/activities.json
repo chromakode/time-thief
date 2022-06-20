@@ -58,6 +58,23 @@
       }
     },
     {
+      "id": "daily-portrait",
+      "content": [
+        {
+          "type": "title",
+          "text": "Take a daily self-portrait.",
+          "subtitle": "We'll turn this into a montage!\nTip: Try to line up your eyes in each shot."
+        },
+        {
+          "type": "input/photo/portrait-with-guides",
+          "field": "photo"
+        }
+      ],
+      "entity": {
+        "type": "daily-portrait"
+      }
+    },
+    {
       "id": "journal-now",
       "content": [
         {

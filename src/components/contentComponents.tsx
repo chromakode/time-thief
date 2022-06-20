@@ -3,6 +3,7 @@ import React, { forwardRef } from 'react'
 import EntityLookup from './content/EntityLookup'
 import MultilineInput from './content/MultilineInput'
 import PhotoInput from './content/PhotoInput'
+import PhotoPortraitGuides from './content/PhotoPortraitGuides'
 import Steps from './content/Steps'
 import ContentTitle from './content/Title'
 
@@ -33,6 +34,10 @@ const contentComponents: Map<string, React.FunctionComponent<any>> = new Map()
 contentComponents.set('title', forwardRef(ContentTitle))
 contentComponents.set('input/multi-line', forwardRef(MultilineInput))
 contentComponents.set('input/photo', forwardRef(PhotoInput))
+contentComponents.set(
+  'input/photo/portrait-with-guides',
+  forwardRef(PhotoPortraitGuides),
+)
 contentComponents.set('input/entity-lookup', forwardRef(EntityLookup))
 contentComponents.set('steps', forwardRef(Steps))
 

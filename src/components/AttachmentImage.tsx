@@ -11,10 +11,15 @@ const thumbDB = new PouchDB('thumbnails')
 const THUMB_WIDTH = 1280
 const THUMB_KEY = `thumb-v1-${THUMB_WIDTH}`
 
-const imgCache = new LRU({
+const urlGetterCache = new LRU({
   max: 100,
-  dispose: (value: string) => {
-    URL.revokeObjectURL(value)
+  dispose: (value: Promise<string | null>) => {
+    value.then((url) => {
+      if (!url) {
+        return
+      }
+      URL.revokeObjectURL(url)
+    })
   },
 })
 
@@ -23,72 +28,88 @@ async function getImg(
   digest: string,
   docId: string,
   attachmentId: string,
+  full: boolean,
 ): Promise<string | null> {
-  let url = imgCache.get(digest)
-  if (url !== undefined) {
-    return url
-  }
+  async function getURL() {
+    if (full) {
+      const blob = (await db.getAttachment(docId, attachmentId)) as Blob
+      return URL.createObjectURL(blob)
+    } else {
+      let thumbDoc
+      let thumbBlob: Blob | null = null
+      try {
+        thumbDoc = await thumbDB.get(digest, {
+          attachments: true,
+          binary: true,
+        })
+        const thumbAttachment = thumbDoc?._attachments?.[THUMB_KEY]
+        thumbBlob =
+          thumbAttachment && 'data' in thumbAttachment
+            ? (thumbAttachment.data as Blob)
+            : null
+      } catch (err) {
+        if (err instanceof Error && err.name !== 'not_found') {
+          throw err
+        }
+      }
 
-  let thumbDoc
-  let thumbBlob: Blob | null = null
-  try {
-    thumbDoc = await thumbDB.get(digest, { attachments: true, binary: true })
-    const thumbAttachment = thumbDoc?._attachments?.[THUMB_KEY]
-    thumbBlob =
-      thumbAttachment && 'data' in thumbAttachment
-        ? (thumbAttachment.data as Blob)
-        : null
-  } catch (err) {
-    if (err instanceof Error && err.name !== 'not_found') {
-      throw err
+      if (!thumbBlob) {
+        const fullBlob = (await db.getAttachment(docId, attachmentId)) as Blob
+        const imgBitmap = await createImageBitmap(fullBlob, {
+          resizeWidth: THUMB_WIDTH,
+          resizeQuality: 'high',
+        })
+        const canvas = document.createElement('canvas')
+        canvas.width = imgBitmap.width
+        canvas.height = imgBitmap.height
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(imgBitmap, 0, 0)
+        thumbBlob = await new Promise((resolve) =>
+          canvas.toBlob(resolve, 'image/webp'),
+        )
+
+        if (thumbBlob) {
+          await thumbDB.put({
+            ...thumbDoc,
+            _id: digest,
+            _attachments: {
+              [THUMB_KEY]: {
+                content_type: 'image/webp',
+                data: thumbBlob,
+              },
+            },
+          })
+        }
+      }
+
+      return thumbBlob ? URL.createObjectURL(thumbBlob) : null
     }
   }
 
-  if (!thumbBlob) {
-    const blob = (await db.getAttachment(docId, attachmentId)) as Blob
-    const imgBitmap = await createImageBitmap(blob, {
-      resizeWidth: THUMB_WIDTH,
-      resizeQuality: 'high',
-    })
-    const canvas = document.createElement('canvas')
-    canvas.width = imgBitmap.width
-    canvas.height = imgBitmap.height
-    const ctx = canvas.getContext('2d')
-    ctx?.drawImage(imgBitmap, 0, 0)
-    thumbBlob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, 'image/webp'),
-    )
+  const cacheKey = `${full ? 'full' : 'thumb'}-${digest}`
+  let urlGetter = urlGetterCache.get(cacheKey)
 
-    if (thumbBlob) {
-      await thumbDB.put({
-        ...thumbDoc,
-        _id: digest,
-        _attachments: {
-          [THUMB_KEY]: {
-            content_type: 'image/webp',
-            data: thumbBlob,
-          },
-        },
-      })
-    }
+  if (!urlGetter) {
+    urlGetter = getURL()
+    urlGetterCache.set(cacheKey, urlGetter)
   }
 
-  if (!thumbBlob) {
-    return null
-  }
-
-  url = URL.createObjectURL(thumbBlob)
-  imgCache.set(digest, url)
-
-  return url
+  return await urlGetter
 }
 
 export default function AttachmentImage({
   digest,
   docId,
   attachmentId,
+  full = false,
+  opacity = 1,
   ...props
-}: { digest: string; docId: string; attachmentId: string } & ImageProps) {
+}: {
+  digest: string
+  docId: string
+  attachmentId: string
+  full?: boolean
+} & ImageProps) {
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
   const ref = useRef<HTMLImageElement>(null)
@@ -103,7 +124,7 @@ export default function AttachmentImage({
 
     let url
     try {
-      url = await getImg(db, digest, docId, attachmentId)
+      url = await getImg(db, digest, docId, attachmentId, full)
     } catch (err) {
       console.warn('error getting image', err)
       return
@@ -114,7 +135,7 @@ export default function AttachmentImage({
     }
 
     ref.current.src = url
-    ref.current.style.opacity = '1'
+    ref.current.style.opacity = opacity?.toString()
   }, [attachmentId, db, digest, docId, isIntersecting])
 
   return (

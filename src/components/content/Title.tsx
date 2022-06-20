@@ -1,4 +1,4 @@
-import { Center, Heading } from '@chakra-ui/react'
+import { Center, Heading, VStack } from '@chakra-ui/react'
 import { Ref, useEffect } from 'react'
 import {
   ContentComponentProps,
@@ -7,7 +7,7 @@ import {
 import Markdown from './Markdown'
 
 export default function ContentTitle(
-  { entityDoc, text, set }: ContentComponentProps,
+  { entityDoc, text, subtitle, set }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
   useEffect(() => {
@@ -15,9 +15,16 @@ export default function ContentTitle(
   }, [entityDoc._rev, entityDoc.title, set, text])
   return (
     <Center h="20vh" px="4" flexShrink="0">
-      <Heading textStyle="title" textAlign="center" whiteSpace="pre-wrap">
-        <Markdown>{text}</Markdown>
-      </Heading>
+      <VStack textAlign="center" whiteSpace="pre-wrap">
+        <Heading textStyle="title">
+          <Markdown>{text}</Markdown>
+        </Heading>
+        {subtitle && (
+          <Heading as="h2" fontSize="md" fontWeight="medium" lineHeight="tall">
+            <Markdown>{subtitle}</Markdown>
+          </Heading>
+        )}
+      </VStack>
     </Center>
   )
 }

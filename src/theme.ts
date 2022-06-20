@@ -31,10 +31,14 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
         fontSynthesis: 'none',
       },
       'html, body, #root': {
-        background: colorMode === 'dark' ? 'primary.800' : 'primary.50',
+        // Black to prevent flashes of white when viewport resizes (e.g. fullscreen camera).
+        background: 'black',
         color: colorMode === 'dark' ? 'primary.100' : 'primary.600',
         height: '100%',
         overflow: 'hidden',
+      },
+      '#root': {
+        background: colorMode === 'dark' ? 'primary.800' : 'primary.50',
       },
     }),
   },

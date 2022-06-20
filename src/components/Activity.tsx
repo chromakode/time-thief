@@ -16,7 +16,9 @@ export default function Activity({
   // TODO: entity field mapping? or drop idea in favor of components controlling?
   const entityId = `${seed}-${idx}:${activity.entity.type}`
   const db = usePouch()
-  const { doc: entityDoc } = useDoc(entityId, undefined, {})
+  const { doc: entityDoc } = useDoc(entityId, undefined, {
+    type: activity.entity.type,
+  })
   const fieldsRef = useRef<{ [key: string]: any }>({})
   const fields = fieldsRef.current
   const [contextState, setContextState] = useState(() => ({}))
@@ -28,11 +30,15 @@ export default function Activity({
       if (entityDocExists) {
         currentRev = await db.get(entityId)
       } else {
-        currentRev = { created: Date.now(), client: getClientId() }
+        currentRev = {
+          created: Date.now(),
+          client: getClientId(),
+          type: activity.entity.type,
+        }
       }
       await db.put({ ...currentRev, ...updates, _id: entityId })
     },
-    [db, entityDocExists, entityId],
+    [activity.entity.type, db, entityDocExists, entityId],
   )
 
   const queueUpdate = useMemo(

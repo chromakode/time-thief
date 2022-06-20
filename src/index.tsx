@@ -13,6 +13,7 @@ import reportWebVitals from './reportWebVitals'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import theme from './theme'
 import './utils/devUtils'
+import 'image-capture'
 
 PouchDB.plugin(PouchFind)
 dayjs.extend(calendar)
