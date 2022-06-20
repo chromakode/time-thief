@@ -6,6 +6,7 @@
     "@chakra-ui/react": "^2.0.2",
     "@fontsource/roboto-flex": "^4.5.0",
     "@iarna/toml": "^2.2.5",
+    "@react-hook/async": "^3.1.1",
     "@react-hook/intersection-observer": "^3.1.1",
     "@react-hook/previous": "^1.0.1",
     "@react-hook/size": "^2.1.2",

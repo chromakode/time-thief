@@ -1,8 +1,9 @@
-import { Box, Image, ImageProps } from '@chakra-ui/react'
+import { Image, ImageProps } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import LRU from 'lru-cache'
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { usePouch } from 'use-pouchdb'
+import { useAsyncEffect } from '@react-hook/async'
 
 const imgCache = new LRU({
   max: 100,
@@ -41,13 +42,16 @@ export default function AttachmentImage({
     rootMargin: '500px 0px 500px 0px',
   })
 
-  const [src, setSrc] = useState<string>()
-
-  useEffect(() => {
-    if (isIntersecting) {
-      getImg(db, digest, docId, attachmentId).then((url) => setSrc(url))
+  useAsyncEffect(async () => {
+    if (!isIntersecting) {
+      return
     }
+    const url = await getImg(db, digest, docId, attachmentId)
+    if (!ref.current || ref.current.src === url) {
+      return
+    }
+    ref.current.src = url
   }, [attachmentId, db, digest, docId, isIntersecting])
 
-  return <Box ref={ref}>{src && <Image ref={ref} {...props} src={src} />}</Box>
+  return <Image ref={ref} bg="blackAlpha.100" {...props} />
 }
