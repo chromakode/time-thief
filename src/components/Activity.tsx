@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useDoc, usePouch } from 'use-pouchdb'
 import { ActivityDefinition } from '../Activities'
 import deepTemplate from '../utils/deepTemplate'
+import { getClientId } from '../utils/getClientId'
 import contentComponents from './contentComponents'
 
 export default function Activity({
@@ -27,7 +28,7 @@ export default function Activity({
       if (entityDocExists) {
         currentRev = await db.get(entityId)
       } else {
-        currentRev = { created: Date.now() }
+        currentRev = { created: Date.now(), client: getClientId() }
       }
       await db.put({ ...currentRev, ...updates, _id: entityId })
     },

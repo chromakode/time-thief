@@ -1,4 +1,5 @@
 import { _db } from '..'
+import { setClientId } from './getClientId'
 
 declare global {
   interface Window {
@@ -19,4 +20,6 @@ window.devUtils = {
     const configDoc = await _db.get('$config')
     await _db.remove(configDoc)
   },
+
+  setClientId,
 }
