@@ -278,6 +278,18 @@
                   {
                     "type": "title",
                     "text": "Reflect on:\n${context.person.name}"
+                  },
+                  {
+                    "type": "title",
+                    "text": "Write \n${context.person.name} a quick note."
+                  },
+                  {
+                    "type": "title",
+                    "text": "What inspires you about ${context.person.name}?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "How did you meet ${context.person.name}?"
                   }
                 ]
               },
