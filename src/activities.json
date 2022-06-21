@@ -189,13 +189,13 @@
     {
       "id": "journal-best-thing",
       "conditions": {
-        "timeOfDay": ["afternoon", "evening"],
+        "timeOfDay": ["evening"],
         "frequency": "day"
       },
       "content": [
         {
           "type": "title",
-          "text": "What's the best thing that happened so far today?"
+          "text": "What's the best thing that happened today?"
         },
         {
           "type": "input/multi-line",
