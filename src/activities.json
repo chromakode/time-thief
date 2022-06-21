@@ -59,6 +59,9 @@
     },
     {
       "id": "daily-portrait",
+      "conditions": {
+        "frequency": "day"
+      },
       "content": [
         {
           "type": "title",
@@ -126,7 +129,8 @@
     {
       "id": "journal-looking-forward",
       "conditions": {
-        "timeOfDay": ["morning"]
+        "timeOfDay": ["morning"],
+        "frequency": "day"
       },
       "content": [
         {
@@ -145,7 +149,8 @@
     {
       "id": "journal-tonight",
       "conditions": {
-        "timeOfDay": ["morning", "afternoon"]
+        "timeOfDay": ["morning", "afternoon"],
+        "frequency": "day"
       },
       "content": [
         {
@@ -169,7 +174,8 @@
       "content": [
         {
           "type": "title",
-          "text": "What would you like to accomplish tomorrow?"
+          "text": "What would you like to accomplish tomorrow?",
+          "frequency": "day"
         },
         {
           "type": "input/multi-line",
@@ -183,7 +189,8 @@
     {
       "id": "journal-best-thing",
       "conditions": {
-        "timeOfDay": ["afternoon", "evening"]
+        "timeOfDay": ["afternoon", "evening"],
+        "frequency": "day"
       },
       "content": [
         {

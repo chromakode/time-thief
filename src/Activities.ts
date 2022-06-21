@@ -1,3 +1,4 @@
+import dayjs, { ManipulateType } from 'dayjs'
 import { isPlainObject, isArray, map, mapValues } from 'lodash'
 import seedrandom from 'seedrandom'
 
@@ -21,6 +22,10 @@ function hoursToTimeOfDay(
   return name ?? 'unknown'
 }
 
+function seedFromTimestamp(ts: number) {
+  return Math.floor(ts / SEED_DURATION).toString()
+}
+
 class Activities {
   data: ActivityData
 
@@ -33,19 +38,29 @@ class Activities {
 
     // TODO: merge in random source from persistence? give a full 15 min when a fresh set is generated
     // Roll seed every 15 min
-    const seed = Math.floor(now / SEED_DURATION).toString()
+    const seed = seedFromTimestamp(now)
     const endTime = SEED_DURATION * Math.ceil(now / SEED_DURATION)
 
     return { seed, now, endTime }
   }
 
-  chooseActivities(count: number = 3) {
+  chooseActivities({
+    lastActivityTimes,
+  }: {
+    lastActivityTimes: Record<string, number>
+  }) {
     const { seed, now, endTime } = this.getSeed()
 
     const nowHours = new Date(now).getHours()
     const timeOfDay = hoursToTimeOfDay(nowHours, this.data.config.timeNames)
 
-    const traversal = new Traversal(seed, timeOfDay, this.data.config)
+    const traversal = new Traversal(
+      seed,
+      now,
+      timeOfDay,
+      this.data.config,
+      lastActivityTimes,
+    )
     const activities = traversal.run(this.data.activities)
 
     return { activities, seed, now, endTime, timeOfDay }
@@ -54,13 +69,25 @@ class Activities {
 
 class Traversal {
   rng: ReturnType<seedrandom>
+  seed: string
+  now: number
   timeOfDay: string
   config: ConfigData
+  lastActivityTimes: Record<string, number>
 
-  constructor(seed: string, timeOfDay: string, config: ConfigData) {
+  constructor(
+    seed: string,
+    now: number,
+    timeOfDay: string,
+    config: ConfigData,
+    lastActivityTimes: Record<string, number>,
+  ) {
     this.rng = seedrandom(seed)
+    this.seed = seed
+    this.now = now
     this.timeOfDay = timeOfDay
     this.config = config
+    this.lastActivityTimes = lastActivityTimes
   }
 
   run(activities: [ActivityDefinition]): ActivityData[] {
@@ -92,6 +119,16 @@ class Traversal {
           if (
             condValue instanceof Array &&
             !condValue.includes(this.timeOfDay)
+          ) {
+            return false
+          }
+        } else if (condType === 'frequency') {
+          const lastActivityTime = this.lastActivityTimes[c.id]
+          const unit = condValue as ManipulateType
+          if (
+            lastActivityTime &&
+            seedFromTimestamp(lastActivityTime) !== this.seed &&
+            dayjs(this.now).subtract(1, unit).isBefore(lastActivityTime, unit)
           ) {
             return false
           }

@@ -12,9 +12,10 @@ import '@fontsource/roboto-flex/variable-full.css'
 import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
 import { useDragControls } from 'framer-motion'
-import { range } from 'lodash'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { range, reduce } from 'lodash'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
+import { useFind } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from './Activities'
 import activityData from './activities.json'
 import './App.css'
@@ -34,32 +35,73 @@ interface ActivityState {
   timeOfDay: string
 }
 
-function useActivities(): [ActivityState, number] {
-  const [now, setNow] = useState(() => Date.now())
-  const [activities] = useState(() => new Activities(activityData))
-  const [activityState, setActivityState] = useState<ActivityState>(() =>
-    activities.chooseActivities(),
+function useLastActivityTimes() {
+  // TODO: prototype. replace with a stored view
+
+  const { docs, loading } = useFind<any>({
+    index: {
+      fields: ['activity', 'created'],
+    },
+    selector: { activity: { $exists: true } },
+    sort: ['activity', 'created'],
+    fields: ['activity', 'created'],
+  })
+
+  return useMemo(
+    () =>
+      loading
+        ? null
+        : reduce(
+            docs,
+            (result, value) => {
+              const key = value.activity
+              result[key] = Math.max(result[key] ?? 0, value.created)
+              return result
+            },
+            {} as { [key: string]: number },
+          ),
+    [docs, loading],
   )
+}
+
+function useActivities(): [ActivityState, number | null] {
+  const [now, setNow] = useState(() => Date.now())
+  const lastActivityTimes = useLastActivityTimes()
+  const [activities] = useState(() => new Activities(activityData))
+  const [activityState, setActivityState] = useState<ActivityState>(() => ({
+    activities: [],
+    seed: '',
+    now,
+    endTime: 0,
+    timeOfDay: 'unknown',
+  }))
 
   useEffect(() => {
     let timeout: number
     function tick() {
-      timeout = window.setTimeout(() => {
-        const now = Date.now()
-        if (now > activityState.endTime) {
-          setActivityState(activities.chooseActivities())
-        }
-        setNow(now)
-        tick()
-      }, Math.max(500, 1000 - (Date.now() % 1000)))
+      const now = Date.now()
+      if (
+        lastActivityTimes !== null &&
+        (activityState === null || now > activityState.endTime)
+      ) {
+        setActivityState(activities.chooseActivities({ lastActivityTimes }))
+      }
+      setNow(now)
+      timeout = window.setTimeout(
+        tick,
+        Math.max(500, 1000 - (Date.now() % 1000)),
+      )
     }
     tick()
     return () => {
       clearTimeout(timeout)
     }
-  }, [activities, activityState])
+  }, [activities, activityState, lastActivityTimes])
 
-  const remainingSeconds = Math.round((activityState.endTime - now) / 1000)
+  const remainingSeconds =
+    activityState.endTime !== 0
+      ? Math.round((activityState.endTime - now) / 1000)
+      : null
 
   return [activityState, remainingSeconds]
 }
@@ -67,7 +109,11 @@ function useActivities(): [ActivityState, number] {
 function RemainingTime({
   remainingSeconds,
   ...props
-}: { remainingSeconds: number } & BoxProps) {
+}: { remainingSeconds: number | null } & BoxProps) {
+  if (remainingSeconds === null) {
+    // Keep space in grid
+    return <Text />
+  }
   const remainingMinutes = Math.ceil(remainingSeconds / 60)
   return (
     <Text textStyle="title" {...props}>
