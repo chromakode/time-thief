@@ -67,6 +67,7 @@ class Activities {
   }
 }
 
+// FIXME: this class and chooseActivities should be merged/cleaned up
 class Traversal {
   rng: ReturnType<seedrandom>
   seed: string
