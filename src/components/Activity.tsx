@@ -39,7 +39,7 @@ export default function Activity({
       }
       await db.put({ ...currentRev, ...updates, _id: entityId })
     },
-    [activity.entity.type, activity.id, db, entityDocExists, entityId, seed],
+    [activity.entity.type, activity.id, db, entityDocExists, entityId],
   )
 
   const queueUpdate = useMemo(
