@@ -116,10 +116,7 @@ export default function EntityLookup(
   const selectedEntity = options.find((o) => o._id === selectedId)
 
   useEffect(() => {
-    if (selectedEntity) {
-      set({ [field]: selectedEntity._id })
-      setContext({ [field]: { ...selectedEntity, _input: input } })
-    }
+    setContext({ [field]: { ...selectedEntity, _input: input } })
   }, [field, input, selectedEntity, set, setContext])
 
   // Auto select first available option
@@ -133,12 +130,13 @@ export default function EntityLookup(
     ref,
     () => ({
       finalize: () => {
+        set({ [field]: selectedEntity._id })
         if (!selectedEntity._rev) {
           db.put(selectedEntity)
         }
       },
     }),
-    [db, selectedEntity],
+    [db, field, selectedEntity, set],
   )
 
   // todo: set value to function which when called finalizes entity or returns existing one
