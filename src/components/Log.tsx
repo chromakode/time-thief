@@ -15,8 +15,8 @@ import {
 } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import dayjs from 'dayjs'
-import { groupBy, isEmpty, reverse } from 'lodash'
-import React, { useCallback, useMemo, useRef } from 'react'
+import { groupBy, isEmpty, reverse, throttle } from 'lodash'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
@@ -126,7 +126,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
           </VStack>
         </>
       ) : (
-        <Box h={boundingClientRect?.height ?? '50vh'} />
+        <Box h={boundingClientRect?.height ?? '100vh'} />
       ),
     [chronoDocs, dateText, isIntersecting, startTime, boundingClientRect],
   )
@@ -139,10 +139,16 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
 }
 
 export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
+  const endRef = useRef<HTMLDivElement>(null)
+  const { isIntersecting: isEndIntersecting } = useIntersectionObserver(
+    endRef,
+    { rootMargin: '500px 0px 500px 0px' },
+  )
+  const [count, setCount] = useState(50)
   const { rows, loading, update_seq } = useAllDocs<any>({
     include_docs: true,
     descending: true,
-    limit: 100, // TODO paginate / virtualize list
+    limit: count,
     update_seq: true,
   })
 
@@ -174,8 +180,22 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [beforeDate.toNow(), update_seq],
+    [beforeDate.toNow(), update_seq, rows.length],
   )
+
+  const loadMore = useMemo(
+    () =>
+      throttle(() => {
+        setCount((count) => count + 50)
+      }, 1000),
+    [],
+  )
+
+  useEffect(() => {
+    if (!loading && count === rows.length && isEndIntersecting) {
+      loadMore()
+    }
+  }, [loading, isEndIntersecting, loadMore, count, rows.length])
 
   // TODO: use content component system to render log
   return (
@@ -192,6 +212,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
         onClick={onShowAbout}
       />
       {logContent}
+      <Box ref={endRef} w="full" h="10vh" />
     </Box>
   )
 }
