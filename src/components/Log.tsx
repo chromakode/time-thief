@@ -111,7 +111,9 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
                 <Heading as="h3" size="md" textStyle="title">
                   <Markdown>{entity.title}</Markdown>
                 </Heading>
-                <Text fontSize="lg">{entity.content}</Text>
+                <Text fontSize="lg" whiteSpace="pre-wrap">
+                  {entity.content}
+                </Text>
               </VStack>
             )
           })}
