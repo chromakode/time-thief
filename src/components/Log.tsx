@@ -1,5 +1,4 @@
 import {
-  AspectRatio,
   Box,
   Flex,
   Heading,
@@ -9,13 +8,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  SimpleGrid,
   Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react'
 import dayjs from 'dayjs'
-import { groupBy, isEmpty, partition, reverse } from 'lodash'
+import { groupBy, isEmpty, reverse } from 'lodash'
 import React, { useCallback, useMemo } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
@@ -66,9 +64,6 @@ function LogMenu({ entity }: { entity: any }) {
 
 function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
   const chronoDocs = reverse([...docs])
-  const [photos, etc] = partition(chronoDocs, (doc) =>
-    doc.hasOwnProperty('_attachments'),
-  )
   const startTime = dayjs(docs[0].created).endOf('day')
   return (
     <VStack align="flex-start" w="full" spacing="4">
@@ -82,9 +77,25 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
         )}
       </Flex>
       <VStack align="flex-start" spacing="6" w="full">
-        <SimpleGrid columns={2} spacing="1" w="full">
-          {photos.map((entity) => (
-            <AspectRatio key={entity._id} ratio={1}>
+        {chronoDocs.map((entity) => (
+          <VStack key={entity._id} align="flex-start">
+            <HStack spacing="1.5">
+              <Text whiteSpace="nowrap" opacity=".75">
+                {dayjs(entity.created).format('h:mm a')}
+              </Text>
+              <LogMenu entity={entity} />
+            </HStack>
+            {entity.title && (
+              <Heading as="h3" size="md" textStyle="title">
+                <Markdown>{entity.title}</Markdown>
+              </Heading>
+            )}
+            {entity.content && (
+              <Text fontSize="lg" whiteSpace="pre-wrap">
+                {entity.content}
+              </Text>
+            )}
+            {entity._attachments?.['photo'] && (
               <AttachmentImage
                 docId={entity._id}
                 attachmentId="photo"
@@ -94,29 +105,9 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
                 h="full"
                 objectFit="cover"
               />
-            </AspectRatio>
-          ))}
-        </SimpleGrid>
-        {etc
-          .filter((entity) => entity.content)
-          .map((entity) => {
-            return (
-              <VStack key={entity._id} align="flex-start">
-                <HStack spacing="1.5">
-                  <Text whiteSpace="nowrap" opacity=".75">
-                    {dayjs(entity.created).format('h:mm a')}
-                  </Text>
-                  <LogMenu entity={entity} />
-                </HStack>
-                <Heading as="h3" size="md" textStyle="title">
-                  <Markdown>{entity.title}</Markdown>
-                </Heading>
-                <Text fontSize="lg" whiteSpace="pre-wrap">
-                  {entity.content}
-                </Text>
-              </VStack>
-            )
-          })}
+            )}
+          </VStack>
+        ))}
       </VStack>
     </VStack>
   )
