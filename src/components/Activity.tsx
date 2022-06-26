@@ -52,14 +52,22 @@ export default function Activity({
 
   const saveAttachment = useCallback(
     async function (id: string, attachment: Blob) {
-      await save({
+      const data: any = {
         _attachments: {
           [id]: {
             content_type: attachment.type,
             data: attachment,
           },
         },
-      })
+      }
+      if (attachment.type.startsWith('image/')) {
+        const bitmap = await createImageBitmap(attachment)
+        data[id] = {
+          width: bitmap.width,
+          height: bitmap.height,
+        }
+      }
+      await save(data)
     },
     [save],
   )

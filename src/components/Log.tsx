@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   Box,
   Flex,
   Heading,
@@ -78,7 +79,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
       </Flex>
       <VStack align="flex-start" spacing="6" w="full">
         {chronoDocs.map((entity) => (
-          <VStack key={entity._id} align="flex-start">
+          <VStack key={entity._id} align="flex-start" w="full">
             <HStack spacing="1.5">
               <Text whiteSpace="nowrap" opacity=".75">
                 {dayjs(entity.created).format('h:mm a')}
@@ -96,15 +97,20 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
               </Text>
             )}
             {entity._attachments?.['photo'] && (
-              <AttachmentImage
-                docId={entity._id}
-                attachmentId="photo"
-                digest={entity._attachments['photo'].digest}
-                borderRadius="4"
+              <AspectRatio
+                ratio={entity.photo.width / entity.photo.height}
                 w="full"
-                h="full"
-                objectFit="cover"
-              />
+              >
+                <AttachmentImage
+                  docId={entity._id}
+                  attachmentId="photo"
+                  digest={entity._attachments['photo'].digest}
+                  borderRadius="4"
+                  w="full"
+                  h="full"
+                  objectFit="cover"
+                />
+              </AspectRatio>
             )}
           </VStack>
         ))}
