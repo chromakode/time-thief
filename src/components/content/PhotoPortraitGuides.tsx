@@ -194,6 +194,7 @@ export default function PhotoPortraitGuides(
         <Box m="1" position="absolute" left="5vw" transform="scaleX(-1)">
           {latestPhotos.map((doc) => (
             <AttachmentImage
+              key={doc._id}
               position="absolute"
               inset="0"
               opacity={0.5 / latestPhotos.length}
