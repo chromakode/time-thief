@@ -125,11 +125,21 @@ class Traversal {
           }
         } else if (condType === 'frequency') {
           const lastActivityTime = this.lastActivityTimes[c.id]
-          const unit = condValue as ManipulateType
+          let count: number
+          let unit: ManipulateType
+          if (isArray(condValue)) {
+            count = condValue[0]
+            unit = condValue[1]
+          } else {
+            count = 1
+            unit = condValue as ManipulateType
+          }
           if (
             lastActivityTime &&
             seedFromTimestamp(lastActivityTime) !== this.seed &&
-            dayjs(this.now).subtract(1, unit).isBefore(lastActivityTime, unit)
+            dayjs(this.now)
+              .subtract(count, unit)
+              .isBefore(lastActivityTime, unit)
           ) {
             return false
           }

@@ -12,6 +12,9 @@
   "activities": [
     {
       "id": "selfie",
+      "conditions": {
+        "frequency": [4, "hours"]
+      },
       "content": [
         {
           "type": "title",
