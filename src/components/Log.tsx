@@ -13,9 +13,10 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import useIntersectionObserver from '@react-hook/intersection-observer'
 import dayjs from 'dayjs'
 import { groupBy, isEmpty, reverse } from 'lodash'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
@@ -64,57 +65,75 @@ function LogMenu({ entity }: { entity: any }) {
 }
 
 function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { isIntersecting, boundingClientRect } = useIntersectionObserver(
+    containerRef,
+    { rootMargin: '1000px 0px 1000px 0px' },
+  )
   const chronoDocs = reverse([...docs])
   const startTime = dayjs(docs[0].created).endOf('day')
-  return (
-    <VStack align="flex-start" w="full" spacing="4">
-      <Flex dir="row" w="full" alignItems="center">
-        <Heading as="h2" size="lg" textStyle="title">
-          {dateText}{' '}
-        </Heading>
-        <Spacer />
-        {dayjs().diff(startTime, 'day') > 0 && (
-          <Text opacity=".75">{startTime.fromNow()}</Text>
-        )}
-      </Flex>
-      <VStack align="flex-start" spacing="6" w="full">
-        {chronoDocs.map((entity) => (
-          <VStack key={entity._id} align="flex-start" w="full">
-            <HStack spacing="1.5">
-              <Text whiteSpace="nowrap" opacity=".75">
-                {dayjs(entity.created).format('h:mm a')}
-              </Text>
-              <LogMenu entity={entity} />
-            </HStack>
-            {entity.title && (
-              <Heading as="h3" size="md" textStyle="title">
-                <Markdown>{entity.title}</Markdown>
-              </Heading>
+
+  const content = useMemo(
+    () =>
+      isIntersecting ? (
+        <>
+          <Flex dir="row" w="full" alignItems="center">
+            <Heading as="h2" size="lg" textStyle="title">
+              {dateText}{' '}
+            </Heading>
+            <Spacer />
+            {dayjs().diff(startTime, 'day') > 0 && (
+              <Text opacity=".75">{startTime.fromNow()}</Text>
             )}
-            {entity.content && (
-              <Text fontSize="lg" whiteSpace="pre-wrap">
-                {entity.content}
-              </Text>
-            )}
-            {entity._attachments?.['photo'] && (
-              <AspectRatio
-                ratio={entity.photo.width / entity.photo.height}
-                w="full"
-              >
-                <AttachmentImage
-                  docId={entity._id}
-                  attachmentId="photo"
-                  digest={entity._attachments['photo'].digest}
-                  borderRadius="4"
-                  w="full"
-                  h="full"
-                  objectFit="cover"
-                />
-              </AspectRatio>
-            )}
+          </Flex>
+          <VStack align="flex-start" spacing="6" w="full">
+            {chronoDocs.map((entity) => (
+              <VStack key={entity._id} align="flex-start" w="full">
+                <HStack spacing="1.5">
+                  <Text whiteSpace="nowrap" opacity=".75">
+                    {dayjs(entity.created).format('h:mm a')}
+                  </Text>
+                  <LogMenu entity={entity} />
+                </HStack>
+                {entity.title && (
+                  <Heading as="h3" size="md" textStyle="title">
+                    <Markdown>{entity.title}</Markdown>
+                  </Heading>
+                )}
+                {entity.content && (
+                  <Text fontSize="lg" whiteSpace="pre-wrap">
+                    {entity.content}
+                  </Text>
+                )}
+                {entity._attachments?.['photo'] && (
+                  <AspectRatio
+                    ratio={entity.photo.width / entity.photo.height}
+                    w="full"
+                  >
+                    <AttachmentImage
+                      docId={entity._id}
+                      attachmentId="photo"
+                      digest={entity._attachments['photo'].digest}
+                      borderRadius="4"
+                      w="full"
+                      h="full"
+                      objectFit="cover"
+                    />
+                  </AspectRatio>
+                )}
+              </VStack>
+            ))}
           </VStack>
-        ))}
-      </VStack>
+        </>
+      ) : (
+        <Box h={boundingClientRect?.height ?? '50vh'} />
+      ),
+    [chronoDocs, dateText, isIntersecting, startTime, boundingClientRect],
+  )
+
+  return (
+    <VStack ref={containerRef} align="flex-start" w="full" spacing="4">
+      {content}
     </VStack>
   )
 }
@@ -123,7 +142,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
   const { rows, loading, update_seq } = useAllDocs<any>({
     include_docs: true,
     descending: true,
-    limit: 500, // TODO paginate / virtualize list
+    limit: 100, // TODO paginate / virtualize list
     update_seq: true,
   })
 
