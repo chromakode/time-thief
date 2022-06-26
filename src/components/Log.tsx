@@ -11,7 +11,7 @@ import {
   MenuList,
   Spacer,
   Text,
-  VStack,
+  VStack
 } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import dayjs from 'dayjs'
