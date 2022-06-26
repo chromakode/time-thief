@@ -1,6 +1,6 @@
 import { Box, Button, chakra, Flex, IconButton, VStack } from '@chakra-ui/react'
 import { useAsync } from '@react-hook/async'
-import { last } from 'lodash'
+import { findLastIndex } from 'lodash'
 import React, { Ref, useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { MdCamera, MdClose } from 'react-icons/md'
@@ -80,9 +80,9 @@ export default function PhotoPortraitGuides(
     },
     sort: ['type', 'created'],
   })
-  const latestPhoto = last(docs)
+  const latestPhotoIdx = findLastIndex(docs, (doc) => doc._id !== entityDoc._id)
+  const latestPhotos = docs.slice(latestPhotoIdx - 10, latestPhotoIdx)
 
-  // overlay yesterday's
   const cameraUIRef = useRef<HTMLDivElement>(null)
   const [isCameraOpen, setCameraOpen] = useState(false)
 
@@ -169,20 +169,20 @@ export default function PhotoPortraitGuides(
         zIndex="popover"
       >
         <Box m="1" position="absolute" left="5vw" transform="scaleX(-1)">
-          {latestPhoto && (
+          {latestPhotos.map((doc) => (
             <AttachmentImage
               position="absolute"
               inset="0"
-              opacity={0.5}
-              docId={latestPhoto._id}
+              opacity={0.5 / latestPhotos.length}
+              docId={doc._id}
               attachmentId={field}
-              digest={latestPhoto._attachments?.[field].digest}
+              digest={doc._attachments?.[field].digest}
               zIndex="overlay"
               pointerEvents="none"
               h="100vh"
               objectFit="contain"
             />
-          )}
+          ))}
           <Video srcObject={stream} h="100vh" />
         </Box>
         <VStack
