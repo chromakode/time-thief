@@ -57,7 +57,7 @@ function Montage({
     }
     const interval = setInterval(() => {
       setIdx((curIdx) => (curIdx + 1) % docs.length)
-    }, 250)
+    }, Math.max(500 / docs.length, 100))
     return () => {
       clearInterval(interval)
     }
