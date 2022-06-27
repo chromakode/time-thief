@@ -1,7 +1,8 @@
 import {
   Badge,
-  Box,
+  Flex,
   HStack,
+  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,9 +13,10 @@ import {
   useColorMode,
   VStack,
 } from '@chakra-ui/react'
-import create from 'zustand'
 import React, { useCallback } from 'react'
 import { useDoc, usePouch } from 'use-pouchdb'
+import create from 'zustand'
+import logoURL from '../logo.svg'
 
 const useStore = create<{
   localShowing: boolean
@@ -55,7 +57,8 @@ export function IntroModal() {
           justifyContent="center"
           pb="0"
         >
-          <Box position="relative">
+          <Flex position="relative">
+            <Image src={logoURL} w="12" ml="-8" mr="1" />
             <Text textStyle="brand" fontSize="5xl">
               TIME THIEF
             </Text>
@@ -70,7 +73,7 @@ export function IntroModal() {
             >
               BETA
             </Badge>
-          </Box>
+          </Flex>
         </ModalHeader>
         <ModalCloseButton _focus={{ boxShadow: 'none' }} />
         <ModalBody fontSize="lg" fontWeight="medium">
