@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Flex,
   HStack,
   IconButton,
   SimpleGrid,
@@ -11,7 +12,7 @@ import {
 import '@fontsource/roboto-flex/variable-full.css'
 import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
-import { useDragControls } from 'framer-motion'
+import { AnimatePresence, useDragControls } from 'framer-motion'
 import { range, reduce } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdArticle } from 'react-icons/md'
@@ -110,15 +111,55 @@ function RemainingTime({
   remainingSeconds,
   ...props
 }: { remainingSeconds: number | null } & BoxProps) {
+  const { colorMode } = useColorMode()
   if (remainingSeconds === null) {
     // Keep space in grid
     return <Text />
   }
   const remainingMinutes = Math.ceil(remainingSeconds / 60)
+
+  let pulseKey
+  if (remainingSeconds <= 10) {
+    pulseKey = remainingSeconds
+  } else if (remainingSeconds <= 60) {
+    pulseKey = Math.ceil(remainingSeconds / 10) * 10
+  } else if (remainingMinutes <= 3) {
+    pulseKey = remainingMinutes * 60
+  }
   return (
-    <Text textStyle="title" {...props}>
-      {remainingSeconds > 60 ? `${remainingMinutes}m` : `${remainingSeconds}s`}
-    </Text>
+    <Flex justifySelf="flex-start" position="relative">
+      <Text textStyle="title" whiteSpace="pre" {...props}>
+        {remainingSeconds > 60
+          ? `${remainingMinutes}m`
+          : `${remainingSeconds}s`}
+      </Text>
+      <AnimatePresence>
+        <MotionBox
+          position="absolute"
+          left="50%"
+          bottom="50%"
+          key={pulseKey}
+          borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
+          borderRadius="9999px"
+          initial={{
+            width: 30,
+            height: 30,
+            translateX: -15,
+            translateY: 15,
+            opacity: 0,
+            borderWidth: 1,
+          }}
+          exit={{
+            width: 200,
+            height: 200,
+            translateX: -100,
+            translateY: 100,
+            opacity: [0, 0.25, 1, 0],
+          }}
+          transition={{ duration: 1.5 }}
+        />
+      </AnimatePresence>
+    </Flex>
   )
 }
 
