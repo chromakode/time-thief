@@ -112,8 +112,8 @@ export function IntroModal() {
             <HStack spacing="4">
               <Text>✌️</Text>
               <Text>
-                All done? There's nothing else to do but wait. Prompts vary by
-                time of day.
+                All done? There's nothing to do but wait. Prompts vary by time
+                of day.
               </Text>
             </HStack>
             <HStack spacing="4">
