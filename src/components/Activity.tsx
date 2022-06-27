@@ -1,5 +1,5 @@
 import { BoxProps, Spinner, VStack } from '@chakra-ui/react'
-import { debounce } from 'lodash'
+import { debounce, merge } from 'lodash'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { useDoc, usePouch } from 'use-pouchdb'
 import { ActivityDefinition } from '../Activities'
@@ -67,9 +67,10 @@ export default function Activity({
           height: bitmap.height,
         }
       }
-      await save(data)
+      fieldsRef.current = merge(fieldsRef.current, data)
+      queueUpdate()
     },
-    [save],
+    [queueUpdate],
   )
 
   const set = useCallback(
