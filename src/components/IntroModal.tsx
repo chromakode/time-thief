@@ -84,22 +84,22 @@ export function IntroModal() {
             borderColor="primary.300"
             py="3"
           >
-            <Text fontSize="4xl">🕵️</Text>
             <Text
               fontWeight="bold"
               color={colorMode === 'dark' ? 'primary.200' : 'primary.500'}
               textAlign="center"
             >
-              This device is engaging in a <br />
-              heist of your attention!
+              Stop doomscrolling.
+              <br />
+              Start doomjournaling.
             </Text>
           </HStack>
           <Text>
             <Text as="strong" display="inline" textStyle="brandStraight">
               TIME THIEF
             </Text>{' '}
-            is a journal that steals your time back and hoards memories for the
-            future.
+            is a journal that steals your time back from distractions and keeps
+            memories.
           </Text>
           <VStack my="2" align="flex-start">
             <HStack spacing="4">
@@ -108,7 +108,10 @@ export function IntroModal() {
             </HStack>
             <HStack spacing="4">
               <Text>✌️</Text>
-              <Text>All done? There's nothing else to do but wait.</Text>
+              <Text>
+                All done? There's nothing else to do but wait. Prompts vary by
+                time of day.
+              </Text>
             </HStack>
             <HStack spacing="4">
               <Text>🔒</Text>
