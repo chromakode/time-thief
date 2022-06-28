@@ -110,22 +110,22 @@ function useActivities(): [ActivityState, number | null] {
 function RemainingTime({
   remainingSeconds,
   ...props
-}: { remainingSeconds: number | null } & BoxProps) {
+}: { remainingSeconds: number } & BoxProps) {
   const { colorMode } = useColorMode()
-  if (remainingSeconds === null) {
-    // Keep space in grid
-    return <Text />
-  }
+  const [pulseKey, setPulseKey] = useState<number | undefined>()
+
   const remainingMinutes = Math.ceil(remainingSeconds / 60)
 
-  let pulseKey
-  if (remainingSeconds <= 10) {
-    pulseKey = remainingSeconds
-  } else if (remainingSeconds <= 60) {
-    pulseKey = Math.ceil(remainingSeconds / 10) * 10
-  } else if (remainingMinutes <= 3) {
-    pulseKey = remainingMinutes * 60
-  }
+  useEffect(() => {
+    if (remainingSeconds <= 10) {
+      setPulseKey(remainingSeconds)
+    } else if (remainingSeconds <= 60) {
+      setPulseKey(Math.ceil(remainingSeconds / 10) * 10)
+    } else if (remainingMinutes <= 3) {
+      setPulseKey(remainingMinutes * 60)
+    }
+  }, [remainingSeconds, remainingMinutes])
+
   return (
     <Flex justifySelf="flex-start" position="relative">
       <Text textStyle="title" whiteSpace="pre" {...props}>
@@ -142,10 +142,10 @@ function RemainingTime({
           borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
           borderRadius="9999px"
           initial={{
-            width: 30,
-            height: 30,
-            translateX: -15,
-            translateY: 15,
+            width: 60,
+            height: 60,
+            translateX: -30,
+            translateY: 30,
             opacity: 0,
             borderWidth: 1,
           }}
@@ -276,10 +276,14 @@ function App() {
           justifyContent="space-around"
           sx={{ touchAction: 'none' }}
         >
-          <RemainingTime
-            remainingSeconds={remainingSeconds}
-            justifySelf="start"
-          />
+          {remainingSeconds == null ? (
+            <Text />
+          ) : (
+            <RemainingTime
+              remainingSeconds={remainingSeconds}
+              justifySelf="start"
+            />
+          )}
           <HStack justifySelf="center">
             {range(activities.length).map((idx) => (
               <Box
