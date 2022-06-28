@@ -13,11 +13,12 @@ function hoursToTimeOfDay(
   hour: number,
   timeNames: Record<string, string>,
 ): string {
-  let startHourStr, name
-  for ([startHourStr, name] of Object.entries(timeNames)) {
+  let name
+  for (let [startHourStr, nextName] of Object.entries(timeNames)) {
     if (hour < Number(startHourStr)) {
-      return name
+      break
     }
+    name = nextName
   }
   return name ?? 'unknown'
 }
