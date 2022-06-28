@@ -128,7 +128,13 @@ function RemainingTime({
 
   return (
     <Flex justifySelf="flex-start" position="relative">
-      <Text textStyle="title" whiteSpace="pre" {...props}>
+      <Text
+        textStyle="title"
+        whiteSpace="pre"
+        minW="6"
+        textAlign="center"
+        {...props}
+      >
         {remainingSeconds > 60
           ? `${remainingMinutes}m`
           : `${remainingSeconds}s`}
