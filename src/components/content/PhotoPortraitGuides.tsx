@@ -90,7 +90,10 @@ export default function PhotoPortraitGuides(
     sort: ['type', 'created'],
   })
   const latestPhotoIdx = findLastIndex(docs, (doc) => doc._id !== entityDoc._id)
-  const latestPhotos = docs.slice(latestPhotoIdx - 10, latestPhotoIdx)
+  const latestPhotos = docs.slice(
+    Math.max(0, latestPhotoIdx - 10),
+    latestPhotoIdx,
+  )
   const tookPhoto = !!entityDoc._attachments?.[field]
 
   const cameraUIRef = useRef<HTMLDivElement>(null)
