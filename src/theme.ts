@@ -26,6 +26,10 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
   },
   styles: {
     global: ({ colorMode }: StyleFunctionProps) => ({
+      html: {
+        // Prevent iOS vert scroll when installed to home screen.
+        position: 'fixed',
+      },
       body: {
         WebkitTapHighlightColor: 'transparent',
         fontSynthesis: 'none',
