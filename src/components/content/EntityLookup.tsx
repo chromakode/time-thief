@@ -159,6 +159,7 @@ export default function EntityLookup(
           pointerEvents="none"
           fontSize="2xl"
           children={<MdSearch />}
+          zIndex="base"
         />
       </InputGroup>
       <VStack w="full" spacing="4" px="4" overflow="hidden" {...getRootProps()}>
