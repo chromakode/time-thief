@@ -145,16 +145,18 @@ export default function AttachmentImage({
   }, [attachmentId, db, digest, docId, isIntersecting])
 
   const handleLoad = useCallback(() => {
-    if (!imgRef.current) {
+    if (!imgRef.current || !containerRef.current) {
       return
     }
     imgRef.current.style.opacity = opacity.toString()
+    containerRef.current.style.background = 'transparent'
   }, [opacity])
 
   return (
     <Flex
       ref={containerRef}
       bg={digest ? 'blackAlpha.100' : 'transparent'}
+      transitionDuration="200ms"
       {...props}
       align="center"
       justify="center"
@@ -162,6 +164,7 @@ export default function AttachmentImage({
       <Image
         ref={imgRef}
         opacity={0}
+        transitionDuration="200ms"
         onLoad={handleLoad}
         src={(digest && url) ?? fallbackSrc}
         w="full"
