@@ -11,7 +11,7 @@ import {
   MenuList,
   Spacer,
   Text,
-  VStack
+  VStack,
 } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import dayjs from 'dayjs'
@@ -77,9 +77,20 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
     () =>
       isIntersecting ? (
         <>
-          <Flex dir="row" w="full" alignItems="center">
+          <Flex
+            dir="row"
+            w="full"
+            alignItems="center"
+            position="sticky"
+            top="0"
+            pt="4"
+            pb="2"
+            _dark={{ bg: 'primary.800' }}
+            _light={{ bg: 'primary.50' }}
+            zIndex="sticky"
+          >
             <Heading as="h2" size="lg" textStyle="title">
-              {dateText}{' '}
+              {dateText}
             </Heading>
             <Spacer />
             {dayjs().diff(startTime, 'day') > 0 && (
@@ -132,7 +143,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
   )
 
   return (
-    <VStack ref={containerRef} align="flex-start" w="full" spacing="4">
+    <VStack ref={containerRef} align="flex-start" w="full">
       {content}
     </VStack>
   )
@@ -168,7 +179,7 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
           <Text>Keep writing!</Text>
         </VStack>
       ) : (
-        <VStack align="flex-start" padding="4" spacing="8">
+        <VStack align="flex-start" px="4" spacing="8">
           {Object.entries(byDate).map(([dateText, rows]) => (
             <LogDay
               key={dateText}
