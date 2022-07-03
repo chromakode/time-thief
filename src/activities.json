@@ -232,8 +232,17 @@
       "id": "journal-be",
       "content": [
         {
-          "type": "title",
-          "text": "Who do you want to _be_ right now?"
+          "type": "choice",
+          "choices": [
+            {
+              "type": "title",
+              "text": "Who do you want to _be_ right now?"
+            },
+            {
+              "type": "title",
+              "text": "What do you want to create?"
+            }
+          ]
         },
         {
           "type": "input/multi-line",
