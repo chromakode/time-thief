@@ -64,7 +64,15 @@ function LogMenu({ entity }: { entity: any }) {
   )
 }
 
-function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
+function LogDay({
+  dateText,
+  docs,
+  preRender,
+}: {
+  dateText: string
+  docs: any[]
+  preRender?: boolean
+}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { isIntersecting, boundingClientRect } = useIntersectionObserver(
     containerRef,
@@ -75,7 +83,7 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
 
   const content = useMemo(
     () =>
-      isIntersecting ? (
+      preRender || isIntersecting ? (
         <>
           <Flex
             dir="row"
@@ -139,7 +147,14 @@ function LogDay({ dateText, docs }: { dateText: string; docs: any[] }) {
       ) : (
         <Box h={boundingClientRect?.height ?? '100vh'} />
       ),
-    [chronoDocs, dateText, isIntersecting, startTime, boundingClientRect],
+    [
+      preRender,
+      isIntersecting,
+      dateText,
+      startTime,
+      chronoDocs,
+      boundingClientRect?.height,
+    ],
   )
 
   return (
@@ -180,11 +195,12 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
         </VStack>
       ) : (
         <VStack align="flex-start" px="4" spacing="8">
-          {Object.entries(byDate).map(([dateText, rows]) => (
+          {Object.entries(byDate).map(([dateText, rows], idx) => (
             <LogDay
               key={dateText}
               dateText={dateText}
               docs={rows.map((row) => row.doc)}
+              preRender={idx === 0}
             />
           ))}
         </VStack>

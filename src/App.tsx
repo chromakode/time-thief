@@ -339,7 +339,7 @@ function App() {
         transition={{ type: 'tween', duration: 0.25 }}
         initial={false}
       >
-        {isShowingLog && <Log onShowAbout={showIntro} />}
+        <Log onShowAbout={showIntro} />
       </MotionBox>
     </>
   )
