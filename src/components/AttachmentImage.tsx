@@ -127,7 +127,12 @@ export default function AttachmentImage({
       return
     }
 
-    setURL(undefined)
+    // If we have a fallback src, unset the URL while loading so that it shows.
+    // Otherwise, keep the existing src, which prevents flashes on src changes
+    // (e.g. during portrait montage).
+    if (fallbackSrc) {
+      setURL(undefined)
+    }
 
     let url
     try {
@@ -160,6 +165,7 @@ export default function AttachmentImage({
         src={(digest && url) ?? fallbackSrc}
         w="full"
         h="full"
+        objectFit="contain"
       />
     </Flex>
   )

@@ -207,7 +207,6 @@ export default function PhotoPortraitGuides(
               zIndex="overlay"
               pointerEvents="none"
               h="100vh"
-              objectFit="contain"
             />
           ))}
           <Video srcObject={stream} h="100vh" />

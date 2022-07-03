@@ -1,4 +1,10 @@
-import { Flex, IconButton, InputGroup, VStack } from '@chakra-ui/react'
+import {
+  AspectRatio,
+  Flex,
+  IconButton,
+  InputGroup,
+  VStack,
+} from '@chakra-ui/react'
 import useChange from '@react-hook/change'
 import { Ref, useRef, useState } from 'react'
 import { MdCamera } from 'react-icons/md'
