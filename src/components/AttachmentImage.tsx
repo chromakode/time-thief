@@ -1,7 +1,6 @@
 import { Flex, FlexProps, Image } from '@chakra-ui/react'
 import { useAsyncEffect } from '@react-hook/async'
 import useIntersectionObserver from '@react-hook/intersection-observer'
-import { motion, useAnimation } from 'framer-motion'
 import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
 import { useCallback, useRef, useState } from 'react'
@@ -98,8 +97,6 @@ async function getImg(
   return await urlGetter
 }
 
-const MotionImage = motion(Image)
-
 export default function AttachmentImage({
   digest,
   docId,
@@ -117,8 +114,8 @@ export default function AttachmentImage({
 } & FlexProps) {
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
   const [url, setURL] = useState<string>()
-  const fadeControls = useAnimation()
 
   const { isIntersecting } = useIntersectionObserver(containerRef, {
     rootMargin: '1000px 0px 1000px 0px',
@@ -148,11 +145,11 @@ export default function AttachmentImage({
   }, [attachmentId, db, digest, docId, isIntersecting])
 
   const handleLoad = useCallback(() => {
-    fadeControls.start({
-      opacity: Number(opacity),
-      transition: { duration: 0.15 },
-    })
-  }, [fadeControls, opacity])
+    if (!imgRef.current) {
+      return
+    }
+    imgRef.current.style.opacity = opacity.toString()
+  }, [opacity])
 
   return (
     <Flex
@@ -162,9 +159,9 @@ export default function AttachmentImage({
       align="center"
       justify="center"
     >
-      <MotionImage
-        initial={{ opacity: 0 }}
-        animate={fadeControls}
+      <Image
+        ref={imgRef}
+        opacity={0}
         onLoad={handleLoad}
         src={(digest && url) ?? fallbackSrc}
         w="full"
