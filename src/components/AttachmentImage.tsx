@@ -146,8 +146,8 @@ export default function AttachmentImage({
   }, [attachmentId, db, digest, docId, isIntersecting])
 
   const handleLoad = useCallback(() => {
-    fadeControls.start({ opacity: 1 })
-  }, [fadeControls])
+    fadeControls.start({ opacity: opacity.toString() })
+  }, [fadeControls, opacity])
 
   return (
     <Flex
