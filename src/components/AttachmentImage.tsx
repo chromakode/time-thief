@@ -98,6 +98,8 @@ async function getImg(
   return await urlGetter
 }
 
+const MotionImage = motion(Image)
+
 export default function AttachmentImage({
   digest,
   docId,
@@ -146,7 +148,10 @@ export default function AttachmentImage({
   }, [attachmentId, db, digest, docId, isIntersecting])
 
   const handleLoad = useCallback(() => {
-    fadeControls.start({ opacity: opacity.toString() })
+    fadeControls.start({
+      opacity: Number(opacity),
+      transition: { duration: 0.15 },
+    })
   }, [fadeControls, opacity])
 
   return (
@@ -157,8 +162,7 @@ export default function AttachmentImage({
       align="center"
       justify="center"
     >
-      <Image
-        as={motion.img}
+      <MotionImage
         initial={{ opacity: 0 }}
         animate={fadeControls}
         onLoad={handleLoad}
