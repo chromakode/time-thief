@@ -69,6 +69,7 @@ export default function Activity({
       }
       fieldsRef.current = merge(fieldsRef.current, data)
       queueUpdate()
+      queueUpdate.flush()
     },
     [queueUpdate],
   )

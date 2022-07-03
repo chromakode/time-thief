@@ -1,7 +1,7 @@
-import { Box, Image, ImageProps } from '@chakra-ui/react'
+import { Flex, FlexProps, Image, Spinner } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import LRU from 'lru-cache'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
 import { useAsyncEffect } from '@react-hook/async'
 import PouchDB from 'pouchdb'
@@ -13,7 +13,7 @@ const THUMB_KEY = `thumb-v1-${THUMB_WIDTH}`
 
 const urlGetterCache = new LRU({
   max: 100,
-  dispose: (value: Promise<string | null>) => {
+  dispose: (value: Promise<string | undefined>) => {
     value.then((url) => {
       if (!url) {
         return
@@ -29,7 +29,7 @@ async function getImg(
   docId: string,
   attachmentId: string,
   full: boolean,
-): Promise<string | null> {
+): Promise<string | undefined> {
   async function getURL() {
     if (full) {
       const blob = (await db.getAttachment(docId, attachmentId)) as Blob
@@ -82,7 +82,7 @@ async function getImg(
         }
       }
 
-      return thumbBlob ? URL.createObjectURL(thumbBlob) : null
+      return thumbBlob ? URL.createObjectURL(thumbBlob) : undefined
     }
   }
 
@@ -102,23 +102,27 @@ export default function AttachmentImage({
   docId,
   attachmentId,
   full = false,
+  showSpinner = false,
+  isWorking = false,
   opacity = 1,
   ...props
 }: {
-  digest: string
+  digest: string | undefined
   docId: string
   attachmentId: string
   full?: boolean
-} & ImageProps) {
+  showSpinner?: boolean
+  isWorking?: boolean
+} & FlexProps) {
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
-  const ref = useRef<HTMLImageElement>(null)
+  const [url, setURL] = useState<string>()
   const { isIntersecting } = useIntersectionObserver(containerRef, {
     rootMargin: '1000px 0px 1000px 0px',
   })
 
-  useAsyncEffect(async () => {
-    if (!isIntersecting) {
+  const { status } = useAsyncEffect(async () => {
+    if (!isIntersecting || !digest) {
       return
     }
 
@@ -130,17 +134,29 @@ export default function AttachmentImage({
       return
     }
 
-    if (!url || !ref.current || ref.current.src === url) {
-      return
-    }
-
-    ref.current.src = url
-    ref.current.style.opacity = opacity?.toString()
+    setURL(url)
   }, [attachmentId, db, digest, docId, isIntersecting])
 
+  const shouldSpinner = (digest && status === 'loading') || isWorking
   return (
-    <Box ref={containerRef} bg="blackAlpha.100">
-      <Image ref={ref} opacity="0" transitionDuration="200ms" {...props} />
-    </Box>
+    <Flex
+      ref={containerRef}
+      bg={digest ? 'blackAlpha.100' : 'transparent'}
+      {...props}
+      align="center"
+      justify="center"
+    >
+      {shouldSpinner && showSpinner ? (
+        <Spinner size="lg" />
+      ) : (
+        <Image
+          opacity={url ? opacity : 0}
+          transitionDuration="200ms"
+          src={url}
+          w="full"
+          h="full"
+        />
+      )}
+    </Flex>
   )
 }

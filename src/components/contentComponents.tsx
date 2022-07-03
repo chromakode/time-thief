@@ -19,7 +19,7 @@ export interface ContentComponentProps {
   }
   set: (updates: { [key: string]: any }, options?: { dirty?: boolean }) => void
   setContext: (updates: { [key: string]: any }) => void
-  saveAttachment: (id: string, attachment: Blob) => void
+  saveAttachment: (id: string, attachment: Blob) => Promise<void>
   [key: string]: any
 }
 
