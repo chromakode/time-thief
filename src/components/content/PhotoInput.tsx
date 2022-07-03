@@ -1,5 +1,6 @@
 import { Flex, IconButton, InputGroup, VStack } from '@chakra-ui/react'
-import { Ref, useEffect, useRef, useState } from 'react'
+import useChange from '@react-hook/change'
+import { Ref, useRef, useState } from 'react'
 import { MdCamera } from 'react-icons/md'
 import AttachmentImage from '../AttachmentImage'
 import {
@@ -12,24 +13,29 @@ export default function PhotoInput(
   ref: Ref<ContentComponentRef>,
 ) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [isWorking, setWorking] = useState(false)
+  const [imgURL, setImgURL] = useState<string>()
+  const [oldDigest, setOldDigest] = useState<string>()
+
+  const imageDigest = entityDoc._attachments?.[field].digest
 
   function handleClick() {
     inputRef.current?.click()
   }
 
-  function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
+  async function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
     const { files } = ev.target
     if (files?.length === 1) {
-      setWorking(true)
-      saveAttachment(field, files[0])
+      setOldDigest(imageDigest)
+      setImgURL(URL.createObjectURL(files[0]))
+      await saveAttachment(field, files[0])
     }
   }
 
-  const imageDigest = entityDoc._attachments?.[field].digest
-  useEffect(() => {
-    setWorking(false)
-  }, [imageDigest])
+  useChange(imgURL, (current, prev) => {
+    if (prev) {
+      URL.revokeObjectURL(prev)
+    }
+  })
 
   return (
     <VStack px="4" flex="1" spacing="4" w="full">
@@ -42,14 +48,14 @@ export default function PhotoInput(
         justifyContent="stretch"
       >
         <AttachmentImage
+          key={imgURL}
           docId={entityDoc._id}
           attachmentId={field}
-          digest={imageDigest}
+          digest={imageDigest === oldDigest ? undefined : imageDigest}
+          fallbackSrc={imgURL}
           borderRadius="4"
           maxH="full"
           w="full"
-          isWorking={isWorking}
-          showSpinner
         />
       </Flex>
       <InputGroup w="auto" onClick={handleClick}>

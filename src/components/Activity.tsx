@@ -68,10 +68,9 @@ export default function Activity({
         }
       }
       fieldsRef.current = merge(fieldsRef.current, data)
-      queueUpdate()
-      queueUpdate.flush()
+      await save(fieldsRef.current)
     },
-    [queueUpdate],
+    [save],
   )
 
   const set = useCallback(

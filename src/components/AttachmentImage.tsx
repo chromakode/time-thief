@@ -1,10 +1,11 @@
-import { Flex, FlexProps, Image, Spinner } from '@chakra-ui/react'
-import useIntersectionObserver from '@react-hook/intersection-observer'
-import LRU from 'lru-cache'
-import { useRef, useState } from 'react'
-import { usePouch } from 'use-pouchdb'
+import { Flex, FlexProps, Image } from '@chakra-ui/react'
 import { useAsyncEffect } from '@react-hook/async'
+import useIntersectionObserver from '@react-hook/intersection-observer'
+import { motion, useAnimation } from 'framer-motion'
+import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
+import { useCallback, useRef, useState } from 'react'
+import { usePouch } from 'use-pouchdb'
 
 const thumbDB = new PouchDB('thumbnails')
 
@@ -101,30 +102,32 @@ export default function AttachmentImage({
   digest,
   docId,
   attachmentId,
+  fallbackSrc,
   full = false,
-  showSpinner = false,
-  isWorking = false,
   opacity = 1,
   ...props
 }: {
   digest: string | undefined
   docId: string
   attachmentId: string
+  fallbackSrc?: string
   full?: boolean
-  showSpinner?: boolean
-  isWorking?: boolean
 } & FlexProps) {
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
   const [url, setURL] = useState<string>()
+  const fadeControls = useAnimation()
+
   const { isIntersecting } = useIntersectionObserver(containerRef, {
     rootMargin: '1000px 0px 1000px 0px',
   })
 
-  const { status } = useAsyncEffect(async () => {
+  useAsyncEffect(async () => {
     if (!isIntersecting || !digest) {
       return
     }
+
+    setURL(undefined)
 
     let url
     try {
@@ -137,7 +140,10 @@ export default function AttachmentImage({
     setURL(url)
   }, [attachmentId, db, digest, docId, isIntersecting])
 
-  const shouldSpinner = (digest && status === 'loading') || isWorking
+  const handleLoad = useCallback(() => {
+    fadeControls.start({ opacity: 1 })
+  }, [fadeControls])
+
   return (
     <Flex
       ref={containerRef}
@@ -146,17 +152,15 @@ export default function AttachmentImage({
       align="center"
       justify="center"
     >
-      {shouldSpinner && showSpinner ? (
-        <Spinner size="lg" />
-      ) : (
-        <Image
-          opacity={url ? opacity : 0}
-          transitionDuration="200ms"
-          src={url}
-          w="full"
-          h="full"
-        />
-      )}
+      <Image
+        as={motion.img}
+        initial={{ opacity: 0 }}
+        animate={fadeControls}
+        onLoad={handleLoad}
+        src={(digest && url) ?? fallbackSrc}
+        w="full"
+        h="full"
+      />
     </Flex>
   )
 }
