@@ -346,7 +346,11 @@ function App() {
         bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
         boxShadow={isShowingLog ? 'dark-lg' : 'none'}
         animate={{ y: isShowingLog ? 0 : '101vh' }}
-        transition={{ type: 'tween', duration: 0.25 }}
+        transition={{
+          type: 'spring',
+          duration: 0.35,
+          bounce: 0,
+        }}
         initial={false}
       >
         <Log onShowAbout={showIntro} />
