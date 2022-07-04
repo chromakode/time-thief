@@ -3,7 +3,7 @@ import { useAsyncEffect } from '@react-hook/async'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
 
 const thumbDB = new PouchDB('thumbnails')
@@ -116,6 +116,7 @@ export default function AttachmentImage({
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
   const [url, setURL] = useState<string>()
+  const [isLoaded, setLoaded] = useState(false)
 
   const { isIntersecting } = useIntersectionObserver(containerRef, {
     rootMargin: '1000px 0px 1000px 0px',
@@ -148,14 +149,13 @@ export default function AttachmentImage({
     if (!imgRef.current || !containerRef.current) {
       return
     }
-    imgRef.current.style.opacity = opacity.toString()
-    containerRef.current.style.background = 'transparent'
-  }, [opacity])
+    setLoaded(true)
+  }, [])
 
   return (
     <Flex
       ref={containerRef}
-      bg={digest ? 'blackAlpha.100' : 'transparent'}
+      bg={digest && !isLoaded ? 'blackAlpha.100' : 'transparent'}
       transitionDuration="200ms"
       {...props}
       align="center"
@@ -163,7 +163,7 @@ export default function AttachmentImage({
     >
       <Image
         ref={imgRef}
-        opacity={0}
+        opacity={isLoaded ? opacity : 0}
         transitionDuration="200ms"
         onLoad={handleLoad}
         src={(digest && url) ?? fallbackSrc}
