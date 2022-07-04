@@ -3,7 +3,7 @@ import { useAsyncEffect } from '@react-hook/async'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
 
 const thumbDB = new PouchDB('thumbnails')
