@@ -301,8 +301,18 @@ function App() {
                 borderColor={
                   colorMode === 'dark' ? 'primary.200' : 'primary.600'
                 }
-                transitionProperty="border"
+                transitionProperty="border-width, background"
                 transitionDuration="200ms"
+                // Hack: fill in subpixel-sized center dot in Android Chrome
+                // (probably due to a rounding error when sizing the border)
+                bg={
+                  idx === page
+                    ? colorMode === 'dark'
+                      ? 'primary.200'
+                      : 'primary.600'
+                    : 'transparent'
+                }
+                transitionDelay={idx === page ? '0s, 200ms' : '0s'}
                 // TODO: a11y
                 onClick={() => {
                   setPage(idx)
