@@ -258,6 +258,7 @@
       "content": [
         {
           "type": "steps",
+          "requiredFields": ["person"],
           "steps": [
             [
               {

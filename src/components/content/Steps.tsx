@@ -1,5 +1,5 @@
 import { Box, IconButton, VStack } from '@chakra-ui/react'
-import { Ref, useCallback, useRef, useState } from 'react'
+import { Ref, useCallback, useMemo, useRef, useState } from 'react'
 import { MdArrowBack, MdArrowForward } from 'react-icons/md'
 import contentComponents, {
   ContentComponentProps,
@@ -10,7 +10,7 @@ export default function Steps(
   props: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
-  const { spec } = props
+  const { spec, entityDoc, context } = props
   const [step, setStep] = useState(0)
   const componentRefs = useRef<ContentComponentRef[]>([])
 
@@ -31,7 +31,9 @@ export default function Steps(
     setStep((step) => step - 1)
   }, [leaveStep])
 
-  const stepContent = spec.steps[step].map((item: any, idx: number) => {
+  const stepSpec = spec.steps[step]
+
+  const stepContent = stepSpec.map((item: any, idx: number) => {
     const Component = contentComponents.get(item.type)
     if (!Component) {
       console.warn('Unknown component type:', item.type)
@@ -49,6 +51,17 @@ export default function Steps(
       />
     )
   })
+
+  const requiredFields = useMemo(
+    () => new Set(spec.requiredFields || []),
+    [spec.requiredFields],
+  )
+  const stepRequiredFields = stepSpec
+    .map((c: any) => c.field)
+    .filter((field: string) => field && requiredFields)
+  const hasAllRequired = stepRequiredFields.every(
+    (field: string) => entityDoc[field] || context[field]?._valid,
+  )
 
   // TODO: animate
   return (
@@ -69,6 +82,7 @@ export default function Steps(
         {stepContent}
         {step < spec.steps.length - 1 && (
           <IconButton
+            disabled={!hasAllRequired}
             onClick={nextStep}
             aria-label="Next step"
             icon={<MdArrowForward />}

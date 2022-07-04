@@ -116,7 +116,9 @@ export default function EntityLookup(
   const selectedEntity = options.find((o) => o._id === selectedId)
 
   useEffect(() => {
-    setContext({ [field]: { ...selectedEntity, _input: input } })
+    setContext({
+      [field]: { ...selectedEntity, _input: input, _valid: !!input.length },
+    })
   }, [field, input, selectedEntity, set, setContext])
 
   // Auto select first available option
