@@ -13,7 +13,8 @@
     {
       "id": "selfie",
       "conditions": {
-        "frequency": [4, "hours"]
+        "frequency": [4, "hours"],
+        "exclusiveTags": ["selfie"]
       },
       "content": [
         {
@@ -63,7 +64,8 @@
     {
       "id": "daily-portrait",
       "conditions": {
-        "frequency": "day"
+        "frequency": "day",
+        "exclusiveTags": ["selfie"]
       },
       "content": [
         {
@@ -133,7 +135,8 @@
       "id": "journal-looking-forward",
       "conditions": {
         "timeOfDay": ["morning"],
-        "frequency": "day"
+        "frequency": "day",
+        "exclusiveTags": ["journal:intention"]
       },
       "content": [
         {
@@ -153,7 +156,8 @@
       "id": "journal-tonight",
       "conditions": {
         "timeOfDay": ["morning", "afternoon"],
-        "frequency": "day"
+        "frequency": "day",
+        "exclusiveTags": ["journal:intention"]
       },
       "content": [
         {
@@ -172,7 +176,8 @@
     {
       "id": "journal-tomorrow",
       "conditions": {
-        "timeOfDay": ["evening", "night"]
+        "timeOfDay": ["evening", "night"],
+        "exclusiveTags": ["journal:intention"]
       },
       "content": [
         {
@@ -230,6 +235,9 @@
     },
     {
       "id": "journal-be",
+      "conditions": {
+        "exclusiveTags": ["journal:intention"]
+      },
       "content": [
         {
           "type": "choice",

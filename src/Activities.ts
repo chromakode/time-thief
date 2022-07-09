@@ -99,18 +99,25 @@ class Traversal {
 
   _choice(choices: Choices, count: number = 1) {
     const results: any = []
+    const seenTags = new Set<string>()
 
-    const choicesCopy = this._filterChoices(choices)
+    let choicesCopy = this._filterChoices(choices, seenTags)
     for (let i = 0; i < count; i++) {
       const idx = Math.floor(this.rng() * choicesCopy.length)
-      results.push(choicesCopy[idx])
+      const chosen = choicesCopy[idx]
+      results.push(chosen)
+
+      for (const tag of chosen.conditions?.exclusiveTags ?? []) {
+        seenTags.add(tag)
+      }
       choicesCopy.splice(idx, 1)
+      choicesCopy = this._filterChoices(choicesCopy, seenTags)
     }
 
     return results
   }
 
-  _filterChoices(choices: Choices) {
+  _filterChoices(choices: Choices, seenTags: Set<string>) {
     return choices.filter((c) => {
       if (!c.hasOwnProperty('conditions')) {
         return true
@@ -143,6 +150,12 @@ class Traversal {
               .isBefore(lastActivityTime, unit)
           ) {
             return false
+          }
+        } else if (condType === 'exclusiveTags') {
+          for (const tag of condValue as string[]) {
+            if (seenTags.has(tag)) {
+              return false
+            }
           }
         } else {
           throw new Error(`Unexpected condition type ${condType}`)
