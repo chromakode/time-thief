@@ -115,10 +115,6 @@
             {
               "type": "title",
               "text": "What could be going better?"
-            },
-            {
-              "type": "title",
-              "text": "Write a haiku."
             }
           ]
         },
@@ -131,6 +127,26 @@
         "type": "journal"
       }
     },
+    {
+      "id": "journal-haiku",
+      "conditions": {
+        "frequency": "day"
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "Write a haiku."
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal"
+      }
+    },
+
     {
       "id": "journal-looking-forward",
       "conditions": {
