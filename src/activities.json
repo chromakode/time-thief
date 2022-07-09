@@ -106,10 +106,6 @@
             },
             {
               "type": "title",
-              "text": "What will you do in the next hour?"
-            },
-            {
-              "type": "title",
               "text": "What are you grateful for?"
             },
             {
@@ -146,7 +142,26 @@
         "type": "journal"
       }
     },
-
+    {
+      "id": "journal-next-hour",
+      "conditions": {
+        "frequency": "hour",
+        "exclusiveTags": ["journal:intention"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What will you do in the next hour?"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal"
+      }
+    },
     {
       "id": "journal-looking-forward",
       "conditions": {
