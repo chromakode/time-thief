@@ -230,7 +230,7 @@
     {
       "id": "journal-best-thing",
       "conditions": {
-        "timeOfDay": ["evening"],
+        "timeOfDay": ["evening", "night"],
         "frequency": "day"
       },
       "content": [
