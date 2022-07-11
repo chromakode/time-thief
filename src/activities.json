@@ -85,6 +85,7 @@
     },
     {
       "id": "journal-now",
+      "rarity": "common",
       "content": [
         {
           "type": "choice",
@@ -248,6 +249,7 @@
     },
     {
       "id": "journal-sleep",
+      "rarity": "x-common",
       "conditions": {
         "timeOfDay": ["sleep"]
       },
@@ -268,6 +270,7 @@
     {
       "id": "journal-be",
       "conditions": {
+        "frequency": [2, "hours"],
         "exclusiveTags": ["journal:intention"]
       },
       "content": [
