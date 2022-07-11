@@ -77,8 +77,8 @@ export default function Steps(
           inset="0"
           initial={{
             opacity: 0,
-            x: step > prevStep ? -35 : 35,
-            rotate: step > prevStep ? 0 : '2deg',
+            x: step > prevStep ? 35 : -35,
+            rotate: step > prevStep ? 0 : '-2deg',
           }}
           animate={{
             opacity: 1,
@@ -88,8 +88,8 @@ export default function Steps(
           }}
           exit={{
             opacity: 0,
-            x: step > prevStep ? -35 : 35,
-            rotate: step > prevStep ? 0 : '2deg',
+            x: step > prevStep ? 35 : -35,
+            rotate: step > prevStep ? 0 : '-2deg',
             transition: { type: 'spring', duration: 0.5 },
           }}
         >
