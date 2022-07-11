@@ -39,8 +39,6 @@ export default function Carousel({
   // TODO: ARIA tabs accessibility
   return (
     <MotionBox
-      flex="1"
-      w="full"
       animate={slidePage}
       transition={{
         x: { type: 'spring', stiffness: 300, damping: 30 },

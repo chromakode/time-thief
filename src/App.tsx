@@ -253,24 +253,46 @@ function App() {
         opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
         onTouchStart={handleStartDrag}
       >
-        {width !== 0 && (
-          <Carousel
-            width={width}
-            page={page}
-            onPageChange={handlePageChange}
-            dragControls={dragControls}
-          >
-            {activities.map((activity, idx) => (
-              <Activity
-                w={width}
-                key={`${seed}-${idx}-${activity.id}`}
-                activity={activity}
-                seed={seed}
-                idx={idx}
-              />
-            ))}
-          </Carousel>
-        )}
+        <Flex flex="1" w="full" position="relative">
+          <AnimatePresence initial={false} exitBeforeEnter>
+            {width !== 0 && (
+              <MotionBox
+                key={seed}
+                position="absolute"
+                inset="0"
+                display="flex"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  transition: { duration: 0.25, ease: 'easeOut' },
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 1.05,
+                  transition: { duration: 0.25, ease: 'easeOut' },
+                }}
+              >
+                <Carousel
+                  width={width}
+                  page={page}
+                  onPageChange={handlePageChange}
+                  dragControls={dragControls}
+                >
+                  {activities.map((activity, idx) => (
+                    <Activity
+                      w={width}
+                      key={`${seed}-${idx}-${activity.id}`}
+                      activity={activity}
+                      seed={seed}
+                      idx={idx}
+                    />
+                  ))}
+                </Carousel>
+              </MotionBox>
+            )}
+          </AnimatePresence>
+        </Flex>
         <SimpleGrid
           flexShrink="0"
           columns={3}
