@@ -253,9 +253,9 @@ function App() {
         opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
         onTouchStart={handleStartDrag}
       >
-        <Flex flex="1" w="full" position="relative">
-          <AnimatePresence initial={false} exitBeforeEnter>
-            {width !== 0 && (
+        {width !== 0 && seed && (
+          <Flex flex="1" w="full" position="relative">
+            <AnimatePresence initial={false} exitBeforeEnter>
               <MotionBox
                 key={seed}
                 position="absolute"
@@ -290,9 +290,9 @@ function App() {
                   ))}
                 </Carousel>
               </MotionBox>
-            )}
-          </AnimatePresence>
-        </Flex>
+            </AnimatePresence>
+          </Flex>
+        )}
         <SimpleGrid
           flexShrink="0"
           columns={3}
