@@ -248,6 +248,26 @@
       }
     },
     {
+      "id": "journal-reflect-eod",
+      "conditions": {
+        "timeOfDay": ["evening", "night"],
+        "frequency": "day"
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "Reflect on your day."
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal"
+      }
+    },
+    {
       "id": "journal-sleep",
       "rarity": "x-common",
       "conditions": {
