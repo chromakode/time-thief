@@ -1,10 +1,12 @@
-import { Box, IconButton, VStack } from '@chakra-ui/react'
+import { Flex, IconButton, VStack } from '@chakra-ui/react'
+import { AnimatePresence } from 'framer-motion'
 import { Ref, useCallback, useMemo, useRef, useState } from 'react'
 import { MdArrowBack, MdArrowForward } from 'react-icons/md'
 import contentComponents, {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
+import MotionBox from '../MotionBox'
 
 export default function Steps(
   props: ContentComponentProps,
@@ -12,6 +14,7 @@ export default function Steps(
 ) {
   const { spec, entityDoc, context } = props
   const [step, setStep] = useState(0)
+  const [prevStep, setPrevStep] = useState(0)
   const componentRefs = useRef<ContentComponentRef[]>([])
 
   const leaveStep = useCallback(() => {
@@ -21,15 +24,17 @@ export default function Steps(
     componentRefs.current = []
   }, [])
 
-  const nextStep = useCallback(() => {
+  const goNext = useCallback(() => {
     leaveStep()
-    setStep((step) => step + 1)
-  }, [leaveStep])
+    setPrevStep(step)
+    setStep(step + 1)
+  }, [step, leaveStep])
 
-  const prevStep = useCallback(() => {
+  const goPrev = useCallback(() => {
     leaveStep()
+    setPrevStep(step)
     setStep((step) => step - 1)
-  }, [leaveStep])
+  }, [step, leaveStep])
 
   const stepSpec = spec.steps[step]
 
@@ -63,34 +68,58 @@ export default function Steps(
     (field: string) => entityDoc[field] || context[field]?._valid,
   )
 
-  // TODO: animate
   return (
-    <Box h="full" w="full" position="relative">
-      {step > 0 && (
-        <IconButton
+    <Flex w="full" h="full" position="relative">
+      <AnimatePresence initial={false}>
+        <MotionBox
+          key={step}
           position="absolute"
-          left="4"
-          top="4"
-          onClick={prevStep}
-          aria-label="Previous step"
-          icon={<MdArrowBack />}
-          fontSize="3xl"
-          boxSize="10"
-        />
-      )}
-      <VStack w="full" h="full">
-        {stepContent}
-        {step < spec.steps.length - 1 && (
-          <IconButton
-            disabled={!hasAllRequired}
-            onClick={nextStep}
-            aria-label="Next step"
-            icon={<MdArrowForward />}
-            fontSize="3xl"
-            boxSize="16"
-          />
-        )}
-      </VStack>
-    </Box>
+          inset="0"
+          initial={{
+            opacity: 0,
+            x: step > prevStep ? -35 : 35,
+            rotate: step > prevStep ? 0 : '2deg',
+          }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            rotate: 0,
+            transition: { type: 'spring', duration: 0.5 },
+          }}
+          exit={{
+            opacity: 0,
+            x: step > prevStep ? -35 : 35,
+            rotate: step > prevStep ? 0 : '2deg',
+            transition: { type: 'spring', duration: 0.5 },
+          }}
+        >
+          {step > 0 && (
+            <IconButton
+              position="absolute"
+              left="4"
+              top="4"
+              onClick={goPrev}
+              aria-label="Previous step"
+              icon={<MdArrowBack />}
+              fontSize="3xl"
+              boxSize="10"
+            />
+          )}
+          <VStack w="full" h="full">
+            {stepContent}
+            {step < spec.steps.length - 1 && (
+              <IconButton
+                disabled={!hasAllRequired}
+                onClick={goNext}
+                aria-label="Next step"
+                icon={<MdArrowForward />}
+                fontSize="3xl"
+                boxSize="16"
+              />
+            )}
+          </VStack>
+        </MotionBox>
+      </AnimatePresence>
+    </Flex>
   )
 }
