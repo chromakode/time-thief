@@ -1,6 +1,7 @@
 import dayjs, { ManipulateType } from 'dayjs'
 import { isPlainObject, isArray, map, mapValues } from 'lodash'
 import seedrandom from 'seedrandom'
+import weightedChoice from './utils/weightedChoice'
 
 export type ActivityData = any // TODO
 export type ConfigData = any // TODO
@@ -8,6 +9,14 @@ export type ActivityDefinition = any
 export type Choices = Array<any> // add weighting'
 
 const SEED_DURATION = 15 * 60 * 1000
+
+const rarityToWeight = new Map([
+  ['xx-common', 4],
+  ['x-common', 2],
+  ['common', 1],
+  ['uncommon', 0.5],
+  ['rare', 0.25],
+])
 
 function hoursToTimeOfDay(
   hour: number,
@@ -97,13 +106,17 @@ class Traversal {
     return map(selected, (act) => this._flattenChoices(act))
   }
 
+  _getWeight(activity: any) {
+    return rarityToWeight.get(activity.rarity ?? 'uncommon') ?? 1
+  }
+
   _choice(choices: Choices, count: number = 1) {
     const results: any = []
     const seenTags = new Set<string>()
 
     let choicesCopy = this._filterChoices(choices, seenTags)
     for (let i = 0; i < count; i++) {
-      const idx = Math.floor(this.rng() * choicesCopy.length)
+      const idx = weightedChoice(choicesCopy, this._getWeight, this.rng)
       const chosen = choicesCopy[idx]
       results.push(chosen)
 

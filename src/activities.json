@@ -63,6 +63,7 @@
     },
     {
       "id": "daily-portrait",
+      "rarity": "xx-common",
       "conditions": {
         "frequency": "day",
         "exclusiveTags": ["selfie"]
