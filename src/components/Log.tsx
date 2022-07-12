@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdInfo, MdMoreVert } from 'react-icons/md'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
-import Markdown from './content/Markdown'
+import Markdown from './Markdown'
 
 function formatDate(date: Date) {
   return dayjs(date).calendar(null, {

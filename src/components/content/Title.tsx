@@ -4,7 +4,7 @@ import {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
-import Markdown from './Markdown'
+import Markdown from '../Markdown'
 
 export default function ContentTitle(
   { entityDoc, text, subtitle, set }: ContentComponentProps,
