@@ -105,6 +105,7 @@ export default function Activity({
     return (
       <Component
         key={idx}
+        // TODO: remove in favor of spec prop
         {...item}
         context={contextState}
         spec={item}
