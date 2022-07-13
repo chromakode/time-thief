@@ -2,19 +2,22 @@ import { Flex, IconButton, VStack } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
 import { Ref, useCallback, useMemo, useRef, useState } from 'react'
 import { MdArrowBack, MdArrowForward } from 'react-icons/md'
+import usePreviousDifferent from '@rooks/use-previous-different'
 import contentComponents, {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
 import MotionBox from '../MotionBox'
 
-export default function Steps(
-  props: ContentComponentProps,
+export function RenderSteps(
+  props: ContentComponentProps & {
+    step: number
+    onStepChange?: (step: number) => void
+  },
   ref: Ref<ContentComponentRef>,
 ) {
-  const { spec, entityDoc, context } = props
-  const [step, setStep] = useState(0)
-  const [prevStep, setPrevStep] = useState(0)
+  const { spec, entityDoc, context, step, onStepChange } = props
+  const prevStep = usePreviousDifferent(step) ?? step
   const componentRefs = useRef<ContentComponentRef[]>([])
 
   const leaveStep = useCallback(() => {
@@ -26,15 +29,13 @@ export default function Steps(
 
   const goNext = useCallback(() => {
     leaveStep()
-    setPrevStep(step)
-    setStep(step + 1)
-  }, [step, leaveStep])
+    onStepChange?.(step + 1)
+  }, [leaveStep, step, onStepChange])
 
   const goPrev = useCallback(() => {
     leaveStep()
-    setPrevStep(step)
-    setStep((step) => step - 1)
-  }, [step, leaveStep])
+    onStepChange?.(step - 1)
+  }, [leaveStep, step, onStepChange])
 
   const stepSpec = spec.steps[step]
 
@@ -122,4 +123,17 @@ export default function Steps(
       </AnimatePresence>
     </Flex>
   )
+}
+
+export default function Steps(
+  props: ContentComponentProps,
+  ref: Ref<ContentComponentRef>,
+) {
+  const [step, setStep] = useState(0)
+
+  const handleStepChange = useCallback((step: number) => {
+    setStep(step)
+  }, [])
+
+  return <RenderSteps {...props} step={step} onStepChange={handleStepChange} />
 }

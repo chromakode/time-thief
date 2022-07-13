@@ -1,9 +1,11 @@
 import '@fontsource/roboto-flex/variable-full.css'
 import React, { forwardRef } from 'react'
+import Branch from './content/Branch'
 import EntityLookup from './content/EntityLookup'
 import MultilineInput from './content/MultilineInput'
 import PhotoInput from './content/PhotoInput'
 import PhotoPortraitGuides from './content/PhotoPortraitGuides'
+import SelectOption from './content/SelectOption'
 import Steps from './content/Steps'
 import ContentTitle from './content/Title'
 
@@ -39,6 +41,8 @@ contentComponents.set(
   forwardRef(PhotoPortraitGuides),
 )
 contentComponents.set('input/entity-lookup', forwardRef(EntityLookup))
+contentComponents.set('input/select-option', forwardRef(SelectOption))
 contentComponents.set('steps', forwardRef(Steps))
+contentComponents.set('branch', forwardRef(Branch))
 
 export default contentComponents

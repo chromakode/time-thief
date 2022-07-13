@@ -84,6 +84,96 @@
       }
     },
     {
+      "id": "journal-how-goes",
+      "rarity": "common",
+      "content": [
+        {
+          "type": "branch",
+          "field": "mood",
+          "branches": {
+            "default": [
+              {
+                "type": "choice",
+                "choices": [
+                  {
+                    "type": "title",
+                    "text": "How are you feeling?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "How's it going?"
+                  }
+                ]
+              },
+              {
+                "type": "input/select-option",
+                "field": "mood",
+                "options": [
+                  {
+                    "value": "positive",
+                    "label": "👍"
+                  },
+                  {
+                    "value": "negative",
+                    "label": "👎"
+                  }
+                ]
+              }
+            ],
+            "positive": [
+              {
+                "type": "choice",
+                "choices": [
+                  {
+                    "type": "title",
+                    "text": "What's going well?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "What's one thing you're happy about?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "What are you grateful for?"
+                  }
+                ]
+              },
+              {
+                "type": "input/multi-line",
+                "field": "content"
+              }
+            ],
+            "negative": [
+              {
+                "type": "choice",
+                "choices": [
+                  {
+                    "type": "title",
+                    "text": "What's bumming you out?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "What could be going better?"
+                  },
+                  {
+                    "type": "title",
+                    "text": "What's wrong?"
+                  }
+                ]
+              },
+              {
+                "type": "input/multi-line",
+                "field": "content"
+              }
+            ]
+          }
+        }
+      ],
+      "entity": {
+        "type": "journal"
+      }
+    },
+    {
       "id": "journal-now",
       "rarity": "common",
       "content": [
@@ -101,18 +191,6 @@
             {
               "type": "title",
               "text": "How did you get here?"
-            },
-            {
-              "type": "title",
-              "text": "How are you feeling?"
-            },
-            {
-              "type": "title",
-              "text": "What are you grateful for?"
-            },
-            {
-              "type": "title",
-              "text": "What could be going better?"
             }
           ]
         },

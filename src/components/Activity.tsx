@@ -44,9 +44,13 @@ export default function Activity({
 
   const queueUpdate = useMemo(
     () =>
-      debounce(() => {
-        save(fieldsRef.current)
-      }, 500),
+      debounce(
+        () => {
+          save(fieldsRef.current)
+        },
+        500,
+        { leading: true },
+      ),
     [save],
   )
 
