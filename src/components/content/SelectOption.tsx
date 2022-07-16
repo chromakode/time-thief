@@ -1,4 +1,4 @@
-import { Button, VStack } from '@chakra-ui/react'
+import { Button, StackDivider, VStack } from '@chakra-ui/react'
 import React, { Ref, useCallback } from 'react'
 import {
   ContentComponentProps,
@@ -22,11 +22,20 @@ export default function SelectOption(
   return (
     <VStack
       px="4"
-      w="full"
       flex="1"
       alignItems="center"
       justifyContent="center"
       spacing="8"
+      divider={
+        <StackDivider
+          _light={{
+            borderColor: 'primary.200',
+          }}
+          _dark={{
+            borderColor: 'primary.600',
+          }}
+        />
+      }
     >
       {spec.options.map((option: any) => (
         <Button
@@ -35,6 +44,13 @@ export default function SelectOption(
           value={option.value}
           fontSize="7xl"
           boxSize="32"
+          mx="4"
+          _light={{
+            bgColor: 'primary.100',
+          }}
+          _dark={{
+            bgColor: 'primary.700',
+          }}
         >
           {option.label}
         </Button>
