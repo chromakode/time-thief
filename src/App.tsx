@@ -281,6 +281,30 @@ function App() {
 
   const ready = width !== 0 && seed && manualEntitiesLoaded
 
+  const activityContent = useMemo(
+    () => [
+      ...activities.map((activity, idx) => (
+        <Activity
+          w={width}
+          key={`${seed}-${idx}-${activity.id}`}
+          activity={activity}
+          seed={seed}
+          idx={idx}
+        />
+      )),
+      ...manualEntityIds.map((id) => (
+        <Activity
+          w={width}
+          key={id}
+          activity={manualActivity}
+          seed={seed}
+          idx={parseIdxFromEntityId(id)}
+        />
+      )),
+    ],
+    [activities, manualActivity, manualEntityIds, seed, width],
+  )
+
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
   return (
@@ -335,24 +359,7 @@ function App() {
                     )
                   }
                 >
-                  {activities.map((activity, idx) => (
-                    <Activity
-                      w={width}
-                      key={`${seed}-${idx}-${activity.id}`}
-                      activity={activity}
-                      seed={seed}
-                      idx={idx}
-                    />
-                  ))}
-                  {manualEntityIds.map((id) => (
-                    <Activity
-                      w={width}
-                      key={id}
-                      activity={manualActivity}
-                      seed={seed}
-                      idx={parseIdxFromEntityId(id)}
-                    />
-                  ))}
+                  {activityContent}
                 </Carousel>
               </MotionBox>
             </AnimatePresence>
