@@ -27,6 +27,7 @@ import Activities, { ActivityDefinition } from './Activities'
 import activityData from './activities.json'
 import './App.css'
 import Activity from './components/Activity'
+import ActivityPips from './components/ActivityPips'
 import Carousel from './components/Carousel'
 import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
@@ -245,11 +246,7 @@ function App() {
   const dragControls = useDragControls()
   const dragMotionValue = useMotionValue(0)
   const dragDraftRange = [-(lastPage - 1) * width, -lastPage * width]
-  const manualDraftPipWidth = useTransform(dragMotionValue, dragDraftRange, [
-    0,
-    14 + 8,
-  ])
-  const manualDraftPipOpacity = useTransform(
+  const dragProgressMotionValue = useTransform(
     dragMotionValue,
     dragDraftRange,
     [0, 1],
@@ -280,7 +277,7 @@ function App() {
     }
   }
 
-  function handleCreateManualEntry() {
+  function handleCreateManualEntity() {
     createManualDraft()
     setPage(page + 1)
   }
@@ -327,7 +324,7 @@ function App() {
                   dragMotionValue={dragMotionValue}
                   dragControls={dragControls}
                   onPageChange={handlePageChange}
-                  onDragToLastPage={handleCreateManualEntry}
+                  onDragToLastPage={handleCreateManualEntity}
                   lastPage={
                     manualActivity &&
                     !manualEntityDraftId && (
@@ -383,60 +380,15 @@ function App() {
               justifySelf="start"
             />
           )}
-          <Flex justifySelf="center" opacity={ready ? 1 : 0}>
-            {range(activities.length).map((idx) => (
-              <Box
-                key={idx}
-                w="14px"
-                h="14px"
-                ml={idx === 0 ? 0 : '8px'}
-                borderRadius="full"
-                borderWidth={idx === page ? '7px' : '3px'}
-                borderColor={
-                  colorMode === 'dark' ? 'primary.200' : 'primary.600'
-                }
-                transitionProperty="border-width, background"
-                transitionDuration="200ms"
-                // Hack: fill in subpixel-sized center dot in Android Chrome
-                // (probably due to a rounding error when sizing the border)
-                bg={
-                  idx === page
-                    ? colorMode === 'dark'
-                      ? 'primary.200'
-                      : 'primary.600'
-                    : 'transparent'
-                }
-                transitionDelay={idx === page ? '0s, 200ms' : '0s'}
-                // TODO: a11y
-                onClick={() => {
-                  setPage(idx)
-                }}
-              />
-            ))}
-            {range(activities.length, lastPage + 1).map((idx) => (
-              <MotionBox
-                key={`manual-${idx === lastPage ? 'last' : idx}`}
-                h="14px"
-                color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
-                style={
-                  idx === lastPage
-                    ? {
-                        width: manualDraftPipWidth,
-                        opacity: manualDraftPipOpacity,
-                      }
-                    : { width: '22px', opacity: idx === page ? 1 : 0.5 }
-                }
-                initial={false}
-                animate={
-                  idx === lastPage ? {} : { opacity: idx === page ? 1 : 0.5 }
-                }
-                overflow="visible"
-                onClick={handleCreateManualEntry}
-              >
-                <Icon as={MdAdd} fontSize="20px" ml="5px" mt="-3px" />
-              </MotionBox>
-            ))}
-          </Flex>
+          <ActivityPips
+            activityCount={activities.length}
+            page={page}
+            lastPage={lastPage}
+            opacity={ready ? 1 : 0}
+            dragProgressMotionValue={dragProgressMotionValue}
+            onGotoPage={setPage}
+            onCreateManualEntity={handleCreateManualEntity}
+          />
           <IconButton
             zIndex="overlay"
             icon={<MdArticle />}
