@@ -196,20 +196,21 @@ export default function PhotoPortraitGuides(
       >
         <Box m="1" position="absolute" left="5vw" transform="scaleX(-1)">
           <Box filter="invert(1) contrast(175%)" mixBlendMode="overlay">
-            {latestPhotos.map((doc) => (
-              <AttachmentImage
-                key={doc._id}
-                position="absolute"
-                inset="0"
-                opacity={1 / latestPhotos.length}
-                docId={doc._id}
-                attachmentId={field}
-                digest={doc._attachments?.[field].digest}
-                zIndex="overlay"
-                pointerEvents="none"
-                h="100vh"
-              />
-            ))}
+            {isCameraOpen &&
+              latestPhotos.map((doc) => (
+                <AttachmentImage
+                  key={doc._id}
+                  position="absolute"
+                  inset="0"
+                  opacity={1 / latestPhotos.length}
+                  docId={doc._id}
+                  attachmentId={field}
+                  digest={doc._attachments?.[field].digest}
+                  zIndex="overlay"
+                  pointerEvents="none"
+                  h="100vh"
+                />
+              ))}
           </Box>
           <Video srcObject={stream} h="100vh" />
         </Box>
