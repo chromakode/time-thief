@@ -63,19 +63,16 @@ export function useManualEntities({
   seed: string
   manualActivity: any | null
 }) {
-  const db = usePouch()
+  const [loaded, setLoaded] = useState(false)
+  const [draftId, setDraftId] = useState<string | null>(null)
 
-  // When the user swipes to a new manual entity, it's important that the
-  // created entity immediately be present in the id list, otherwise the router
-  // will consider it an invalid page and redirect.
-  const [optimisticId, setOptimisticId] = useState<string | null>(null)
-
-  const { rows } = useAllDocs<any>({
+  const { rows, loading } = useAllDocs<any>({
     startkey: `${seed}-manual`,
     endkey: `${seed}-manual\ufff0`,
+    update_seq: true,
   })
 
-  const createManualEntity = useCallback(() => {
+  const createManualDraft = useCallback(() => {
     const created = Date.now()
     const entityInfo = {
       seed,
@@ -84,24 +81,40 @@ export function useManualEntities({
       idx: `manual${created}`,
     }
     const entityId = getEntityId(entityInfo)
-    const attrs = getDefaultAttrs(entityInfo.type, entityInfo.activity, created)
-    setOptimisticId(entityId)
-    db.put({ ...attrs, _id: entityId })
-  }, [db, manualActivity?.entity.type, manualActivity?.id, seed])
+    setDraftId(entityId)
+  }, [manualActivity?.entity.type, manualActivity?.id, seed])
+
+  const cleanupManualDraft = useCallback(() => {
+    setDraftId(null)
+  }, [])
 
   const manualEntityIds = useMemo(() => {
-    const ids = rows.map((r) => r.id).filter((id) => id !== optimisticId)
-    if (optimisticId) {
-      ids.push(optimisticId)
+    const ids = rows.map((r) => r.id).filter((id) => id !== draftId)
+    if (draftId) {
+      ids.push(draftId)
     }
     return ids
-  }, [rows, optimisticId])
+  }, [rows, draftId])
 
   useEffect(() => {
-    if (rows.find((r) => r.id === optimisticId)) {
-      setOptimisticId(null)
+    if (rows.find((r) => r.id === draftId)) {
+      setDraftId(null)
     }
-  }, [optimisticId, rows])
+  }, [draftId, rows])
 
-  return { manualEntityIds, createManualEntity }
+  // FIXME: use-pouchdb seems to state change from loading to done without
+  // returning any rows, then load again and return a real result
+  useEffect(() => {
+    if (loading === false) {
+      setLoaded(true)
+    }
+  }, [loading])
+
+  return {
+    manualEntityIds,
+    manualEntityDraftId: draftId,
+    manualEntitiesLoaded: loaded,
+    cleanupManualDraft,
+    createManualDraft,
+  }
 }

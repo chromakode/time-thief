@@ -3,6 +3,7 @@ import {
   BoxProps,
   Flex,
   HStack,
+  Icon,
   IconButton,
   SimpleGrid,
   Text,
@@ -12,10 +13,15 @@ import {
 import '@fontsource/roboto-flex/variable-full.css'
 import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
-import { AnimatePresence, useDragControls } from 'framer-motion'
+import {
+  AnimatePresence,
+  useDragControls,
+  useMotionValue,
+  useTransform,
+} from 'framer-motion'
 import { range, reduce } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MdArticle } from 'react-icons/md'
+import { MdAdd, MdArticle } from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from './Activities'
 import activityData from './activities.json'
@@ -216,17 +222,38 @@ function App() {
   const { colorMode } = useColorMode()
   const [{ activities, manualActivity, seed }, remainingSeconds] =
     useActivities()
-  const { manualEntityIds, createManualEntity } = useManualEntities({
+  const {
+    manualEntityIds,
+    manualEntityDraftId,
+    manualEntitiesLoaded,
+    createManualDraft,
+    cleanupManualDraft,
+  } = useManualEntities({
     seed,
     manualActivity,
   })
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
-  const dragControls = useDragControls()
   const { isShowingIntro, showIntro } = useShowingIntro()
+
+  const pageCount = activities.length + manualEntityIds.length
+  const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
   const { page, setPage, isShowingLog, setShowingLog } = useRouter({
-    maxPages: activities.length + manualEntityIds.length,
+    maxPages: pageCount,
   })
+
+  const dragControls = useDragControls()
+  const dragMotionValue = useMotionValue(0)
+  const dragDraftRange = [-(lastPage - 1) * width, -lastPage * width]
+  const manualDraftPipWidth = useTransform(dragMotionValue, dragDraftRange, [
+    0,
+    14 + 8,
+  ])
+  const manualDraftPipOpacity = useTransform(
+    dragMotionValue,
+    dragDraftRange,
+    [0, 1],
+  )
 
   function blur() {
     if (document.activeElement instanceof HTMLElement) {
@@ -248,12 +275,17 @@ function App() {
   function handlePageChange(page: number) {
     setPage(page)
     blur()
+    if (page < pageCount - 1) {
+      cleanupManualDraft()
+    }
   }
 
   function handleCreateManualEntry() {
-    createManualEntity()
+    createManualDraft()
     setPage(page + 1)
   }
+
+  const ready = width !== 0 && seed && manualEntitiesLoaded
 
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
@@ -270,7 +302,7 @@ function App() {
         onTouchStart={handleStartDrag}
       >
         <Flex flex="1" w="full" position="relative">
-          {width !== 0 && seed && (
+          {ready && (
             <AnimatePresence initial={false} exitBeforeEnter>
               <MotionBox
                 key={seed}
@@ -292,14 +324,16 @@ function App() {
                 <Carousel
                   width={width}
                   page={page}
+                  dragMotionValue={dragMotionValue}
                   dragControls={dragControls}
                   onPageChange={handlePageChange}
                   onDragToLastPage={handleCreateManualEntry}
                   lastPage={
-                    manualActivity && (
+                    manualActivity &&
+                    !manualEntityDraftId && (
                       <Activity
                         w={width}
-                        key="add-entry"
+                        key="manual-draft"
                         activity={manualActivity}
                         seed={seed}
                         idx={activities.length}
@@ -349,12 +383,13 @@ function App() {
               justifySelf="start"
             />
           )}
-          <HStack justifySelf="center">
+          <Flex justifySelf="center" opacity={ready ? 1 : 0}>
             {range(activities.length).map((idx) => (
               <Box
                 key={idx}
                 w="14px"
                 h="14px"
+                ml={idx === 0 ? 0 : '8px'}
                 borderRadius="full"
                 borderWidth={idx === page ? '7px' : '3px'}
                 borderColor={
@@ -378,7 +413,30 @@ function App() {
                 }}
               />
             ))}
-          </HStack>
+            {range(activities.length, lastPage + 1).map((idx) => (
+              <MotionBox
+                key={`manual-${idx === lastPage ? 'last' : idx}`}
+                h="14px"
+                color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
+                style={
+                  idx === lastPage
+                    ? {
+                        width: manualDraftPipWidth,
+                        opacity: manualDraftPipOpacity,
+                      }
+                    : { width: '22px', opacity: idx === page ? 1 : 0.5 }
+                }
+                initial={false}
+                animate={
+                  idx === lastPage ? {} : { opacity: idx === page ? 1 : 0.5 }
+                }
+                overflow="visible"
+                onClick={handleCreateManualEntry}
+              >
+                <Icon as={MdAdd} fontSize="20px" ml="5px" mt="-3px" />
+              </MotionBox>
+            ))}
+          </Flex>
           <IconButton
             zIndex="overlay"
             icon={<MdArticle />}

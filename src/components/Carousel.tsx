@@ -1,12 +1,13 @@
 import { HStack } from '@chakra-ui/react'
 import usePrevious from '@react-hook/previous'
-import { DragControls, useAnimation } from 'framer-motion'
+import { DragControls, MotionValue, useAnimation } from 'framer-motion'
 import React, { useEffect } from 'react'
 import MotionBox from './MotionBox'
 
 export default function Carousel({
   width,
   page,
+  dragMotionValue,
   dragControls,
   onPageChange,
   onDragToLastPage,
@@ -15,6 +16,7 @@ export default function Carousel({
 }: {
   width: number
   page: number
+  dragMotionValue: MotionValue
   dragControls: DragControls
   onPageChange: (page: number) => void
   onDragToLastPage: () => void
@@ -47,12 +49,13 @@ export default function Carousel({
       transition={{
         x: { type: 'spring', stiffness: 300, damping: 30 },
       }}
+      style={{ x: dragMotionValue }}
       drag="x"
       dragConstraints={{
         left: baseOffset + (canMoveRight ? -width : 0),
         right: baseOffset + (canMoveLeft ? width : 0),
       }}
-      dragElastic={lastPage && !canMoveRight ? 0.5 : 0.15}
+      dragElastic={lastPage && !canMoveRight ? 0.35 : 0.15}
       dragMomentum={false}
       dragDirectionLock
       dragControls={dragControls}
@@ -77,7 +80,7 @@ export default function Carousel({
         }
 
         let newPage = page
-        if (movingRight) {
+        if (movingRight && canMoveRight) {
           newPage++
         } else if (movingLeft && canMoveLeft) {
           newPage--
