@@ -1,8 +1,12 @@
-import { Box, Flex, FlexProps, Icon, useColorMode } from '@chakra-ui/react'
-import { MotionValue, useTransform } from 'framer-motion'
+import { Box, Flex, FlexProps, useColorMode, useToken } from '@chakra-ui/react'
+import { motion, MotionValue, useTransform } from 'framer-motion'
 import { range } from 'lodash'
-import { MdAdd } from 'react-icons/md'
+import { useMemo } from 'react'
 import MotionBox from './MotionBox'
+
+const SIZE = 15
+const HALF_SIZE = SIZE / 2
+const SPACING = 8
 
 function CirclePip({
   isFirst,
@@ -16,11 +20,11 @@ function CirclePip({
   const { colorMode } = useColorMode()
   return (
     <Box
-      w="14px"
-      h="14px"
-      ml={isFirst ? 0 : '8px'}
+      w={`${SIZE}px`}
+      h={`${SIZE}px`}
+      ml={isFirst ? 0 : `${SPACING}px`}
       borderRadius="full"
-      borderWidth={isSelected ? '7px' : '3px'}
+      borderWidth={isSelected ? `${HALF_SIZE}px` : '3px'}
       borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
       transitionProperty="border-width, background"
       transitionDuration="200ms"
@@ -51,30 +55,79 @@ function PlusPip({
   dragProgressMotionValue: MotionValue
   onClick: () => void
 }) {
+  const normalWidth = 2
+  const selectedWidth = 2.75
+  const inset = 1.5
+  const oversize = selectedWidth / 2
+
   const { colorMode } = useColorMode()
   const manualDraftPipWidth = useTransform(
     dragProgressMotionValue,
     [0, 1],
     [0, 14 + 8],
   )
+  const strokeWidth = useTransform(
+    dragProgressMotionValue,
+    [0.5, 1],
+    [normalWidth, selectedWidth],
+  )
+  const colorName = colorMode === 'dark' ? 'primary.200' : 'primary.600'
+  const color = useToken('colors', colorName)
+
+  const viewBox = [
+    -oversize,
+    -oversize,
+    SIZE + 2 * oversize,
+    SIZE + 2 * oversize,
+  ].join(' ')
+  const path = useMemo(
+    () =>
+      [
+        `M ${HALF_SIZE} ${inset}`,
+        `L ${HALF_SIZE} ${SIZE - inset}`,
+        `M ${inset} ${HALF_SIZE}`,
+        `L ${SIZE - inset} ${HALF_SIZE}`,
+      ].join(' '),
+    [],
+  )
+
   return (
     <MotionBox
-      h="14px"
-      color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
+      h={`${SIZE}px`}
       style={
         isLast
           ? {
               width: manualDraftPipWidth,
               opacity: dragProgressMotionValue,
             }
-          : { width: '22px', opacity: isSelected ? 1 : 0.5 }
+          : { width: `${SIZE + SPACING}px`, opacity: isSelected ? 1 : 0.5 }
       }
       initial={false}
       animate={isLast ? {} : { opacity: isSelected ? 1 : 0.5 }}
-      overflow="visible"
       onClick={onClick}
     >
-      <Icon as={MdAdd} fontSize="20px" ml="5px" mt="-3px" />
+      <svg
+        width={`${SIZE + 2 * oversize}px`}
+        height={`${SIZE + 2 * oversize}px`}
+        viewBox={viewBox}
+        style={{
+          marginLeft: `${SPACING - oversize}px`,
+          marginTop: `${-oversize}px`,
+        }}
+      >
+        <motion.path
+          d={path}
+          style={isLast ? { strokeWidth } : {}}
+          initial={false}
+          animate={
+            isLast
+              ? {}
+              : { strokeWidth: isSelected ? selectedWidth : normalWidth }
+          }
+          stroke={color}
+          strokeLinecap="round"
+        />
+      </svg>
     </MotionBox>
   )
 }
