@@ -1,57 +1,41 @@
 import { BoxProps, Spinner, VStack } from '@chakra-ui/react'
 import { debounce, merge } from 'lodash'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
-import { useDoc, usePouch } from 'use-pouchdb'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { ActivityDefinition } from '../Activities'
 import deepTemplate from '../utils/deepTemplate'
-import { getClientId } from '../utils/getClientId'
 import contentComponents from './contentComponents'
+import { useEntity } from './useActivityDB'
 
 export default function Activity({
   activity,
   seed,
   idx,
   ...props
-}: { activity: ActivityDefinition; seed: string; idx: number } & BoxProps) {
-  // TODO: entity field mapping? or drop idea in favor of components controlling?
-  const entityId = `${seed}-${idx}:${activity.entity.type}`
-  const db = usePouch()
-  const { doc: entityDoc } = useDoc(entityId, undefined, {
+}: {
+  activity: ActivityDefinition
+  seed: string
+  idx: number | string
+} & BoxProps) {
+  const { entityDoc, saveEntity } = useEntity({
+    seed,
+    idx,
     type: activity.entity.type,
+    activity: activity.id,
   })
   const fieldsRef = useRef<{ [key: string]: any }>({})
   const fields = fieldsRef.current
   const [contextState, setContextState] = useState(() => ({}))
-  const entityDocExists = entityDoc?._rev !== ''
-
-  const save = useCallback(
-    async function (updates: { [key: string]: any }) {
-      let currentRev
-      if (entityDocExists) {
-        currentRev = await db.get(entityId)
-      } else {
-        currentRev = {
-          created: Date.now(),
-          client: getClientId(),
-          type: activity.entity.type,
-          activity: activity.id,
-        }
-      }
-      await db.put({ ...currentRev, ...updates, _id: entityId })
-    },
-    [activity.entity.type, activity.id, db, entityDocExists, entityId],
-  )
 
   const queueUpdate = useMemo(
     () =>
       debounce(
         () => {
-          save(fieldsRef.current)
+          saveEntity(fieldsRef.current)
         },
         500,
         { leading: true },
       ),
-    [save],
+    [saveEntity],
   )
 
   const saveAttachment = useCallback(
@@ -72,9 +56,9 @@ export default function Activity({
         }
       }
       fieldsRef.current = merge(fieldsRef.current, data)
-      await save(fieldsRef.current)
+      await saveEntity(fieldsRef.current)
     },
-    [save],
+    [saveEntity],
   )
 
   const set = useCallback(

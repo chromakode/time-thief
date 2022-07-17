@@ -1,5 +1,5 @@
 import dayjs, { ManipulateType } from 'dayjs'
-import { isPlainObject, isArray, map, mapValues } from 'lodash'
+import { isArray, isPlainObject, map, mapValues } from 'lodash'
 import seedrandom from 'seedrandom'
 import weightedChoice from './utils/weightedChoice'
 
@@ -71,9 +71,11 @@ class Activities {
       this.data.config,
       lastActivityTimes,
     )
+
+    const manualActivity = traversal.run([this.data.manualActivity], 1)[0]
     const activities = traversal.run(this.data.activities)
 
-    return { activities, seed, now, endTime, timeOfDay }
+    return { activities, manualActivity, seed, now, endTime, timeOfDay }
   }
 }
 
@@ -101,8 +103,8 @@ class Traversal {
     this.lastActivityTimes = lastActivityTimes
   }
 
-  run(activities: [ActivityDefinition]): ActivityData[] {
-    const selected = this._choice(activities, 3)
+  run(activities: [ActivityDefinition], count = 3): ActivityData[] {
+    const selected = this._choice(activities, count)
     return map(selected, (act) => this._flattenChoices(act))
   }
 

@@ -25,11 +25,16 @@ import Carousel from './components/Carousel'
 import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
+import {
+  parseIdxFromEntityId,
+  useManualEntities,
+} from './components/useActivityDB'
 import useLocationURL from './utils/useLocationURL'
 import useLongPress from './utils/useLongPress'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
+  manualActivity: ActivityDefinition
   seed: string
   now: number
   endTime: number
@@ -71,6 +76,7 @@ function useActivities(): [ActivityState, number | null] {
   const [activities] = useState(() => new Activities(activityData))
   const [activityState, setActivityState] = useState<ActivityState>(() => ({
     activities: [],
+    manualActivity: null,
     seed: '',
     now,
     endTime: 0,
@@ -208,13 +214,18 @@ function useRouter({ maxPages }: { maxPages: number }) {
 
 function App() {
   const { colorMode } = useColorMode()
-  const [{ activities, seed }, remainingSeconds] = useActivities()
+  const [{ activities, manualActivity, seed }, remainingSeconds] =
+    useActivities()
+  const { manualEntityIds, createManualEntity } = useManualEntities({
+    seed,
+    manualActivity,
+  })
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0] = useSize(ref)
   const dragControls = useDragControls()
   const { isShowingIntro, showIntro } = useShowingIntro()
   const { page, setPage, isShowingLog, setShowingLog } = useRouter({
-    maxPages: activities.length,
+    maxPages: activities.length + manualEntityIds.length,
   })
 
   function blur() {
@@ -237,6 +248,11 @@ function App() {
   function handlePageChange(page: number) {
     setPage(page)
     blur()
+  }
+
+  function handleCreateManualEntry() {
+    createManualEntity()
+    setPage(page + 1)
   }
 
   // FIXME: ignore multiple touch drags
@@ -276,8 +292,20 @@ function App() {
                 <Carousel
                   width={width}
                   page={page}
-                  onPageChange={handlePageChange}
                   dragControls={dragControls}
+                  onPageChange={handlePageChange}
+                  onDragToLastPage={handleCreateManualEntry}
+                  lastPage={
+                    manualActivity && (
+                      <Activity
+                        w={width}
+                        key="add-entry"
+                        activity={manualActivity}
+                        seed={seed}
+                        idx={activities.length}
+                      />
+                    )
+                  }
                 >
                   {activities.map((activity, idx) => (
                     <Activity
@@ -286,6 +314,15 @@ function App() {
                       activity={activity}
                       seed={seed}
                       idx={idx}
+                    />
+                  ))}
+                  {manualEntityIds.map((id) => (
+                    <Activity
+                      w={width}
+                      key={id}
+                      activity={manualActivity}
+                      seed={seed}
+                      idx={parseIdxFromEntityId(id)}
                     />
                   ))}
                 </Carousel>

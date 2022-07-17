@@ -7,14 +7,18 @@ import MotionBox from './MotionBox'
 export default function Carousel({
   width,
   page,
-  onPageChange,
   dragControls,
+  onPageChange,
+  onDragToLastPage,
+  lastPage,
   children,
 }: {
   width: number
   page: number
-  onPageChange: (page: number) => void
   dragControls: DragControls
+  onPageChange: (page: number) => void
+  onDragToLastPage: () => void
+  lastPage?: React.ReactNode
   children: React.ReactNode
 }) {
   const slidePage = useAnimation()
@@ -48,7 +52,7 @@ export default function Carousel({
         left: baseOffset + (canMoveRight ? -width : 0),
         right: baseOffset + (canMoveLeft ? width : 0),
       }}
-      dragElastic={0.15}
+      dragElastic={lastPage && !canMoveRight ? 0.5 : 0.15}
       dragMomentum={false}
       dragDirectionLock
       dragControls={dragControls}
@@ -67,8 +71,13 @@ export default function Carousel({
           swipe > velocityThreshold ||
           (point.x !== 0 && offset.x > posThreshold)
 
+        if (movingRight && !canMoveRight && lastPage) {
+          onDragToLastPage()
+          return
+        }
+
         let newPage = page
-        if (movingRight && canMoveRight) {
+        if (movingRight) {
           newPage++
         } else if (movingLeft && canMoveLeft) {
           newPage--
@@ -79,6 +88,7 @@ export default function Carousel({
     >
       <HStack h="full" spacing={0}>
         {children}
+        {lastPage}
       </HStack>
     </MotionBox>
   )

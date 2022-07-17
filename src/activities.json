@@ -9,6 +9,61 @@
       "21": "night"
     }
   },
+  "manualActivity": {
+    "id": "manual",
+    "content": [
+      {
+        "type": "branch",
+        "field": "manualKind",
+        "branches": {
+          "default": [
+            {
+              "type": "title",
+              "text": "What else is on your mind?"
+            },
+            {
+              "type": "input/select-option",
+              "field": "manualKind",
+              "options": [
+                {
+                  "value": "text",
+                  "label": "📝"
+                },
+                {
+                  "value": "photo",
+                  "label": "📸"
+                }
+              ]
+            }
+          ],
+          "text": [
+            {
+              "type": "title",
+              "text": "Just write."
+            },
+            {
+              "type": "input/multi-line",
+              "field": "content"
+            }
+          ],
+          "photo": [
+            {
+              "type": "title",
+              "text": "Take a photo."
+            },
+            {
+              "type": "input/photo",
+              "field": "photo",
+              "capture": "environment"
+            }
+          ]
+        }
+      }
+    ],
+    "entity": {
+      "type": "journal"
+    }
+  },
   "activities": [
     {
       "id": "selfie",
