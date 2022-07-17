@@ -1,9 +1,6 @@
 import {
-  Box,
   BoxProps,
   Flex,
-  HStack,
-  Icon,
   IconButton,
   SimpleGrid,
   Text,
@@ -19,9 +16,9 @@ import {
   useMotionValue,
   useTransform,
 } from 'framer-motion'
-import { range, reduce } from 'lodash'
+import { reduce } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MdAdd, MdArticle } from 'react-icons/md'
+import { MdArticle } from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from './Activities'
 import activityData from './activities.json'
