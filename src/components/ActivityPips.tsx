@@ -4,7 +4,7 @@ import { range } from 'lodash'
 import { useMemo } from 'react'
 import MotionBox from './MotionBox'
 
-const SIZE = 15
+const SIZE = 14
 const HALF_SIZE = SIZE / 2
 const SPACING = 8
 
