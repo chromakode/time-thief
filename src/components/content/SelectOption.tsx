@@ -1,9 +1,25 @@
-import { Button, StackDivider, VStack } from '@chakra-ui/react'
+import { Button, Icon, StackDivider, VStack } from '@chakra-ui/react'
 import React, { Ref, useCallback } from 'react'
+import { IconType } from 'react-icons'
+import {
+  MdEditNote,
+  MdError,
+  MdPhotoCamera,
+  MdThumbDown,
+  MdThumbUp,
+} from 'react-icons/md'
 import {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
+
+const icons: Record<string, IconType> = {
+  MdEditNote,
+  MdPhotoCamera,
+  MdThumbUp,
+  MdThumbDown,
+  MdError,
+}
 
 export default function SelectOption(
   { entityDoc, field, spec, set }: ContentComponentProps,
@@ -42,17 +58,20 @@ export default function SelectOption(
           key={option.value}
           onClick={handleButtonClick}
           value={option.value}
-          fontSize="7xl"
-          boxSize="32"
+          boxSize="28"
           mx="4"
           _light={{
-            bgColor: 'primary.100',
+            color: 'primary.50',
           }}
           _dark={{
-            bgColor: 'primary.700',
+            color: 'primary.800',
           }}
         >
-          {option.label}
+          {option.icon ? (
+            <Icon as={icons[option.icon] ?? MdError} boxSize="16" />
+          ) : (
+            option.label
+          )}
         </Button>
       ))}
     </VStack>
