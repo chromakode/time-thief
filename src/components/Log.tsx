@@ -165,6 +165,7 @@ function LogDay({
 }
 
 export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
+  const scrollerRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const { isIntersecting: isEndIntersecting } = useIntersectionObserver(
     endRef,
@@ -224,9 +225,39 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
     }
   }, [loading, isEndIntersecting, loadMore, count, rows.length])
 
+  // Prevent scroll when swiping down so drag gesture handler can take effect
+  useEffect(() => {
+    const scroller = scrollerRef.current
+    let touchStartY = 0
+
+    function handleTouchStart(ev: TouchEvent) {
+      touchStartY = ev.touches[0].clientY
+    }
+
+    function handleTouchMove(ev: TouchEvent) {
+      const delta = ev.touches[0].clientY - touchStartY
+      if (ev.cancelable && scroller?.scrollTop === 0 && delta > 1) {
+        ev.preventDefault()
+      }
+    }
+
+    scroller?.addEventListener('touchstart', handleTouchStart)
+    scroller?.addEventListener('touchmove', handleTouchMove)
+    return () => {
+      scroller?.removeEventListener('touchstart', handleTouchStart)
+      scroller?.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [])
+
   // TODO: use content component system to render log
   return (
-    <Box className="scroller" position="relative" h="full" overflowY="scroll">
+    <Box
+      ref={scrollerRef}
+      className="scroller"
+      position="relative"
+      h="full"
+      overflowY="scroll"
+    >
       <IconButton
         position="absolute"
         top="4"

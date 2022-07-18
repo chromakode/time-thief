@@ -12,6 +12,7 @@ import useSize from '@react-hook/size'
 import 'focus-visible/dist/focus-visible'
 import {
   AnimatePresence,
+  useAnimation,
   useDragControls,
   useMotionValue,
   useTransform,
@@ -202,15 +203,16 @@ function useRouter({ maxPages }: { maxPages: number }) {
   const isShowingLog = url.pathname.substring(1) === 'log'
   const setShowingLog = useCallback(
     (newShowingLog: boolean) => {
+      const url = new URL(window.location.href)
       if (newShowingLog) {
-        const url = new URL(window.location.href)
         url.pathname = 'log'
         pushURL(url.toString())
       } else {
-        window.history.back()
+        url.pathname = ''
+        replaceURL(url.toString())
       }
     },
-    [pushURL],
+    [pushURL, replaceURL],
   )
 
   return { page, setPage, isShowingLog, setShowingLog }
@@ -231,7 +233,7 @@ function App() {
     manualActivity,
   })
   const ref = useRef<HTMLDivElement>(null)
-  const [width = 0] = useSize(ref)
+  const [width = 0, height = 0] = useSize(ref)
   const { isShowingIntro, showIntro } = useShowingIntro()
 
   const pageCount = activities.length + manualEntityIds.length
@@ -248,6 +250,10 @@ function App() {
     dragDraftRange,
     [0, 1],
   )
+
+  const dragLogControls = useDragControls()
+  const slideLog = useAnimation()
+  const [isDraggingLog, setDraggingLog] = useState(false)
 
   function blur() {
     if (document.activeElement instanceof HTMLElement) {
@@ -266,6 +272,10 @@ function App() {
     dragControls.start(event)
   }
 
+  function handleStartLogDrag(event: React.TouchEvent) {
+    dragLogControls.start(event)
+  }
+
   function handlePageChange(page: number) {
     setPage(page)
     blur()
@@ -278,6 +288,10 @@ function App() {
     createManualDraft()
     setPage(page + 1)
   }
+
+  useEffect(() => {
+    slideLog.start(isShowingLog ? 'open' : 'closed')
+  }, [isShowingLog, slideLog])
 
   const ready = width !== 0 && seed && manualEntitiesLoaded
 
@@ -317,9 +331,13 @@ function App() {
         spacing="4"
         overflow="hidden"
         opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
-        onTouchStart={handleStartDrag}
       >
-        <Flex flex="1" w="full" position="relative">
+        <Flex
+          flex="1"
+          w="full"
+          position="relative"
+          onTouchStart={handleStartDrag}
+        >
           {ready && (
             <AnimatePresence initial={false} exitBeforeEnter>
               <MotionBox
@@ -374,6 +392,7 @@ function App() {
           px="8"
           alignItems="center"
           justifyContent="space-around"
+          onTouchStart={handleStartLogDrag}
           sx={{ touchAction: 'none' }}
         >
           {remainingSeconds == null ? (
@@ -398,7 +417,7 @@ function App() {
             icon={<MdArticle />}
             aria-label="View log"
             justifySelf="end"
-            variant={isShowingLog ? 'solid' : 'ghost'}
+            variant={isShowingLog || isDraggingLog ? 'solid' : 'ghost'}
             fontSize="3xl"
             onClick={() => {
               setShowingLog(!isShowingLog)
@@ -412,19 +431,43 @@ function App() {
       </VStack>
       <MotionBox
         position="absolute"
-        left="0"
         top="0"
+        left="0"
         w="full"
         h="full"
         bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
-        boxShadow={isShowingLog ? 'dark-lg' : 'none'}
-        animate={{ y: isShowingLog ? 0 : '101vh' }}
+        boxShadow="dark-lg"
+        drag="y"
+        dragDirectionLock
+        dragConstraints={{ top: 0, bottom: height + 10 }}
+        dragControls={dragLogControls}
         transition={{
-          type: 'spring',
-          duration: 0.35,
-          bounce: 0,
+          y: { type: 'spring', duration: 0.5, bounce: 0 },
         }}
+        variants={{ open: { y: 0 }, closed: { y: height + 10 } }}
+        animate={slideLog}
         initial={false}
+        onDirectionLock={(axis) => {
+          if (axis === 'y') {
+            setDraggingLog(true)
+          }
+        }}
+        onDragEnd={(ev, { offset, velocity }) => {
+          const velocityThreshold = 5000
+          const threshold = 30
+          const swipe = Math.abs(offset.y) * velocity.y
+
+          let showingLog = isShowingLog
+          if (swipe < -velocityThreshold || offset.y < -threshold) {
+            showingLog = true
+          } else if (swipe > velocityThreshold || offset.y > 0) {
+            showingLog = false
+          }
+
+          slideLog.start(showingLog ? 'open' : 'closed')
+          setShowingLog(showingLog)
+          setDraggingLog(false)
+        }}
       >
         <Log onShowAbout={showIntro} />
       </MotionBox>
