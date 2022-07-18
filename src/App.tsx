@@ -429,48 +429,50 @@ function App() {
           />
         </SimpleGrid>
       </VStack>
-      <MotionBox
-        position="absolute"
-        top="0"
-        left="0"
-        w="full"
-        h="full"
-        bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
-        boxShadow="dark-lg"
-        drag="y"
-        dragDirectionLock
-        dragConstraints={{ top: 0, bottom: height + 10 }}
-        dragControls={dragLogControls}
-        transition={{
-          y: { type: 'spring', duration: 0.5, bounce: 0 },
-        }}
-        variants={{ open: { y: 0 }, closed: { y: height + 10 } }}
-        animate={slideLog}
-        initial={false}
-        onDirectionLock={(axis) => {
-          if (axis === 'y') {
-            setDraggingLog(true)
-          }
-        }}
-        onDragEnd={(ev, { offset, velocity }) => {
-          const velocityThreshold = 5000
-          const threshold = 30
-          const swipe = Math.abs(offset.y) * velocity.y
+      {ready && (
+        <MotionBox
+          position="absolute"
+          top="0"
+          left="0"
+          w="full"
+          h="full"
+          bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
+          boxShadow="dark-lg"
+          drag="y"
+          dragDirectionLock
+          dragConstraints={{ top: 0, bottom: height + 10 }}
+          dragControls={dragLogControls}
+          transition={{
+            y: { type: 'spring', duration: 0.5, bounce: 0 },
+          }}
+          variants={{ open: { y: 0 }, closed: { y: height + 10 } }}
+          animate={slideLog}
+          initial={isShowingLog ? 'open' : 'closed'}
+          onDirectionLock={(axis) => {
+            if (axis === 'y') {
+              setDraggingLog(true)
+            }
+          }}
+          onDragEnd={(ev, { offset, velocity }) => {
+            const velocityThreshold = 5000
+            const threshold = 30
+            const swipe = Math.abs(offset.y) * velocity.y
 
-          let showingLog = isShowingLog
-          if (swipe < -velocityThreshold || offset.y < -threshold) {
-            showingLog = true
-          } else if (swipe > velocityThreshold || offset.y > 0) {
-            showingLog = false
-          }
+            let showingLog = isShowingLog
+            if (swipe < -velocityThreshold || offset.y < -threshold) {
+              showingLog = true
+            } else if (swipe > velocityThreshold || offset.y > 0) {
+              showingLog = false
+            }
 
-          slideLog.start(showingLog ? 'open' : 'closed')
-          setShowingLog(showingLog)
-          setDraggingLog(false)
-        }}
-      >
-        <Log onShowAbout={showIntro} />
-      </MotionBox>
+            slideLog.start(showingLog ? 'open' : 'closed')
+            setShowingLog(showingLog)
+            setDraggingLog(false)
+          }}
+        >
+          <Log onShowAbout={showIntro} />
+        </MotionBox>
+      )}
     </>
   )
 }
