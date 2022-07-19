@@ -56,7 +56,8 @@
             {
               "type": "input/photo",
               "field": "photo",
-              "capture": "environment"
+              "capture": "environment",
+              "autostart": true
             }
           ]
         }

@@ -1,6 +1,6 @@
 import { Flex, IconButton, InputGroup, VStack } from '@chakra-ui/react'
 import useChange from '@react-hook/change'
-import { Ref, useRef, useState } from 'react'
+import { Ref, useEffect, useRef, useState } from 'react'
 import { MdCamera } from 'react-icons/md'
 import AttachmentImage from '../AttachmentImage'
 import {
@@ -9,7 +9,13 @@ import {
 } from '../contentComponents'
 
 export default function PhotoInput(
-  { entityDoc, field, capture, saveAttachment }: ContentComponentProps,
+  {
+    entityDoc,
+    field,
+    capture,
+    autostart,
+    saveAttachment,
+  }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -36,6 +42,12 @@ export default function PhotoInput(
       URL.revokeObjectURL(prev)
     }
   })
+
+  useEffect(() => {
+    if (autostart) {
+      handleClick()
+    }
+  }, [autostart])
 
   return (
     <VStack px="4" flex="1" spacing="4" w="full">
