@@ -18,8 +18,8 @@
       "sizes": "512x512"
     }
   ],
-  "scope": "app",
-  "start_url": ".",
+  "scope": "/app",
+  "start_url": "/app",
   "display": "standalone",
   "theme_color": "#892953",
   "background_color": "#ffe8ef"
