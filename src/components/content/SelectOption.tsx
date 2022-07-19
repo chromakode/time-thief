@@ -1,4 +1,4 @@
-import { Button, Icon, StackDivider, VStack } from '@chakra-ui/react'
+import { Icon, IconButton, StackDivider, VStack } from '@chakra-ui/react'
 import React, { Ref, useCallback } from 'react'
 import { IconType } from 'react-icons'
 import {
@@ -27,10 +27,10 @@ export default function SelectOption(
 ) {
   const handleButtonClick = useCallback(
     (ev: React.MouseEvent) => {
-      if (!(ev.target instanceof HTMLButtonElement)) {
+      if (!(ev.currentTarget instanceof HTMLButtonElement)) {
         return
       }
-      set({ [field]: ev.target.value })
+      set({ [field]: ev.currentTarget.value })
     },
     [field, set],
   )
@@ -54,8 +54,10 @@ export default function SelectOption(
       }
     >
       {spec.options.map((option: any) => (
-        <Button
+        <IconButton
           key={option.value}
+          icon={<Icon as={icons[option.icon] ?? MdError} boxSize="16" />}
+          aria-label={option.label}
           onClick={handleButtonClick}
           value={option.value}
           boxSize="28"
@@ -66,13 +68,7 @@ export default function SelectOption(
           _dark={{
             color: 'primary.800',
           }}
-        >
-          {option.icon ? (
-            <Icon as={icons[option.icon] ?? MdError} boxSize="16" />
-          ) : (
-            option.label
-          )}
-        </Button>
+        />
       ))}
     </VStack>
   )

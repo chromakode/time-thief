@@ -27,11 +27,13 @@
               "options": [
                 {
                   "value": "text",
-                  "icon": "MdEditNote"
+                  "icon": "MdEditNote",
+                  "label": "Write text"
                 },
                 {
                   "value": "photo",
-                  "icon": "MdPhotoCamera"
+                  "icon": "MdPhotoCamera",
+                  "label": "Take a photo"
                 }
               ]
             }
@@ -166,11 +168,13 @@
                 "options": [
                   {
                     "value": "positive",
-                    "icon": "MdThumbUp"
+                    "icon": "MdThumbUp",
+                    "label": "Positive"
                   },
                   {
                     "value": "negative",
-                    "icon": "MdThumbDown"
+                    "icon": "MdThumbDown",
+                    "label": "Negative"
                   }
                 ]
               }
