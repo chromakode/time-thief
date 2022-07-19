@@ -6,14 +6,14 @@ import PouchDB from 'pouchdb'
 import PouchFind from 'pouchdb-find'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { Provider as PouchProvider } from 'use-pouchdb'
-import App from './App'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import theme from './theme'
 import './utils/devUtils'
 import 'image-capture'
+import AppRoutes from './AppRoutes'
+import { BrowserRouter } from 'react-router-dom'
 
 PouchDB.plugin(PouchFind)
 dayjs.extend(calendar)
@@ -29,11 +29,11 @@ if (syncEndpoint) {
 const root = createRoot(document.getElementById('root')!)
 root.render(
   <React.StrictMode>
-    <PouchProvider pouchdb={_db}>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
-    </PouchProvider>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ChakraProvider>
   </React.StrictMode>,
 )
 

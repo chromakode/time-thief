@@ -34,8 +34,10 @@ import {
   parseIdxFromEntityId,
   useManualEntities,
 } from './components/useActivityDB'
-import useLocationURL from './utils/useLocationURL'
 import useLongPress from './utils/useLongPress'
+import { Provider as PouchProvider } from 'use-pouchdb'
+import { _db } from '.'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -180,10 +182,11 @@ function RemainingTime({
   )
 }
 
-function useRouter({ maxPages }: { maxPages: number }) {
-  const { url, pushURL, replaceURL } = useLocationURL()
+function useRouteState({ maxPages }: { maxPages: number }) {
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const locationHashPage = parseInt(url.hash.substring(1))
+  const locationHashPage = parseInt(location.hash.substring(1))
   const page =
     Number.isInteger(locationHashPage) &&
     locationHashPage > 0 &&
@@ -193,32 +196,26 @@ function useRouter({ maxPages }: { maxPages: number }) {
 
   const setPage = useCallback(
     (nextPage: number) => {
-      const url = new URL(window.location.href)
-      url.hash = nextPage.toString()
-      replaceURL(url.toString())
+      navigate(`#${nextPage}`)
     },
-    [replaceURL],
+    [navigate],
   )
 
-  const isShowingLog = url.pathname.substring(1) === 'log'
   const setShowingLog = useCallback(
     (newShowingLog: boolean) => {
-      const url = new URL(window.location.href)
       if (newShowingLog) {
-        url.pathname = 'log'
-        pushURL(url.toString())
+        navigate(`/app/log#${page}`, { replace: true })
       } else {
-        url.pathname = ''
-        replaceURL(url.toString())
+        navigate(`/app#${page}`, { replace: true })
       }
     },
-    [pushURL, replaceURL],
+    [navigate, page],
   )
 
-  return { page, setPage, isShowingLog, setShowingLog }
+  return { page, setPage, setShowingLog }
 }
 
-function App() {
+function App({ isShowingLog }: { isShowingLog: boolean }) {
   const { colorMode } = useColorMode()
   const [{ activities, manualActivity, seed }, remainingSeconds] =
     useActivities()
@@ -238,7 +235,7 @@ function App() {
 
   const pageCount = activities.length + manualEntityIds.length
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
-  const { page, setPage, isShowingLog, setShowingLog } = useRouter({
+  const { page, setPage, setShowingLog } = useRouteState({
     maxPages: pageCount,
   })
 
@@ -477,4 +474,12 @@ function App() {
   )
 }
 
-export default App
+function AppWrapper({ isShowingLog }: { isShowingLog?: boolean }) {
+  return (
+    <PouchProvider pouchdb={_db}>
+      <App isShowingLog={isShowingLog === true} />
+    </PouchProvider>
+  )
+}
+
+export default AppWrapper
