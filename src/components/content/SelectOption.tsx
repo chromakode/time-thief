@@ -42,16 +42,7 @@ export default function SelectOption(
       alignItems="center"
       justifyContent="center"
       spacing="8"
-      divider={
-        <StackDivider
-          _light={{
-            borderColor: 'primary.200',
-          }}
-          _dark={{
-            borderColor: 'primary.600',
-          }}
-        />
-      }
+      divider={<StackDivider />}
     >
       {spec.options.map((option: any) => (
         <IconButton
@@ -62,12 +53,6 @@ export default function SelectOption(
           value={option.value}
           boxSize="28"
           mx="4"
-          _light={{
-            color: 'primary.50',
-          }}
-          _dark={{
-            color: 'primary.800',
-          }}
         />
       ))}
     </VStack>

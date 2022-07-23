@@ -28,13 +28,13 @@ const useStore = create<{
   hide: () => set(() => ({ localShowing: false })),
 }))
 
-export function useShowingIntro() {
+export function useShowingIntro({ isDemo = false }: { isDemo?: boolean } = {}) {
   const store = useStore()
   const db = usePouch()
   const { doc: config, loading } = useDoc('$config', {}, { introSeen: false })
 
   const isShowingIntro =
-    store.localShowing || (!loading && config?.introSeen === false)
+    !isDemo && (store.localShowing || (!loading && config?.introSeen === false))
 
   const closeIntro = useCallback(() => {
     db.put({ ...config, introSeen: true })

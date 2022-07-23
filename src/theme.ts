@@ -6,6 +6,9 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
     useSystemColorMode: true,
   },
   colors: {
+    beige: '#f8efef',
+    lightBeige: '#fefcfc',
+    inverse: '#007140',
     primary: {
       25: '#fff5f8',
       50: '#ffe8ef',
@@ -37,12 +40,9 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
       'html, body, #root': {
         // Black to prevent flashes of white when viewport resizes (e.g. fullscreen camera).
         background: 'black',
-        color: colorMode === 'dark' ? 'primary.100' : 'primary.600',
         height: '100%',
+        width: '100%',
         overflow: 'hidden',
-      },
-      '#root': {
-        background: colorMode === 'dark' ? 'primary.800' : 'primary.50',
       },
     }),
   },
@@ -62,8 +62,30 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: 'primary' }), {
       fontVariationSettings: '"GRAD" 150, "YOPQ" 40',
       textTransform: 'capitalize',
     },
+    slant: {
+      fontWeight: 500,
+      fontVariationSettings: '"GRAD" 150, "slnt" -8',
+    },
+    hero: {
+      letterSpacing: '-.05rem',
+      fontWeight: 600,
+      fontVariationSettings: '"GRAD" 75, "opsz" 28',
+    },
   },
   components: {
+    Button: {
+      variants: {
+        solid: ({ colorMode }: StyleFunctionProps) => ({
+            bgColor: colorMode === 'dark' ? 'primary.200' : 'primary.600',
+          color: colorMode === 'dark' ? 'primary.800' : 'primary.50',
+        }),
+      },
+    },
+    StackDivider: {
+      baseStyle: ({ colorMode }: StyleFunctionProps) => ({
+        color: colorMode === 'dark' ? 'primary.600' : 'primary.200',
+      }),
+    },
     Textarea: {
       variants: {
         filled: ({ colorMode }: StyleFunctionProps) => ({

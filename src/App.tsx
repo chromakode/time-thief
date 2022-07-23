@@ -2,6 +2,7 @@ import {
   BoxProps,
   Flex,
   IconButton,
+  LightMode,
   SimpleGrid,
   Text,
   useColorMode,
@@ -37,7 +38,7 @@ import {
 import useLongPress from './utils/useLongPress'
 import { Provider as PouchProvider } from 'use-pouchdb'
 import { _db } from '.'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -186,6 +187,7 @@ function useRouteState({ maxPages }: { maxPages: number }) {
   const location = useLocation()
   const navigate = useNavigate()
 
+  const { search } = location
   const locationHashPage = parseInt(location.hash.substring(1))
   const page =
     Number.isInteger(locationHashPage) &&
@@ -196,26 +198,32 @@ function useRouteState({ maxPages }: { maxPages: number }) {
 
   const setPage = useCallback(
     (nextPage: number) => {
-      navigate(`#${nextPage}`)
+      navigate(`${search}#${nextPage}`)
     },
-    [navigate],
+    [navigate, search],
   )
 
   const setShowingLog = useCallback(
     (newShowingLog: boolean) => {
       if (newShowingLog) {
-        navigate(`/app/log#${page}`, { replace: true })
+        navigate(`/app/log${search}#${page}`, { replace: true })
       } else {
-        navigate(`/app#${page}`, { replace: true })
+        navigate(`/app${search}#${page}`, { replace: true })
       }
     },
-    [navigate, page],
+    [navigate, page, search],
   )
 
   return { page, setPage, setShowingLog }
 }
 
-function App({ isShowingLog }: { isShowingLog: boolean }) {
+function App({
+  isDemo,
+  isShowingLog,
+}: {
+  isDemo: boolean
+  isShowingLog: boolean
+}) {
   const { colorMode } = useColorMode()
   const [{ activities, manualActivity, seed }, remainingSeconds] =
     useActivities()
@@ -231,7 +239,7 @@ function App({ isShowingLog }: { isShowingLog: boolean }) {
   })
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0, height = 0] = useSize(ref)
-  const { isShowingIntro, showIntro } = useShowingIntro()
+  const { isShowingIntro, showIntro } = useShowingIntro({ isDemo })
 
   const pageCount = activities.length + manualEntityIds.length
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
@@ -325,6 +333,8 @@ function App({ isShowingLog }: { isShowingLog: boolean }) {
         ref={ref}
         w="100vw"
         h="full"
+        background={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
+        color={colorMode === 'dark' ? 'primary.100' : 'primary.600'}
         spacing="4"
         overflow="hidden"
         opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
@@ -475,11 +485,15 @@ function App({ isShowingLog }: { isShowingLog: boolean }) {
 }
 
 function AppWrapper({ isShowingLog }: { isShowingLog?: boolean }) {
-  return (
-    <PouchProvider pouchdb={_db}>
-      <App isShowingLog={isShowingLog === true} />
-    </PouchProvider>
-  )
+  const [searchParams] = useSearchParams()
+  const isDemo = searchParams.has('demo')
+
+  let content = <App isDemo={isDemo} isShowingLog={isShowingLog === true} />
+  if (isDemo) {
+    content = <LightMode>{content}</LightMode>
+  }
+
+  return <PouchProvider pouchdb={_db}>{content}</PouchProvider>
 }
 
 export default AppWrapper
