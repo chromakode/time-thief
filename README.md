@@ -1,4 +1,4 @@
-<p align="center"><img width="150px" src="src/logo.svg"></p>
+<p align="center"><img width="150px" src="src/logoWithBorder.svg"></p>
 
 # [TIME THIEF](https://tmthf.me)
 
