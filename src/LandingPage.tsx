@@ -47,6 +47,10 @@ function ExternalLink({
   )
 }
 
+function SectionDivider() {
+  return <Divider borderColor="primary.100" borderWidth="1px" w="auto" mx="4" />
+}
+
 const commonMargin = { base: '8', xl: '20' }
 const commonTopSpace = { base: '14', xl: '20' }
 
@@ -207,7 +211,7 @@ export default function LandingPage() {
           </Text>
           <Text>It's time to take that time back.</Text>
         </VStack>
-        <Divider borderColor="primary.100" borderWidth="1px" />
+        <SectionDivider />
         <VStack
           mx={commonMargin}
           py={commonTopSpace}
@@ -287,7 +291,7 @@ export default function LandingPage() {
             ))}
           </Stack>
         </VStack>
-        <Divider borderColor="primary.100" borderWidth="1px" />
+        <SectionDivider />
         <VStack
           mx={commonMargin}
           py={commonTopSpace}
