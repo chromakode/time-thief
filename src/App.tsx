@@ -1,5 +1,6 @@
 import {
   BoxProps,
+  ChakraProvider,
   Flex,
   IconButton,
   LightMode,
@@ -39,6 +40,7 @@ import useLongPress from './utils/useLongPress'
 import { Provider as PouchProvider } from 'use-pouchdb'
 import { _db } from '.'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { appTheme } from './theme'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -493,7 +495,11 @@ function AppWrapper({ isShowingLog }: { isShowingLog?: boolean }) {
     content = <LightMode>{content}</LightMode>
   }
 
-  return <PouchProvider pouchdb={_db}>{content}</PouchProvider>
+  return (
+    <PouchProvider pouchdb={_db}>
+      <ChakraProvider theme={appTheme}>{content}</ChakraProvider>
+    </PouchProvider>
+  )
 }
 
 export default AppWrapper

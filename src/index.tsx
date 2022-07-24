@@ -1,4 +1,3 @@
-import { ChakraProvider } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import calendar from 'dayjs/plugin/calendar'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -9,7 +8,6 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import theme from './theme'
 import './utils/devUtils'
 import 'image-capture'
 import AppRoutes from './AppRoutes'
@@ -29,11 +27,9 @@ if (syncEndpoint) {
 const root = createRoot(document.getElementById('root')!)
 root.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </ChakraProvider>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   </React.StrictMode>,
 )
 
