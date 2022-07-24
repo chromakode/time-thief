@@ -229,7 +229,7 @@ function useRouteState({
         }
       }
     },
-    [navigate, navigationType, page, search],
+    [isShowingLog, navigate, navigationType, page, search],
   )
 
   return { page, setPage, setShowingLog }
