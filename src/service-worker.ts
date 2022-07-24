@@ -36,7 +36,7 @@ registerRoute(
       return false
     }
 
-    // Don't cache front page
+    // Don't cache landing page
     if (url.pathname === '/') {
       return false
     }
