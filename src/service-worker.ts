@@ -36,13 +36,13 @@ registerRoute(
       return false
     }
 
-    // Don't cache landing page
-    if (url.pathname === '/') {
+    // If this is a URL that starts with /_, skip.
+    if (url.pathname.startsWith('/_')) {
       return false
     }
 
-    // If this is a URL that starts with /_, skip.
-    if (url.pathname.startsWith('/_')) {
+    // Only cache app pages
+    if (!url.pathname.startsWith('/app')) {
       return false
     }
 

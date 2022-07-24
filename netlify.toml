@@ -2,11 +2,13 @@
   from = "/discord"
   to = "https://discord.gg/4W5Ddkk6CU"
   status = 301
+  force = true
 
 [[redirects]]
   from = "/github"
   to = "https://github.com/chromakode/time-thief"
   status = 301
+  force = true
 
 [[redirects]]
   from = "/app/*"
