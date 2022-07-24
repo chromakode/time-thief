@@ -11,6 +11,7 @@ import {
   MenuList,
   Spacer,
   Text,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react'
 import useIntersectionObserver from '@react-hook/intersection-observer'
@@ -165,6 +166,7 @@ function LogDay({
 }
 
 export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
+  const { colorMode } = useColorMode()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const { isIntersecting: isEndIntersecting } = useIntersectionObserver(
@@ -190,7 +192,14 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
       )
       return !loading && isEmpty(byDate) ? (
         // TODO: an art would be nice here
-        <VStack fontSize="3xl" m="8" spacing="8" mt="20vh" align="flex-start">
+        <VStack
+          fontSize="3xl"
+          color={colorMode === 'dark' ? 'primary.100' : 'primary.700'}
+          m="8"
+          spacing="8"
+          mt="20vh"
+          align="flex-start"
+        >
           <Text>After your first day, your journal will appear here. 🌟</Text>
           <Text>Keep writing!</Text>
         </VStack>
