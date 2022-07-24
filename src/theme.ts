@@ -148,7 +148,7 @@ export const baseTheme = extendTheme(
 export const appTheme = extendTheme(
   {
     styles: {
-      global: {
+      global: ({ colorMode }: StyleFunctionProps) => ({
         html: {
           // Prevent iOS vert scroll when installed to home screen.
           position: 'fixed',
@@ -159,11 +159,12 @@ export const appTheme = extendTheme(
         'html, body, #root': {
           // Black to prevent flashes of white when viewport resizes (e.g. fullscreen camera).
           background: 'black',
+          color: colorMode === 'dark' ? 'primary.100' : 'primary.600',
           height: '100%',
           width: '100%',
           overflow: 'hidden',
         },
-      },
+      }),
     },
   },
   baseTheme,
