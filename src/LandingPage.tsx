@@ -214,7 +214,7 @@ export default function LandingPage() {
           alignItems="flex-start"
           color="primary.700"
           fontSize="lg"
-          fontWeight="600"
+          fontWeight={{ base: '500', xl: '600' }}
           spacing="12"
         >
           <VStack alignItems="flex-start" spacing="2">
