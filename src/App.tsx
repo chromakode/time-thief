@@ -39,7 +39,12 @@ import {
 import useLongPress from './utils/useLongPress'
 import { Provider as PouchProvider } from 'use-pouchdb'
 import { _db } from '.'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  useLocation,
+  useNavigate,
+  useNavigationType,
+  useSearchParams,
+} from 'react-router-dom'
 import { appTheme } from './theme'
 
 interface ActivityState {
@@ -185,9 +190,16 @@ function RemainingTime({
   )
 }
 
-function useRouteState({ maxPages }: { maxPages: number }) {
+function useRouteState({
+  maxPages,
+  isShowingLog,
+}: {
+  maxPages: number
+  isShowingLog: boolean
+}) {
   const location = useLocation()
   const navigate = useNavigate()
+  const navigationType = useNavigationType()
 
   const { search } = location
   const locationHashPage = parseInt(location.hash.substring(1))
@@ -200,20 +212,24 @@ function useRouteState({ maxPages }: { maxPages: number }) {
 
   const setPage = useCallback(
     (nextPage: number) => {
-      navigate(`${search}#${nextPage}`)
+      navigate(`${search}#${nextPage}`, { replace: true })
     },
     [navigate, search],
   )
 
   const setShowingLog = useCallback(
     (newShowingLog: boolean) => {
-      if (newShowingLog) {
-        navigate(`/app/log${search}#${page}`, { replace: true })
-      } else {
-        navigate(`/app${search}#${page}`, { replace: true })
+      if (newShowingLog && !isShowingLog) {
+        navigate(`/app/log${search}#${page}`)
+      } else if (isShowingLog) {
+        if (navigationType === 'PUSH') {
+          navigate(-1)
+        } else {
+          navigate(`/app${search}#${page}`, { replace: true })
+        }
       }
     },
-    [navigate, page, search],
+    [navigate, navigationType, page, search],
   )
 
   return { page, setPage, setShowingLog }
@@ -247,6 +263,7 @@ function App({
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
   const { page, setPage, setShowingLog } = useRouteState({
     maxPages: pageCount,
+    isShowingLog,
   })
 
   const dragControls = useDragControls()
