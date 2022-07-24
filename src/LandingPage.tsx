@@ -253,7 +253,7 @@ export default function LandingPage() {
             </Text>
             <Text>
               To get the most out of TIME THIEF, open it when you catch yourself
-              wasting time on your phone
+              wasting time on your phone.
             </Text>
             <Text>
               Tip: Try replacing an app on your home screen you reach for when
