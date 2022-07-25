@@ -1,7 +1,7 @@
 import { Flex, IconButton, InputGroup, VStack } from '@chakra-ui/react'
 import useChange from '@react-hook/change'
 import { Ref, useEffect, useRef, useState } from 'react'
-import { MdCamera } from 'react-icons/md'
+import { MdCamera, MdImageSearch } from 'react-icons/md'
 import AttachmentImage from '../AttachmentImage'
 import {
   ContentComponentProps,
@@ -18,14 +18,19 @@ export default function PhotoInput(
   }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const captureInputRef = useRef<HTMLInputElement>(null)
+  const chooseInputRef = useRef<HTMLInputElement>(null)
   const [imgURL, setImgURL] = useState<string>()
   const [oldDigest, setOldDigest] = useState<string>()
 
   const imageDigest = entityDoc._attachments?.[field].digest
 
-  function handleClick() {
-    inputRef.current?.click()
+  function handleCaptureClick() {
+    captureInputRef.current?.click()
+  }
+
+  function handleChooseClick() {
+    chooseInputRef.current?.click()
   }
 
   async function handleChange(ev: React.ChangeEvent<HTMLInputElement>) {
@@ -45,7 +50,7 @@ export default function PhotoInput(
 
   useEffect(() => {
     if (autostart) {
-      handleClick()
+      handleCaptureClick()
     }
   }, [autostart])
 
@@ -70,22 +75,46 @@ export default function PhotoInput(
           w="full"
         />
       </Flex>
-      <InputGroup w="auto" onClick={handleClick}>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          capture={capture}
-          onChange={handleChange}
-          hidden
-        />
-        <IconButton
-          aria-label="Open camera"
-          icon={<MdCamera />}
-          fontSize="3xl"
-          boxSize="16"
-        />
-      </InputGroup>
+      <Flex position="relative" alignItems="center">
+        <InputGroup w="auto" onClick={handleCaptureClick}>
+          <input
+            ref={captureInputRef}
+            type="file"
+            accept="image/*"
+            capture={capture}
+            onChange={handleChange}
+            hidden
+          />
+          <IconButton
+            aria-label="Open camera"
+            icon={<MdCamera />}
+            fontSize="3xl"
+            boxSize="16"
+          />
+        </InputGroup>
+        <InputGroup
+          w="auto"
+          position="absolute"
+          right="-20"
+          onClick={handleChooseClick}
+        >
+          <input
+            ref={chooseInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            hidden
+          />
+          <IconButton
+            aria-label="Choose existing image"
+            icon={<MdImageSearch />}
+            variant="outline"
+            fontSize="3xl"
+            boxSize="12"
+            opacity=".5"
+          />
+        </InputGroup>
+      </Flex>
     </VStack>
   )
 }
