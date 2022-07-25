@@ -17,8 +17,8 @@
        id="rect45254"
        width="520.22742"
        height="295.31192"
-       x="-6.7262993"
-       y="-4.516788" />
+       x="-3.6367779"
+       y="-11.018885" />
     <g
        id="g57930">
       <path
@@ -217,11 +217,11 @@
          r="35.025475" />
       <path
          style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#f0c3cf;fill-opacity:1;stroke:#892953;stroke-width:5.29167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
-         d="M 259.50512,147.53805 V 129.16056"
+         d="m 259.50512,147.53805 1.6986,-17.71448"
          id="path41553" />
       <path
          style="font-variation-settings:normal;fill:#f0c3cf;fill-opacity:1;stroke:#892953;stroke-width:3.96875;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
-         d="m 260.23063,147.7401 20.19315,-16.6467"
+         d="m 259.91682,148.18881 23.28012,-1.09686"
          id="path41553-5" />
     </g>
   </g>
