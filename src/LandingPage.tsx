@@ -1,22 +1,24 @@
 import {
-  Box,
-  Flex,
-  Link,
-  Image,
-  Text,
-  HStack,
-  VStack,
-  Container,
   AspectRatio,
+  Box,
   Button,
+  Container,
   Divider,
+  Flex,
+  HStack,
   Icon,
+  Image,
+  Link,
   Stack,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
-import { MdLock } from 'react-icons/md'
-import { FaDiscord, FaGithub } from 'react-icons/fa'
-import logoURL from './logoWithBorder.svg'
 import { ReactNode } from 'react'
+import { FaDiscord, FaGithub } from 'react-icons/fa'
+import { MdLock } from 'react-icons/md'
+import howItWorksURL from './art/how-it-works-doodle.svg'
+import journalingHabitURL from './art/journaling-habit-doodle.svg'
+import logoURL from './logoWithBorder.svg'
 
 const GITHUB_URL = 'https://github.com/chromakode/time-thief'
 
@@ -221,45 +223,55 @@ export default function LandingPage() {
           fontWeight={{ base: '500', xl: '600' }}
           spacing="12"
         >
-          <VStack alignItems="flex-start" spacing="2">
-            <Text as="h2" textStyle="hero" fontSize="2xl">
-              How it works:{' '}
-              <Text as="span" color="primary.500">
-                every 15 minutes, you get 3 prompts
+          <HStack spacing="16" w="full">
+            <AspectRatio ratio={16 / 9} w="24rem">
+              <Image src={howItWorksURL} borderRadius="2xl" />
+            </AspectRatio>
+            <VStack alignItems="flex-start" spacing="2" flex="1">
+              <Text as="h2" textStyle="hero" fontSize="2xl">
+                How it works:{' '}
+                <Text as="span" color="primary.500">
+                  every 15 minutes, you get 3 prompts
+                </Text>
+                .
               </Text>
-              .
-            </Text>
-            <Text>
-              They vary by time of day, and some build off previous ones.
-            </Text>
-            <Text>
-              Don't overthink it &mdash; jot something in the ones that interest
-              you.
-            </Text>
-            <HStack>
-              <Icon as={MdLock} boxSize="6" />
               <Text>
-                Your journal is stored privately and never leaves your device.
+                They vary by time of day, and some build off previous ones.
               </Text>
-            </HStack>
-          </VStack>
-          <VStack alignItems="flex-start" spacing="2">
-            <Text as="h2" textStyle="hero" fontSize="2xl">
-              Cultivate a{' '}
-              <Text as="span" color="primary.500">
-                journaling habit
+              <Text>
+                Don't overthink it &mdash; jot something in the ones that
+                interest you.
               </Text>
-              .
-            </Text>
-            <Text>
-              To get the most out of TIME THIEF, open it when you catch yourself
-              wasting time on your phone.
-            </Text>
-            <Text>
-              Tip: Try replacing an app on your home screen you reach for when
-              you're bored.
-            </Text>
-          </VStack>
+              <HStack>
+                <Icon as={MdLock} boxSize="6" />
+                <Text>
+                  Your journal is stored privately and never leaves your device.
+                </Text>
+              </HStack>
+            </VStack>
+          </HStack>
+          <HStack spacing="12" w="full">
+            <VStack alignItems="flex-start" spacing="2" flex="1">
+              <Text as="h2" textStyle="hero" fontSize="2xl">
+                Cultivate a{' '}
+                <Text as="span" color="primary.500">
+                  journaling habit
+                </Text>
+                .
+              </Text>
+              <Text>
+                To get the most out of TIME THIEF, open it when you catch
+                yourself wasting time.
+              </Text>
+              <Text>
+                Tip: Try replacing an app on your home screen you reach for when
+                you're bored.
+              </Text>
+            </VStack>
+            <AspectRatio ratio={16 / 9} w="24rem">
+              <Image src={journalingHabitURL} borderRadius="2xl" />
+            </AspectRatio>
+          </HStack>
           <Stack
             spacing="6"
             direction={{ base: 'column', md: 'row' }}
