@@ -221,7 +221,7 @@ export default function LandingPage() {
           color="primary.700"
           fontSize="lg"
           fontWeight={{ base: '500', xl: '600' }}
-          spacing="12"
+          spacing={{ base: '20', md: '12' }}
         >
           <Flex
             w="full"
@@ -230,13 +230,14 @@ export default function LandingPage() {
           >
             <AspectRatio
               ratio={16 / 9}
-              w={{ base: 'full', md: '24rem' }}
-              mr={{ base: '0', md: '16', xl: '24' }}
+              w={{ base: 'calc(100% + 4rem)', md: '24rem' }}
+              ml={{ base: '-8', md: 'unset' }}
+              mr={{ base: 'unset', md: '16', xl: '24' }}
               mb={{ base: '8', md: '0' }}
             >
               <Image
                 src={howItWorksURL}
-                borderRadius={{ base: 'xl', md: '2xl' }}
+                borderRadius={{ base: '0', md: '2xl' }}
               />
             </AspectRatio>
             <VStack alignItems="flex-start" spacing="2" flex="1">
@@ -269,14 +270,14 @@ export default function LandingPage() {
           >
             <AspectRatio
               ratio={16 / 9}
-              w={{ base: 'full', md: '24rem' }}
+              w={{ base: 'calc(100% + 4rem)', md: '24rem' }}
               order={{ base: 0, md: 1 }}
-              ml={{ base: '0', md: '16', xl: '24' }}
+              ml={{ base: '-8', md: '16', xl: '24' }}
               mb={{ base: '8', md: '0' }}
             >
               <Image
                 src={journalingHabitURL}
-                borderRadius={{ base: 'xl', md: '2xl' }}
+                borderRadius={{ base: '0', md: '2xl' }}
               />
             </AspectRatio>
             <VStack alignItems="flex-start" spacing="2" flex="1">
