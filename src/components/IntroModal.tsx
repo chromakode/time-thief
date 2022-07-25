@@ -28,7 +28,7 @@ const useStore = create<{
   hide: () => set(() => ({ localShowing: false })),
 }))
 
-export function useShowingIntro({ isDemo = false }: { isDemo?: boolean } = {}) {
+export function useShowingIntro({ isDemo }: { isDemo: boolean }) {
   const store = useStore()
   const db = usePouch()
   const { doc: config, loading } = useDoc('$config', {}, { introSeen: false })
@@ -44,9 +44,14 @@ export function useShowingIntro({ isDemo = false }: { isDemo?: boolean } = {}) {
   return { isShowingIntro, closeIntro, showIntro: store.show }
 }
 
-export function IntroModal() {
+export function IntroModal({
+  isShowingIntro,
+  closeIntro,
+}: {
+  isShowingIntro: boolean
+  closeIntro: () => void
+}) {
   const { colorMode } = useColorMode()
-  const { isShowingIntro, closeIntro } = useShowingIntro()
   return (
     <Modal isOpen={isShowingIntro} onClose={closeIntro} isCentered>
       <ModalOverlay />

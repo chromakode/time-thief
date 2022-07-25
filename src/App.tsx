@@ -257,7 +257,7 @@ function App({
   })
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0, height = 0] = useSize(ref)
-  const { isShowingIntro, showIntro } = useShowingIntro({ isDemo })
+  const { isShowingIntro, showIntro, closeIntro } = useShowingIntro({ isDemo })
 
   const pageCount = activities.length + manualEntityIds.length
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
@@ -347,7 +347,7 @@ function App({
   // TODO: ARIA tabs accessibility
   return (
     <>
-      <IntroModal />
+      <IntroModal isShowingIntro={isShowingIntro} closeIntro={closeIntro} />
       <VStack
         ref={ref}
         w="100vw"
