@@ -323,6 +323,7 @@ export default function LandingPage() {
                 target="_blank"
                 bgColor="primary.50"
                 _hover={{ bgColor: 'primary.100' }}
+                _active={{ bgColor: 'primary.200' }}
                 color="primary.700"
                 fontSize="lg"
                 py="6"
