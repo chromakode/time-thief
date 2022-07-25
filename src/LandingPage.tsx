@@ -223,9 +223,21 @@ export default function LandingPage() {
           fontWeight={{ base: '500', xl: '600' }}
           spacing="12"
         >
-          <HStack spacing="16" w="full">
-            <AspectRatio ratio={16 / 9} w="24rem">
-              <Image src={howItWorksURL} borderRadius="2xl" />
+          <Flex
+            w="full"
+            flexDir={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'flex-start', md: 'center' }}
+          >
+            <AspectRatio
+              ratio={16 / 9}
+              w={{ base: 'full', md: '24rem' }}
+              mr={{ base: '0', md: '16' }}
+              mb={{ base: '8', md: '0' }}
+            >
+              <Image
+                src={howItWorksURL}
+                borderRadius={{ base: 'xl', md: '2xl' }}
+              />
             </AspectRatio>
             <VStack alignItems="flex-start" spacing="2" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
@@ -249,8 +261,24 @@ export default function LandingPage() {
                 </Text>
               </HStack>
             </VStack>
-          </HStack>
-          <HStack spacing="12" w="full">
+          </Flex>
+          <Flex
+            w="full"
+            flexDir={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'flex-start', md: 'center' }}
+          >
+            <AspectRatio
+              ratio={16 / 9}
+              w={{ base: 'full', md: '24rem' }}
+              order={{ base: 0, md: 1 }}
+              ml={{ base: '0', md: '16' }}
+              mb={{ base: '8', md: '0' }}
+            >
+              <Image
+                src={journalingHabitURL}
+                borderRadius={{ base: 'xl', md: '2xl' }}
+              />
+            </AspectRatio>
             <VStack alignItems="flex-start" spacing="2" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
                 Cultivate a{' '}
@@ -268,10 +296,7 @@ export default function LandingPage() {
                 you're bored.
               </Text>
             </VStack>
-            <AspectRatio ratio={16 / 9} w="24rem">
-              <Image src={journalingHabitURL} borderRadius="2xl" />
-            </AspectRatio>
-          </HStack>
+          </Flex>
           <Stack
             spacing="6"
             direction={{ base: 'column', md: 'row' }}
