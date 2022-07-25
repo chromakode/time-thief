@@ -8,6 +8,7 @@ export const baseTheme = extendTheme(
       global: {
         body: {
           fontSynthesis: 'none',
+          WebkitTapHighlightColor: 'transparent',
         },
       },
     },
@@ -152,9 +153,6 @@ export const appTheme = extendTheme(
         html: {
           // Prevent iOS vert scroll when installed to home screen.
           position: 'fixed',
-        },
-        body: {
-          WebkitTapHighlightColor: 'transparent',
         },
         'html, body, #root': {
           // Black to prevent flashes of white when viewport resizes (e.g. fullscreen camera).
