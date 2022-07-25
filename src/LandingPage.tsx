@@ -231,7 +231,7 @@ export default function LandingPage() {
             <AspectRatio
               ratio={16 / 9}
               w={{ base: 'full', md: '24rem' }}
-              mr={{ base: '0', md: '16' }}
+              mr={{ base: '0', md: '16', xl: '24' }}
               mb={{ base: '8', md: '0' }}
             >
               <Image
@@ -271,7 +271,7 @@ export default function LandingPage() {
               ratio={16 / 9}
               w={{ base: 'full', md: '24rem' }}
               order={{ base: 0, md: 1 }}
-              ml={{ base: '0', md: '16' }}
+              ml={{ base: '0', md: '16', xl: '24' }}
               mb={{ base: '8', md: '0' }}
             >
               <Image
