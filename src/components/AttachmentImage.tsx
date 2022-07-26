@@ -84,6 +84,7 @@ async function getImg(
                 data: thumbBlob,
               },
             },
+            created: Date.now(),
           })
         }
       }
