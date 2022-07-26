@@ -5,11 +5,12 @@ import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
 import { useCallback, useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
+import { once } from 'events'
 
 const thumbDB = new PouchDB('thumbnails')
 
 const THUMB_WIDTH = 1280
-const THUMB_KEY = `thumb-v1-${THUMB_WIDTH}`
+const THUMB_KEY = `thumb-v2-${THUMB_WIDTH}`
 
 const urlGetterCache = new LRU({
   max: 100,
@@ -55,18 +56,23 @@ async function getImg(
 
       if (!thumbBlob) {
         const fullBlob = (await db.getAttachment(docId, attachmentId)) as Blob
-        const imgBitmap = await createImageBitmap(fullBlob, {
-          resizeWidth: THUMB_WIDTH,
-          resizeQuality: 'high',
-        })
+        const fullBlobURL = URL.createObjectURL(fullBlob)
+        const img = document.createElement('img')
+        img.src = fullBlobURL
+        await once(img, 'load')
         const canvas = document.createElement('canvas')
-        canvas.width = imgBitmap.width
-        canvas.height = imgBitmap.height
+        canvas.width = THUMB_WIDTH
+        canvas.height = THUMB_WIDTH * (img.naturalHeight / img.naturalWidth)
         const ctx = canvas.getContext('2d')
-        ctx?.drawImage(imgBitmap, 0, 0)
+        if (!ctx) {
+          return undefined
+        }
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
         thumbBlob = await new Promise((resolve) =>
           canvas.toBlob(resolve, 'image/webp'),
         )
+        URL.revokeObjectURL(fullBlobURL)
 
         if (thumbBlob) {
           await thumbDB.put({
