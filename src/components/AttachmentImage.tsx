@@ -122,7 +122,7 @@ export default function AttachmentImage({
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
-  const [url, setURL] = useState<string>()
+  const loadedSrc = useRef<string | null>(null)
   const [isLoaded, setLoaded] = useState(false)
 
   const { isIntersecting } = useIntersectionObserver(containerRef, {
@@ -130,6 +130,11 @@ export default function AttachmentImage({
   })
 
   useAsyncEffect(async () => {
+    const img = imgRef.current
+    if (!img) {
+      return
+    }
+
     if (!isIntersecting || !digest) {
       return
     }
@@ -137,8 +142,12 @@ export default function AttachmentImage({
     // If we have a fallback src, unset the URL while loading so that it shows.
     // Otherwise, keep the existing src, which prevents flashes on src changes
     // (e.g. during portrait montage).
-    if (fallbackSrc) {
-      setURL(undefined)
+    if (!loadedSrc.current && fallbackSrc) {
+      img.src = fallbackSrc
+    }
+
+    if (!digest) {
+      return
     }
 
     let url
@@ -149,8 +158,11 @@ export default function AttachmentImage({
       return
     }
 
-    setURL(url)
-  }, [attachmentId, db, digest, docId, isIntersecting])
+    if (url) {
+      loadedSrc.current = url
+      img.src = url
+    }
+  }, [attachmentId, db, digest, docId, isIntersecting, fallbackSrc])
 
   const handleLoad = useCallback(() => {
     if (!imgRef.current || !containerRef.current) {
@@ -174,13 +186,13 @@ export default function AttachmentImage({
           opacity={isLoaded ? opacity : 0}
           transitionDuration="200ms"
           onLoad={handleLoad}
-          src={(digest && url) ?? fallbackSrc}
+          src={fallbackSrc}
           w="full"
           h="full"
           objectFit="contain"
         />
       </Flex>
     ),
-    [digest, fallbackSrc, handleLoad, isLoaded, opacity, props, url],
+    [digest, fallbackSrc, handleLoad, isLoaded, opacity, props],
   )
 }
