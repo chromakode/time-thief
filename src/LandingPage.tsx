@@ -253,7 +253,7 @@ export default function LandingPage() {
               <Text as="h2" textStyle="hero" fontSize="2xl">
                 How it works:{' '}
                 <Text as="span" color="primary.500">
-                  every 15 minutes, you get 3 prompts
+                  every 15 minutes, you get 3 new prompts
                 </Text>
                 .
               </Text>
