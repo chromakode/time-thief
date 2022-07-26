@@ -193,15 +193,14 @@ export default function LandingPage() {
         </Container>
       </Box>
       <Container maxW="container.xl" color="primary.700" p="0">
-        <Flex
-          flexDir="column"
+        <VStack
           mx={commonMargin}
           py={commonTopSpace}
           width={{ xl: '40rem' }}
           alignItems="flex-start"
           fontSize="xl"
           fontWeight="600"
-          lineHeight="taller"
+          spacing="3"
         >
           <Text as="h2">
             <Text
@@ -220,7 +219,7 @@ export default function LandingPage() {
             phone.
           </Text>
           <Text>It's time to take that time back.</Text>
-        </Flex>
+        </VStack>
         <SectionDivider />
         <VStack
           mx={commonMargin}
@@ -229,7 +228,6 @@ export default function LandingPage() {
           color="primary.700"
           fontSize="lg"
           fontWeight={{ base: '500', xl: '600' }}
-          lineHeight="taller"
           spacing={{ base: '20', md: '12' }}
         >
           <Flex
@@ -249,7 +247,7 @@ export default function LandingPage() {
                 borderRadius={{ base: '0', md: '2xl' }}
               />
             </AspectRatio>
-            <Flex flexDir="column" alignItems="flex-start" flex="1">
+            <VStack alignItems="flex-start" spacing="3" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
                 How it works:{' '}
                 <Text as="span" color="primary.500">
@@ -271,7 +269,7 @@ export default function LandingPage() {
                   Your journal is stored privately and never leaves your device.
                 </Text>
               </HStack>
-            </Flex>
+            </VStack>
           </Flex>
           <Flex
             w="full"
@@ -290,7 +288,7 @@ export default function LandingPage() {
                 borderRadius={{ base: '0', md: '2xl' }}
               />
             </AspectRatio>
-            <Flex flexDir="column" alignItems="flex-start" flex="1">
+            <VStack alignItems="flex-start" spacing="3" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
                 Cultivate a{' '}
                 <Text as="span" color="primary.500">
@@ -306,7 +304,7 @@ export default function LandingPage() {
                 Tip: Try replacing an app on your home screen you reach for when
                 you're bored.
               </Text>
-            </Flex>
+            </VStack>
           </Flex>
           <Stack
             spacing="6"
