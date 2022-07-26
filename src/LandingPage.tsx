@@ -258,11 +258,12 @@ export default function LandingPage() {
                 .
               </Text>
               <Text>
-                They vary by time of day, and some build on previous ones.
+                Whenever you open your journal, there's inspiration waiting for
+                you.
               </Text>
               <Text>
-                Don't overthink it &mdash; jot something in the ones that
-                interest you.
+                Write as little or as much as you'd like &mdash; don't overthink
+                it!
               </Text>
               <HStack>
                 <Icon as={MdLock} boxSize="6" />
