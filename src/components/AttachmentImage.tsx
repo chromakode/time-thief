@@ -3,7 +3,7 @@ import { useAsyncEffect } from '@react-hook/async'
 import useIntersectionObserver from '@react-hook/intersection-observer'
 import LRU from 'lru-cache'
 import PouchDB from 'pouchdb'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
 import { once } from 'events'
 
@@ -24,7 +24,7 @@ const urlGetterCache = new LRU({
   },
 })
 
-async function getImg(
+export async function getImg(
   db: PouchDB.Database<any>,
   digest: string,
   docId: string,
@@ -159,25 +159,28 @@ export default function AttachmentImage({
     setLoaded(true)
   }, [])
 
-  return (
-    <Flex
-      ref={containerRef}
-      bg={digest && !isLoaded ? 'blackAlpha.100' : 'transparent'}
-      transitionDuration="200ms"
-      {...props}
-      align="center"
-      justify="center"
-    >
-      <Image
-        ref={imgRef}
-        opacity={isLoaded ? opacity : 0}
+  return useMemo(
+    () => (
+      <Flex
+        ref={containerRef}
+        bg={digest && !isLoaded ? 'blackAlpha.100' : 'transparent'}
         transitionDuration="200ms"
-        onLoad={handleLoad}
-        src={(digest && url) ?? fallbackSrc}
-        w="full"
-        h="full"
-        objectFit="contain"
-      />
-    </Flex>
+        {...props}
+        align="center"
+        justify="center"
+      >
+        <Image
+          ref={imgRef}
+          opacity={isLoaded ? opacity : 0}
+          transitionDuration="200ms"
+          onLoad={handleLoad}
+          src={(digest && url) ?? fallbackSrc}
+          w="full"
+          h="full"
+          objectFit="contain"
+        />
+      </Flex>
+    ),
+    [digest, fallbackSrc, handleLoad, isLoaded, opacity, props, url],
   )
 }
