@@ -221,7 +221,7 @@ function useRouteState({
     (newShowingLog: boolean) => {
       if (newShowingLog && !isShowingLog) {
         navigate(`/app/log${search}#${page}`)
-      } else if (isShowingLog) {
+      } else if (!newShowingLog && isShowingLog) {
         if (navigationType === 'PUSH') {
           navigate(-1)
         } else {
