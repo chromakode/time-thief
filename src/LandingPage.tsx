@@ -256,7 +256,7 @@ export default function LandingPage() {
                 .
               </Text>
               <Text>
-                They vary by time of day, and some build off previous ones.
+                They vary by time of day, and some build on previous ones.
               </Text>
               <Text>
                 Don't overthink it &mdash; jot something in the ones that
@@ -364,7 +364,7 @@ export default function LandingPage() {
             </FAQItem>
             <FAQItem title="What determines which prompts I see?">
               It depends on the time of day, prompts you've seen recently, and
-              what you've written (some prompts build off past ones). Under the
+              what you've written (some prompts build on past ones). Under the
               hood, there's an extensible rule system which determines which
               prompts you see. In the future, this will be customizable.
             </FAQItem>
