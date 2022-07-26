@@ -147,6 +147,8 @@ export default function LandingPage() {
                 mt="8"
                 bottom={{ base: '10', xl: '16' }}
                 bgColor="primary.600"
+                _hover={{ bgColor: 'primary.500' }}
+                _active={{ bgColor: 'primary.700' }}
                 color="primary.50"
                 fontSize={{ base: '2xl', md: '4xl' }}
                 textStyle="hero"
