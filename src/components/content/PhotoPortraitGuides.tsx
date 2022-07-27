@@ -13,7 +13,13 @@ import useIntersectionObserver from '@react-hook/intersection-observer'
 import { findLastIndex } from 'lodash'
 import React, { Ref, useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { MdCamera, MdCheck, MdClose } from 'react-icons/md'
+import {
+  MdCamera,
+  MdCheck,
+  MdClose,
+  MdPause,
+  MdPlayArrow,
+} from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import AttachmentImage from '../AttachmentImage'
 import {
@@ -51,12 +57,17 @@ function Montage({
 >) {
   // TODO: allow swiping horizontally through images
   const [idx, setIdx] = useState(0)
+  const [isPaused, setPaused] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { isIntersecting } = useIntersectionObserver(containerRef)
 
+  const handlePauseClick = useCallback(() => {
+    setPaused((isPaused) => !isPaused)
+  }, [])
+
   useEffect(() => {
-    if (!docs.length || !isIntersecting) {
+    if (!docs.length || !isIntersecting || isPaused) {
       return
     }
     const interval = setInterval(() => {
@@ -65,11 +76,11 @@ function Montage({
     return () => {
       clearInterval(interval)
     }
-  }, [docs, isIntersecting])
+  }, [docs, isIntersecting, isPaused])
 
   const doc = docs[idx]
   return (
-    <Box ref={containerRef}>
+    <Box ref={containerRef} position="relative" overflow="hidden">
       {doc && (
         <AttachmentImage
           {...props}
@@ -78,6 +89,16 @@ function Montage({
           digest={doc._attachments?.[field].digest}
         />
       )}
+      <IconButton
+        icon={!isPaused ? <MdPause /> : <MdPlayArrow />}
+        onClick={handlePauseClick}
+        aria-label="Pause"
+        position="absolute"
+        bottom="2"
+        left="2"
+        size="xs"
+        opacity=".75"
+      />
     </Box>
   )
 }
