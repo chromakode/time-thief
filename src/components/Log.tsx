@@ -110,18 +110,18 @@ function LogDay({
             {chronoDocs.map((entity) => (
               <VStack key={entity._id} align="flex-start" w="full">
                 <HStack spacing="1.5">
-                  <Text whiteSpace="nowrap" opacity=".75">
+                  <Text whiteSpace="nowrap" opacity=".75" userSelect="all">
                     {dayjs(entity.created).format('h:mm a')}
                   </Text>
                   <LogMenu entity={entity} />
                 </HStack>
                 {entity.title && (
-                  <Heading as="h3" size="md" textStyle="title">
+                  <Heading as="h3" size="md" textStyle="title" userSelect="all">
                     <Markdown>{entity.title}</Markdown>
                   </Heading>
                 )}
                 {entity.content && (
-                  <Text fontSize="lg" whiteSpace="pre-wrap">
+                  <Text fontSize="lg" whiteSpace="pre-wrap" userSelect="all">
                     {entity.content}
                   </Text>
                 )}
