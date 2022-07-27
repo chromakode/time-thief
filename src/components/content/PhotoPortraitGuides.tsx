@@ -9,6 +9,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { useAsync } from '@react-hook/async'
+import useIntersectionObserver from '@react-hook/intersection-observer'
 import { findLastIndex } from 'lodash'
 import React, { Ref, useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
@@ -50,9 +51,12 @@ function Montage({
 >) {
   // TODO: allow swiping horizontally through images
   const [idx, setIdx] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const { isIntersecting } = useIntersectionObserver(containerRef)
 
   useEffect(() => {
-    if (!docs.length) {
+    if (!docs.length || !isIntersecting) {
       return
     }
     const interval = setInterval(() => {
@@ -61,18 +65,20 @@ function Montage({
     return () => {
       clearInterval(interval)
     }
-  }, [docs])
+  }, [docs, isIntersecting])
 
   const doc = docs[idx]
-  return doc ? (
-    <AttachmentImage
-      {...props}
-      docId={doc._id}
-      attachmentId={field}
-      digest={doc._attachments?.[field].digest}
-    />
-  ) : (
-    <></>
+  return (
+    <Box ref={containerRef}>
+      {doc && (
+        <AttachmentImage
+          {...props}
+          docId={doc._id}
+          attachmentId={field}
+          digest={doc._attachments?.[field].digest}
+        />
+      )}
+    </Box>
   )
 }
 
