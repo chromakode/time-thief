@@ -102,8 +102,8 @@ export function RenderSteps(
               onClick={goPrev}
               aria-label="Previous step"
               icon={<MdArrowBack />}
-              fontSize="3xl"
-              boxSize="10"
+              fontSize="2xl"
+              size="sm"
             />
           )}
           <VStack w="full" h="full">
