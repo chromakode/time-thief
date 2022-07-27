@@ -289,7 +289,7 @@ export default function PhotoPortraitGuides(
                 >
                   <Icon as={MdRotateLeft} boxSize="20" />
                   <Text fontSize="3xl" fontWeight="700">
-                    Rotate to Landscape
+                    Rotate to landscape
                   </Text>
                 </VStack>
               </Center>
