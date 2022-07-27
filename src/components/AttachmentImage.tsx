@@ -110,6 +110,7 @@ export default function AttachmentImage({
   attachmentId,
   fallbackSrc,
   full = false,
+  showPlaceholder = true,
   opacity = 1,
   ...props
 }: {
@@ -118,6 +119,7 @@ export default function AttachmentImage({
   attachmentId: string
   fallbackSrc?: string
   full?: boolean
+  showPlaceholder?: boolean
 } & FlexProps) {
   const db = usePouch()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -175,7 +177,11 @@ export default function AttachmentImage({
     () => (
       <Flex
         ref={containerRef}
-        bg={digest && !isLoaded ? 'blackAlpha.100' : 'transparent'}
+        bg={
+          digest && !isLoaded && showPlaceholder
+            ? 'blackAlpha.100'
+            : 'transparent'
+        }
         transitionDuration="200ms"
         {...props}
         align="center"
@@ -193,6 +199,14 @@ export default function AttachmentImage({
         />
       </Flex>
     ),
-    [digest, fallbackSrc, handleLoad, isLoaded, opacity, props],
+    [
+      digest,
+      fallbackSrc,
+      handleLoad,
+      isLoaded,
+      opacity,
+      props,
+      showPlaceholder,
+    ],
   )
 }

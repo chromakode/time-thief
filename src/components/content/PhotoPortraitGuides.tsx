@@ -1,11 +1,14 @@
 import {
   Box,
   Button,
+  Center,
   chakra,
   Flex,
   Icon,
   IconButton,
+  Portal,
   Text,
+  useMediaQuery,
   VStack,
 } from '@chakra-ui/react'
 import { useAsync } from '@react-hook/async'
@@ -19,6 +22,7 @@ import {
   MdClose,
   MdPause,
   MdPlayArrow,
+  MdRotateLeft,
 } from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import AttachmentImage from '../AttachmentImage'
@@ -44,7 +48,7 @@ function Video({
     ref.current.srcObject = srcObject ?? null
   }, [srcObject])
 
-  return <ChakraVideo ref={ref} {...props} autoPlay playsInline />
+  return <ChakraVideo ref={ref} {...props} autoPlay playsInline muted />
 }
 
 function Montage({
@@ -133,10 +137,16 @@ export default function PhotoPortraitGuides(
   const cameraUIRef = useRef<HTMLDivElement>(null)
   const [isCameraOpen, setCameraOpen] = useState(false)
 
+  const [isLandscape] = useMediaQuery('(orientation: landscape)')
+
   const [{ value: stream }, startCamera] = useAsync(async () => {
     setCameraOpen(true)
     await new Promise<void>(flushSync)
-    await cameraUIRef.current?.requestFullscreen({ navigationUI: 'hide' })
+    try {
+      await cameraUIRef.current?.requestFullscreen({ navigationUI: 'hide' })
+    } catch (err) {
+      console.warn('failed to request fullscreen', err)
+    }
     try {
       await window.screen.orientation.lock('landscape')
     } catch (err) {
@@ -188,6 +198,13 @@ export default function PhotoPortraitGuides(
     endCamera()
   }, [endCamera, field, saveAttachment, stream])
 
+  const showWithDelay = {
+    opacity: isCameraOpen ? 1 : 0,
+    transitionProperty: 'opacity',
+    transitionDuration: '350ms',
+    transitionDelay: '150ms',
+  }
+
   // TODO error state
 
   return (
@@ -219,71 +236,105 @@ export default function PhotoPortraitGuides(
       <Button onClick={startCamera} fontSize="3xl" h="16">
         Start camera
       </Button>
-      <Box
-        ref={cameraUIRef}
-        visibility={isCameraOpen ? 'visible' : 'hidden'}
-        pointerEvents={isCameraOpen ? 'auto' : 'none'}
-        bg="black"
-        position="fixed"
-        inset="-500px"
-        zIndex="popover"
-      >
-        <Box m="1" position="absolute" left="5vw" transform="scaleX(-1)">
-          <Box filter="invert(1) contrast(175%)" mixBlendMode="overlay">
-            {isCameraOpen &&
-              latestPhotos.map((doc) => (
-                <AttachmentImage
-                  key={doc._id}
-                  position="absolute"
-                  inset="0"
-                  opacity={1 / latestPhotos.length}
-                  docId={doc._id}
-                  attachmentId={field}
-                  digest={doc._attachments?.[field].digest}
-                  zIndex="overlay"
-                  pointerEvents="none"
-                  h="100vh"
-                />
-              ))}
-          </Box>
-          <Video srcObject={stream} h="100vh" />
-        </Box>
-        <VStack
-          position="absolute"
-          right="5vw"
-          h="full"
-          justify="center"
-          opacity={isCameraOpen ? 1 : 0}
-          transitionProperty="opacity"
-          transitionDuration="350ms"
-          transitionDelay="150ms"
+      <Portal>
+        <Flex
+          ref={cameraUIRef}
+          visibility={isCameraOpen ? 'visible' : 'hidden'}
+          pointerEvents={isCameraOpen ? 'auto' : 'none'}
+          flexDir={isLandscape ? 'row' : 'column'}
+          bg="black"
+          position="fixed"
+          inset="0"
+          zIndex="popover"
         >
-          <IconButton
-            onClick={handleCapture}
-            aria-label="Take picture"
-            icon={<MdCamera />}
-            fontSize="3xl"
-            boxSize="16"
-            m="8"
-            variant="outline"
-            color="primary.200"
-            _hover={{ bg: 'none' }}
-            _active={{ bg: 'primary.700' }}
-          />
-          <IconButton
-            onClick={endCamera}
-            aria-label="Cancel"
-            icon={<MdClose />}
-            fontSize="3xl"
-            boxSize="16"
-            m="8"
-            variant="ghost"
-            color="primary.200"
-            _hover={{ bg: 'none' }}
-            _active={{ bg: 'none' }}
-          />
-        </VStack>
-      </Box>
+          <Box flex="3" m="1" position="relative">
+            {isLandscape ? (
+              <Box
+                position="absolute"
+                inset="0"
+                transform="scaleX(-1)"
+                filter="invert(1) contrast(175%)"
+                mixBlendMode="overlay"
+                zIndex="overlay"
+              >
+                {isCameraOpen &&
+                  latestPhotos.map((doc) => (
+                    <AttachmentImage
+                      key={doc._id}
+                      position="absolute"
+                      inset="0"
+                      opacity={1 / latestPhotos.length}
+                      docId={doc._id}
+                      attachmentId={field}
+                      digest={doc._attachments?.[field].digest}
+                      pointerEvents="none"
+                      showPlaceholder={false}
+                    />
+                  ))}
+              </Box>
+            ) : (
+              <Center
+                position="absolute"
+                inset="0"
+                zIndex="overlay"
+                {...showWithDelay}
+              >
+                <VStack
+                  color="white"
+                  background="blackAlpha.500"
+                  p="6"
+                  borderRadius="xl"
+                  backdropFilter="auto"
+                  backdropBlur="lg"
+                >
+                  <Icon as={MdRotateLeft} boxSize="20" />
+                  <Text fontSize="3xl" fontWeight="700">
+                    Rotate to Landscape
+                  </Text>
+                </VStack>
+              </Center>
+            )}
+            <Video
+              srcObject={stream}
+              w="full"
+              h="full"
+              transform="scaleX(-1)"
+            />
+          </Box>
+          <Flex
+            flex="1"
+            flexDir={isLandscape ? 'column' : 'row'}
+            justifyContent="center"
+            alignItems="center"
+            {...showWithDelay}
+          >
+            <IconButton
+              onClick={handleCapture}
+              aria-label="Take picture"
+              icon={<MdCamera />}
+              fontSize="3xl"
+              boxSize="16"
+              m="4"
+              variant="outline"
+              color="primary.200"
+              _hover={{ bg: 'none' }}
+              _active={{ bg: 'primary.700' }}
+            />
+            <IconButton
+              onClick={endCamera}
+              aria-label="Cancel"
+              icon={<MdClose />}
+              fontSize="3xl"
+              boxSize="16"
+              m="4"
+              variant="ghost"
+              color="primary.200"
+              _hover={{ bg: 'none' }}
+              _active={{ bg: 'none' }}
+            />
+          </Flex>
+        </Flex>
+      </Portal>
     </VStack>
   )
 }
