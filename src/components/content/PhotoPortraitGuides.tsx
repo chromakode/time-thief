@@ -80,7 +80,14 @@ function Montage({
 
   const doc = docs[idx]
   return (
-    <Box ref={containerRef} position="relative" overflow="hidden">
+    <Box
+      ref={containerRef}
+      w="full"
+      h="auto"
+      minH="1px" // Ensure starts onscreen
+      position="relative"
+      overflow="hidden"
+    >
       {doc && (
         <AttachmentImage
           {...props}
