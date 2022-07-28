@@ -84,11 +84,10 @@ function Montage({
 
   const doc = docs[idx]
   return (
-    <Box
+    <Flex
       ref={containerRef}
-      w="full"
-      h="auto"
       minH="1px" // Ensure starts onscreen
+      justifyContent="center"
       position="relative"
       overflow="hidden"
     >
@@ -110,7 +109,7 @@ function Montage({
         size="xs"
         opacity=".75"
       />
-    </Box>
+    </Flex>
   )
 }
 
