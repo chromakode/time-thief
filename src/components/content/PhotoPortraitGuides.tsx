@@ -141,19 +141,14 @@ export default function PhotoPortraitGuides(
   const [{ value: stream }, startCamera] = useAsync(async () => {
     setCameraOpen(true)
     await new Promise<void>(flushSync)
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' },
+    })
     try {
       await cameraUIRef.current?.requestFullscreen({ navigationUI: 'hide' })
     } catch (err) {
       console.warn('failed to request fullscreen', err)
     }
-    try {
-      await window.screen.orientation.lock('landscape')
-    } catch (err) {
-      console.warn('failed to lock orientation', err)
-    }
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' },
-    })
     const videoTrack = stream.getVideoTracks()[0]
     const capabilities = videoTrack.getCapabilities()
     videoTrack.applyConstraints({
@@ -168,10 +163,7 @@ export default function PhotoPortraitGuides(
     for (const track of stream?.getTracks() ?? []) {
       track.stop()
     }
-    await Promise.all([
-      window.screen.orientation.unlock(),
-      document.exitFullscreen(),
-    ])
+    await document.exitFullscreen()
   }, [stream])
 
   const handleFullscreenChange = useCallback(() => {
