@@ -87,6 +87,7 @@ function Montage({
     <Flex
       ref={containerRef}
       minH="1px" // Ensure starts onscreen
+      minW="1px"
       justifyContent="center"
       position="relative"
       overflow="hidden"
