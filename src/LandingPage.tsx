@@ -197,7 +197,7 @@ export default function LandingPage() {
           mx={commonMargin}
           py={commonTopSpace}
           width={{ xl: '40rem' }}
-          alignItems="flex-start"
+          alignItems={{ base: 'flex-start', md: 'center', xl: 'flex-start' }}
           fontSize="xl"
           fontWeight="600"
           spacing="3"
