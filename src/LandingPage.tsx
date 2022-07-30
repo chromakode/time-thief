@@ -20,7 +20,7 @@ import howItWorksURL from './art/how-it-works-doodle.svg'
 import journalingHabitURL from './art/journaling-habit-doodle.svg'
 import logoURL from './logoWithBorder.svg'
 
-const GITHUB_URL = 'https://github.com/chromakode/time-thief'
+export const GITHUB_URL = 'https://github.com/chromakode/time-thief'
 
 function FAQItem({ title, children }: { title: string; children: ReactNode }) {
   return (
