@@ -1,5 +1,6 @@
 import {
   AspectRatio,
+  Badge,
   Box,
   Flex,
   Heading,
@@ -18,7 +19,8 @@ import useIntersectionObserver from '@react-hook/intersection-observer'
 import dayjs from 'dayjs'
 import { groupBy, isEmpty, reverse, throttle } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MdInfo, MdMoreVert } from 'react-icons/md'
+import { MdMoreVert, MdSettings } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
 import Markdown from './Markdown'
@@ -260,24 +262,40 @@ export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
 
   // TODO: use content component system to render log
   return (
-    <Box
-      ref={scrollerRef}
-      className="scroller"
-      position="relative"
-      h="full"
-      overflowY="scroll"
-    >
-      <IconButton
-        position="absolute"
-        top="4"
-        right="4"
-        zIndex="overlay"
-        aria-label="About this app"
-        icon={<MdInfo />}
-        variant="ghost"
-        fontSize="2xl"
-        onClick={onShowAbout}
-      />
+    <Box ref={scrollerRef} className="scroller" h="full" overflowY="scroll">
+      <HStack
+        position="relative"
+        px="4"
+        py="2"
+        alignItems="center"
+        justifyContent="center"
+        borderBottomWidth="1px"
+        borderBottomColor={colorMode === 'dark' ? 'primary.900' : 'primary.100'}
+      >
+        <Text textStyle="brand" fontSize="xl">
+          TIME THIEF
+        </Text>
+        <Badge
+          fontSize=".6rem"
+          transform="skew(-8deg)"
+          bg="primary.300"
+          color="primary.25"
+        >
+          BETA
+        </Badge>
+        <IconButton
+          as={Link}
+          to="/app/settings"
+          position="absolute"
+          right="3"
+          icon={<MdSettings />}
+          aria-label="Settings"
+          fontSize="lg"
+          onClick={() => {}}
+          variant="ghost"
+          size="sm"
+        />
+      </HStack>
       {logContent}
       <Box ref={endRef} w="full" h="10vh" />
     </Box>

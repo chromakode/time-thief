@@ -46,6 +46,7 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 import { appTheme } from './theme'
+import Settings from './components/Settings'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -238,9 +239,11 @@ function useRouteState({
 function App({
   isDemo,
   isShowingLog,
+  isShowingSettings,
 }: {
   isDemo: boolean
   isShowingLog: boolean
+  isShowingSettings: boolean
 }) {
   const { colorMode } = useColorMode()
   const [{ activities, manualActivity, seed }, remainingSeconds] =
@@ -343,6 +346,8 @@ function App({
     [activities, manualActivity, manualEntityIds, seed, width],
   )
 
+  const backgroundColor = colorMode === 'dark' ? 'primary.800' : 'primary.50'
+
   // FIXME: ignore multiple touch drags
   // TODO: ARIA tabs accessibility
   return (
@@ -352,7 +357,7 @@ function App({
         ref={ref}
         w="100vw"
         h="full"
-        background={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
+        background={backgroundColor}
         color={colorMode === 'dark' ? 'primary.100' : 'primary.600'}
         spacing="4"
         overflow="hidden"
@@ -502,15 +507,28 @@ function App({
           <Log onShowAbout={showIntro} />
         </MotionBox>
       )}
+      <Settings isShowing={isShowingSettings} />
     </>
   )
 }
 
-function AppWrapper({ isShowingLog }: { isShowingLog?: boolean }) {
+function AppWrapper({
+  isShowingLog,
+  isShowingSettings,
+}: {
+  isShowingLog?: boolean
+  isShowingSettings?: boolean
+}) {
   const [searchParams] = useSearchParams()
   const isDemo = searchParams.has('demo')
 
-  let content = <App isDemo={isDemo} isShowingLog={isShowingLog === true} />
+  let content = (
+    <App
+      isDemo={isDemo}
+      isShowingLog={isShowingLog === true}
+      isShowingSettings={isShowingSettings === true}
+    />
+  )
   if (isDemo) {
     content = <LightMode>{content}</LightMode>
   }

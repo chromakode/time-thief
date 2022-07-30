@@ -21,5 +21,9 @@ window.devUtils = {
     await _db.remove(configDoc)
   },
 
+  async dumpDB() {
+    return (await import('./dumpDB')).dumpDB()
+  },
+
   setClientId,
 }

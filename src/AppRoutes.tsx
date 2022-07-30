@@ -18,6 +18,10 @@ export default function AppRoutes() {
       <Route path="app">
         <Route index element={<App />} />
         <Route path="log" element={<App isShowingLog />} />
+        <Route
+          path="settings"
+          element={<App isShowingLog isShowingSettings />}
+        />
       </Route>
     </Routes>
   )

@@ -15,19 +15,16 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.2.0",
-    "@types/jest": "^27.5.1",
-    "@types/node": "^17.0.35",
-    "@types/pouchdb": "^6.4.0",
-    "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.4",
-    "@types/w3c-image-capture": "^1.0.6",
     "dayjs": "^1.11.3",
     "events": "^3.3.0",
+    "file-saver": "^2.0.5",
     "focus-visible": "^5.2.0",
     "framer-motion": "^6.3.3",
     "image-capture": "^0.4.0",
+    "jszip": "^3.10.0",
     "lodash": "^4.17.21",
     "lru-cache": "^7.10.1",
+    "mime2ext": "^2.0.0",
     "node": "^17.7.2",
     "pouchdb": "^7.3.0",
     "pouchdb-find": "^7.3.0",
@@ -47,7 +44,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "export REACT_APP_VERSION=$(git rev-parse HEAD) && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -70,6 +67,13 @@
     ]
   },
   "devDependencies": {
-    "@types/seedrandom": "^3.0.2"
+    "@types/file-saver": "^2.0.5",
+    "@types/jest": "^27.5.1",
+    "@types/node": "^17.0.35",
+    "@types/pouchdb": "^6.4.0",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
+    "@types/seedrandom": "^3.0.2",
+    "@types/w3c-image-capture": "^1.0.6"
   }
 }

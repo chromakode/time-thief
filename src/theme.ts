@@ -114,7 +114,7 @@ export const baseTheme = extendTheme(
       Modal: {
         baseStyle: ({ colorMode }: StyleFunctionProps) => ({
           dialog: {
-            bg: colorMode === 'dark' ? 'primary.800' : 'white',
+            bg: colorMode === 'dark' ? 'primary.800' : 'primary.50',
           },
         }),
       },

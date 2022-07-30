@@ -55,7 +55,11 @@ export function IntroModal({
   return (
     <Modal isOpen={isShowingIntro} onClose={closeIntro} isCentered>
       <ModalOverlay />
-      <ModalContent pb="4" mx="3">
+      <ModalContent
+        pb="4"
+        mx="3"
+        bg={colorMode === 'dark' ? 'primary.800' : 'white'}
+      >
         <ModalHeader
           display="flex"
           alignItems="baseline"
