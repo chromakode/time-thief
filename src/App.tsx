@@ -448,6 +448,9 @@ function App({
             onClick={() => {
               setShowingLog(!isShowingLog)
             }}
+            borderColor={backgroundColor}
+            borderWidth="1.5px"
+            boxSizing="content-box"
             borderRadius="full"
             size="lg"
             mr="-2"
