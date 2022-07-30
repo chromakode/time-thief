@@ -7,6 +7,7 @@ import {
   SimpleGrid,
   Text,
   useColorMode,
+  usePrevious,
   VStack,
 } from '@chakra-ui/react'
 import '@fontsource/roboto-flex/variable-full.css'
@@ -202,7 +203,8 @@ function useRouteState({
   const navigate = useNavigate()
   const navigationType = useNavigationType()
 
-  const { search } = location
+  const { pathname, search } = location
+  const prevPathname = usePrevious(pathname)
   const locationHashPage = parseInt(location.hash.substring(1))
   const page =
     Number.isInteger(locationHashPage) &&
@@ -222,7 +224,11 @@ function useRouteState({
     (newShowingLog: boolean) => {
       if (newShowingLog && !isShowingLog) {
         navigate(`/app/log${search}#${page}`)
-      } else if (!newShowingLog && isShowingLog) {
+      } else if (
+        !newShowingLog &&
+        isShowingLog &&
+        prevPathname !== '/app/settings'
+      ) {
         if (navigationType === 'PUSH') {
           navigate(-1)
         } else {
@@ -230,7 +236,7 @@ function useRouteState({
         }
       }
     },
-    [isShowingLog, navigate, navigationType, page, search],
+    [isShowingLog, navigate, navigationType, page, prevPathname, search],
   )
 
   return { page, setPage, setShowingLog }
