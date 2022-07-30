@@ -32,7 +32,6 @@ export default function Settings({ isShowing }: { isShowing: boolean }) {
 
   return (
     <Modal isOpen={isShowing} onClose={handleClose} size="full">
-      <ModalOverlay />
       <ModalContent>
         <ModalHeader
           py="2"
