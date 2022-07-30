@@ -17,6 +17,10 @@ export async function dumpDB() {
   const attachments = []
 
   for (const row of allDocs.rows) {
+    if (row.id.startsWith('_design/')) {
+      continue
+    }
+
     const doc = row.doc!
     const docAttachments = doc._attachments ?? {}
     delete doc._attachments
