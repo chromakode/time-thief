@@ -52,5 +52,5 @@ export async function dumpDB() {
   }
 
   const zipBlob = await zip.generateAsync({ type: 'blob' })
-  saveAs(zipBlob, 'time-thief-journal.zip')
+  await saveAs(zipBlob, 'time-thief-journal.zip')
 }
