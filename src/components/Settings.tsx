@@ -4,7 +4,6 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalOverlay,
   Image,
   Text,
   useColorMode,
