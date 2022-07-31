@@ -30,7 +30,6 @@ import './App.css'
 import Activity from './components/Activity'
 import ActivityPips from './components/ActivityPips'
 import Carousel from './components/Carousel'
-import { IntroModal, useShowingIntro } from './components/IntroModal'
 import Log from './components/Log'
 import MotionBox from './components/MotionBox'
 import {
@@ -264,7 +263,6 @@ function App({
   })
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0, height = 0] = useSize(ref)
-  const { isShowingIntro, showIntro, closeIntro } = useShowingIntro({ isDemo })
 
   const pageCount = activities.length + manualEntityIds.length
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
@@ -356,7 +354,6 @@ function App({
   // TODO: ARIA tabs accessibility
   return (
     <>
-      <IntroModal isShowingIntro={isShowingIntro} closeIntro={closeIntro} />
       <VStack
         ref={ref}
         w="100vw"
@@ -365,7 +362,6 @@ function App({
         color={colorMode === 'dark' ? 'primary.100' : 'primary.600'}
         spacing="4"
         overflow="hidden"
-        opacity={isShowingIntro && !isShowingLog ? '0' : '1'}
       >
         <Flex
           flex="1"
@@ -508,7 +504,7 @@ function App({
             setDraggingLog(false)
           }}
         >
-          <Log onShowAbout={showIntro} />
+          <Log />
         </MotionBox>
       )}
       <Settings isShowing={isShowingSettings} onClose={dismissSettings} />

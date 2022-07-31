@@ -167,7 +167,7 @@ function LogDay({
   )
 }
 
-export default function Log({ onShowAbout }: { onShowAbout: () => void }) {
+export default function Log() {
   const { colorMode } = useColorMode()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
