@@ -14,20 +14,19 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react'
 import { useAsync } from '@react-hook/async'
-import { useCallback } from 'react'
 import { FaDiscord, FaGithub } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
 import { GITHUB_URL } from '../LandingPage'
 
 import logoWithBorderURL from '../logoWithBorder.svg'
 
-export default function Settings({ isShowing }: { isShowing: boolean }) {
+export default function Settings({
+  isShowing,
+  onClose,
+}: {
+  isShowing: boolean
+  onClose: () => void
+}) {
   const { colorMode, toggleColorMode } = useColorMode()
-
-  const navigate = useNavigate()
-  const handleClose = useCallback(() => {
-    navigate('/app/log')
-  }, [navigate])
 
   const [{ status: dumpStatus }, doDumpDB] = useAsync(async () => {
     const { dumpDB } = await import('../utils/dumpDB')
@@ -35,7 +34,7 @@ export default function Settings({ isShowing }: { isShowing: boolean }) {
   })
 
   return (
-    <Modal isOpen={isShowing} onClose={handleClose} size="full">
+    <Modal isOpen={isShowing} onClose={onClose} size="full">
       <ModalContent>
         <ModalHeader
           py="2"

@@ -40,12 +40,7 @@ import {
 import useLongPress from './utils/useLongPress'
 import { Provider as PouchProvider } from 'use-pouchdb'
 import { _db } from '.'
-import {
-  useLocation,
-  useNavigate,
-  useNavigationType,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { appTheme } from './theme'
 import Settings from './components/Settings'
 
@@ -201,7 +196,6 @@ function useRouteState({
 }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const navigationType = useNavigationType()
 
   const { pathname, search } = location
   const prevPathname = usePrevious(pathname)
@@ -224,22 +218,26 @@ function useRouteState({
     (newShowingLog: boolean) => {
       if (newShowingLog && !isShowingLog) {
         navigate(`/app/log${search}#${page}`)
-      } else if (
-        !newShowingLog &&
-        isShowingLog &&
-        prevPathname !== '/app/settings'
-      ) {
-        if (navigationType === 'PUSH') {
+      } else if (!newShowingLog && isShowingLog) {
+        if (prevPathname === '/app' || prevPathname === '/app/settings') {
           navigate(-1)
         } else {
           navigate(`/app${search}#${page}`, { replace: true })
         }
       }
     },
-    [isShowingLog, navigate, navigationType, page, prevPathname, search],
+    [isShowingLog, navigate, page, prevPathname, search],
   )
 
-  return { page, setPage, setShowingLog }
+  const dismissSettings = useCallback(() => {
+    if (prevPathname === '/app/log') {
+      navigate(-1)
+    } else {
+      navigate(`/app/log`, { replace: true })
+    }
+  }, [navigate, prevPathname])
+
+  return { page, setPage, setShowingLog, dismissSettings }
 }
 
 function App({
@@ -270,7 +268,7 @@ function App({
 
   const pageCount = activities.length + manualEntityIds.length
   const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
-  const { page, setPage, setShowingLog } = useRouteState({
+  const { page, setPage, setShowingLog, dismissSettings } = useRouteState({
     maxPages: pageCount,
     isShowingLog,
   })
@@ -513,7 +511,7 @@ function App({
           <Log onShowAbout={showIntro} />
         </MotionBox>
       )}
-      <Settings isShowing={isShowingSettings} />
+      <Settings isShowing={isShowingSettings} onClose={dismissSettings} />
     </>
   )
 }
