@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react'
 import {
   Box,
-  Center,
   HStack,
   Icon,
   Text,
@@ -16,7 +15,7 @@ import { AnimatePresence } from 'framer-motion'
 import MotionBox from './MotionBox'
 import { MdArticle, MdFavorite } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
-import { atom, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom } from '../App'
 import { useLocation } from 'react-router-dom'
 
