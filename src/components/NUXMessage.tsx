@@ -186,7 +186,7 @@ function useNUXFirstWritten() {
   return (
     <MessageBox key="first-written" onFinish={setSeen}>
       <MessageText>Awesome, you wrote your first note!</MessageText>
-      <VStack spacing="0">
+      <VStack spacing="1">
         <MessageText>
           Everything is auto-saved privately on your device.{' '}
         </MessageText>
