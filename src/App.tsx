@@ -208,7 +208,7 @@ function useDemoSwipes(
         dirRef.current = 1
       }
       setPage(curPage + dirRef.current)
-    }, 3000)
+    }, 2500)
     return () => {
       clearInterval(interval)
     }
