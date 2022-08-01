@@ -220,7 +220,7 @@ function useNUXLogViewed() {
     <MessageBox key="log-viewed" onFinish={setSeen}>
       <MessageText>This is your log.</MessageText>
       <MessageText>
-        It displays everything you’ve written in{' '}
+        It displays everything you've written in{' '}
         <Text as="span" textStyle="brand">
           TIME THIEF
         </Text>
@@ -228,7 +228,7 @@ function useNUXLogViewed() {
       </MessageText>
       <MessageText>Except! There's a twist!</MessageText>
       <MessageText>
-        The log doesn’t show anything less than a day old.
+        The log doesn't show anything less than a day old.
       </MessageText>
       <MessageText>To help avoid dwelling on recent history...</MessageText>
       <MessageText>
