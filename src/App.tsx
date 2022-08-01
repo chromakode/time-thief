@@ -1,5 +1,4 @@
 import {
-  BoxProps,
   ChakraProvider,
   Flex,
   IconButton,
@@ -7,6 +6,7 @@ import {
   SimpleGrid,
   Text,
   useColorMode,
+  useLatestRef,
   usePrevious,
   VStack,
 } from '@chakra-ui/react'
@@ -42,6 +42,9 @@ import { _db } from '.'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { appTheme } from './theme'
 import Settings from './components/Settings'
+import NUXMessage from './components/NUXMessage'
+import RemainingTime from './components/RemainingTime'
+import { atom, useAtom } from 'jotai'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -124,68 +127,6 @@ function useActivities(): [ActivityState, number | null] {
   return [activityState, remainingSeconds]
 }
 
-function RemainingTime({
-  remainingSeconds,
-  ...props
-}: { remainingSeconds: number } & BoxProps) {
-  const { colorMode } = useColorMode()
-  const [pulseKey, setPulseKey] = useState<number | undefined>()
-
-  const remainingMinutes = Math.ceil(remainingSeconds / 60)
-
-  useEffect(() => {
-    if (remainingSeconds <= 10) {
-      setPulseKey(remainingSeconds)
-    } else if (remainingSeconds <= 60) {
-      setPulseKey(Math.ceil(remainingSeconds / 10) * 10)
-    } else if (remainingMinutes <= 3) {
-      setPulseKey(remainingMinutes * 60)
-    }
-  }, [remainingSeconds, remainingMinutes])
-
-  return (
-    <Flex justifySelf="flex-start" position="relative">
-      <Text
-        textStyle="title"
-        whiteSpace="pre"
-        minW="6"
-        textAlign="center"
-        {...props}
-      >
-        {remainingSeconds > 60
-          ? `${remainingMinutes}m`
-          : `${remainingSeconds}s`}
-      </Text>
-      <AnimatePresence>
-        <MotionBox
-          position="absolute"
-          left="50%"
-          bottom="50%"
-          key={pulseKey}
-          borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
-          borderRadius="9999px"
-          initial={{
-            width: 60,
-            height: 60,
-            translateX: -30,
-            translateY: 30,
-            opacity: 0,
-            borderWidth: 1,
-          }}
-          exit={{
-            width: 200,
-            height: 200,
-            translateX: -100,
-            translateY: 100,
-            opacity: [0, 0.25, 1, 0],
-          }}
-          transition={{ duration: 1.5 }}
-        />
-      </AnimatePresence>
-    </Flex>
-  )
-}
-
 function useRouteState({
   maxPages,
   isShowingLog,
@@ -239,6 +180,46 @@ function useRouteState({
   return { page, setPage, setShowingLog, dismissSettings }
 }
 
+export const demoSwipe = atom<boolean | null>(null)
+
+function useDemoSwipes(
+  isDemo: boolean,
+  page: number,
+  pageCount: number,
+  setPage: (num: number) => void,
+) {
+  const [demoSwipeValue, setDemoSwipeValue] = useAtom(demoSwipe)
+  const isDemoingSwipes = demoSwipeValue ?? isDemo
+
+  const dirRef = useRef(1)
+  const pageRef = useLatestRef(page)
+
+  useEffect(() => {
+    if (!isDemoingSwipes) {
+      return
+    }
+    function simulateSwipe() {
+      const curPage = pageRef.current
+      if (curPage === pageCount - 1) {
+        dirRef.current = -1
+      } else if (curPage === 0) {
+        dirRef.current = 1
+      }
+      setPage(curPage + dirRef.current)
+    }
+    const interval = setInterval(simulateSwipe, 3000)
+    simulateSwipe()
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isDemoingSwipes, pageCount, pageRef, setPage])
+
+  const stopDemoSwipes = useCallback(() => {
+    setDemoSwipeValue(false)
+  }, [setDemoSwipeValue])
+  return stopDemoSwipes
+}
+
 function App({
   isDemo,
   isShowingLog,
@@ -271,6 +252,8 @@ function App({
     isShowingLog,
   })
 
+  const stopDemoSwipes = useDemoSwipes(isDemo, page, pageCount, setPage)
+
   const dragControls = useDragControls()
   const dragMotionValue = useMotionValue(0)
   const dragDraftRange = [-(lastPage - 1) * width, -lastPage * width]
@@ -297,7 +280,8 @@ function App({
     )
   })
 
-  function handleStartDrag(event: React.TouchEvent) {
+  function handleStartDrag(event: React.PointerEvent) {
+    stopDemoSwipes()
     dragControls.start(event)
   }
 
@@ -354,115 +338,117 @@ function App({
   // TODO: ARIA tabs accessibility
   return (
     <>
-      <VStack
-        ref={ref}
-        w="100vw"
-        h="full"
-        background={backgroundColor}
-        color={colorMode === 'dark' ? 'primary.100' : 'primary.600'}
-        spacing="4"
-        overflow="hidden"
-      >
-        <Flex
-          flex="1"
-          w="full"
-          position="relative"
-          onTouchStart={handleStartDrag}
+      <Flex ref={ref} h="full" flexDir="column" background={backgroundColor}>
+        <VStack
+          w="100vw"
+          h="full"
+          color={colorMode === 'dark' ? 'primary.100' : 'primary.600'}
+          spacing="4"
+          overflow="hidden"
         >
-          {ready && (
-            <AnimatePresence initial={false} exitBeforeEnter>
-              <MotionBox
-                key={seed}
-                position="absolute"
-                inset="0"
-                display="flex"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  transition: { duration: 0.25, ease: 'easeOut' },
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 1.05,
-                  transition: { duration: 0.25, ease: 'easeOut' },
-                }}
-              >
-                <Carousel
-                  width={width}
-                  page={page}
-                  dragMotionValue={dragMotionValue}
-                  dragControls={dragControls}
-                  onPageChange={handlePageChange}
-                  onDragToLastPage={handleCreateManualEntity}
-                  lastPage={
-                    manualActivity &&
-                    !manualEntityDraftId && (
-                      <Activity
-                        w={width}
-                        key="manual-draft"
-                        activity={manualActivity}
-                        seed={seed}
-                        idx={activities.length}
-                      />
-                    )
-                  }
+          <Flex
+            flex="1"
+            w="full"
+            position="relative"
+            onPointerDown={handleStartDrag}
+          >
+            {ready && (
+              <AnimatePresence initial={false} exitBeforeEnter>
+                <MotionBox
+                  key={seed}
+                  position="absolute"
+                  inset="0"
+                  display="flex"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    transition: { duration: 0.25, ease: 'easeOut' },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 1.05,
+                    transition: { duration: 0.25, ease: 'easeOut' },
+                  }}
                 >
-                  {activityContent}
-                </Carousel>
-              </MotionBox>
-            </AnimatePresence>
-          )}
-        </Flex>
-        <SimpleGrid
-          flexShrink="0"
-          columns={3}
-          h="10vh"
-          minH="12"
-          w="full"
-          px="8"
-          alignItems="center"
-          justifyContent="space-around"
-          onTouchStart={handleStartLogDrag}
-          sx={{ touchAction: 'none' }}
-        >
-          {remainingSeconds == null ? (
-            <Text />
-          ) : (
-            <RemainingTime
-              remainingSeconds={remainingSeconds}
-              justifySelf="start"
+                  <Carousel
+                    width={width}
+                    page={page}
+                    dragMotionValue={dragMotionValue}
+                    dragControls={dragControls}
+                    onPageChange={handlePageChange}
+                    onDragToLastPage={handleCreateManualEntity}
+                    lastPage={
+                      manualActivity &&
+                      !manualEntityDraftId && (
+                        <Activity
+                          w={width}
+                          flexShrink="0"
+                          key="manual-draft"
+                          activity={manualActivity}
+                          seed={seed}
+                          idx={activities.length}
+                        />
+                      )
+                    }
+                  >
+                    {activityContent}
+                  </Carousel>
+                </MotionBox>
+              </AnimatePresence>
+            )}
+          </Flex>
+          <SimpleGrid
+            flexShrink="0"
+            columns={3}
+            h="10vh"
+            minH="12"
+            w="full"
+            px="8"
+            alignItems="center"
+            justifyContent="space-around"
+            onTouchStart={handleStartLogDrag}
+            sx={{ touchAction: 'none' }}
+          >
+            {remainingSeconds == null ? (
+              <Text />
+            ) : (
+              <RemainingTime
+                remainingSeconds={remainingSeconds}
+                justifySelf="start"
+              />
+            )}
+            <ActivityPips
+              activityCount={activities.length}
+              page={page}
+              lastPage={lastPage}
+              opacity={ready ? 1 : 0}
+              dragProgressMotionValue={dragProgressMotionValue}
+              onGotoPage={setPage}
+              onCreateManualEntity={handleCreateManualEntity}
             />
-          )}
-          <ActivityPips
-            activityCount={activities.length}
-            page={page}
-            lastPage={lastPage}
-            opacity={ready ? 1 : 0}
-            dragProgressMotionValue={dragProgressMotionValue}
-            onGotoPage={setPage}
-            onCreateManualEntity={handleCreateManualEntity}
-          />
-          <IconButton
-            zIndex="overlay"
-            icon={<MdArticle />}
-            aria-label="View log"
-            justifySelf="end"
-            variant={isShowingLog || isDraggingLog ? 'solid' : 'ghost'}
-            fontSize="3xl"
-            onClick={() => {
-              setShowingLog(!isShowingLog)
-            }}
-            borderColor={backgroundColor}
-            borderWidth="1.5px"
-            boxSizing="content-box"
-            borderRadius="full"
-            size="lg"
-            mr="-2"
-            {...logLongPressProps}
-          />
-        </SimpleGrid>
-      </VStack>
+            <IconButton
+              zIndex="overlay"
+              icon={<MdArticle />}
+              aria-label="View log"
+              justifySelf="end"
+              variant={isShowingLog || isDraggingLog ? 'solid' : 'ghost'}
+              fontSize="3xl"
+              onClick={() => {
+                setShowingLog(!isShowingLog)
+              }}
+              borderColor={backgroundColor}
+              borderWidth="1.5px"
+              boxSizing="content-box"
+              borderRadius="full"
+              size="lg"
+              mr="-2"
+              {...logLongPressProps}
+            />
+          </SimpleGrid>
+        </VStack>
+        {!isDemo && <NUXMessage />}
+      </Flex>
       {ready && (
         <MotionBox
           position="absolute"

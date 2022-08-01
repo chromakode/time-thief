@@ -17,9 +17,9 @@ export default function Carousel({
   width: number
   page: number
   dragMotionValue: MotionValue
-  dragControls: DragControls
+  dragControls?: DragControls
   onPageChange: (page: number) => void
-  onDragToLastPage: () => void
+  onDragToLastPage?: () => void
   lastPage?: React.ReactNode
   children: React.ReactNode
 }) {
@@ -75,7 +75,7 @@ export default function Carousel({
           (point.x !== 0 && offset.x > posThreshold)
 
         if (movingRight && !canMoveRight && lastPage) {
-          onDragToLastPage()
+          onDragToLastPage?.()
           return
         }
 

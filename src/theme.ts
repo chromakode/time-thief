@@ -54,7 +54,6 @@ export const baseTheme = extendTheme(
         textTransform: 'capitalize',
       },
       slant: {
-        fontWeight: 500,
         fontVariationSettings: '"GRAD" 150, "slnt" -8',
       },
       hero: {

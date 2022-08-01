@@ -101,7 +101,13 @@ export default function LandingPage() {
                 TIME THIEF
               </Text>
             </Link>
-            <Text textStyle="slant" fontSize="md" color="primary.600" ml="3">
+            <Text
+              textStyle="slant"
+              fontSize="md"
+              color="primary.600"
+              fontWeight="500"
+              ml="3"
+            >
               EARLY BETA
             </Text>
           </Flex>

@@ -111,7 +111,7 @@ export default function Activity({
   }
 
   return (
-    <VStack w="full" h="full" flexShrink="0" overflow="hidden" {...props}>
+    <VStack w="full" h="full" overflow="hidden" {...props}>
       {content}
     </VStack>
   )
