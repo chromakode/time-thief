@@ -44,7 +44,7 @@ import { appTheme } from './theme'
 import Settings from './components/Settings'
 import NUXMessage from './components/NUXMessage'
 import RemainingTime from './components/RemainingTime'
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -180,7 +180,9 @@ function useRouteState({
   return { page, setPage, setShowingLog, dismissSettings }
 }
 
-export const demoSwipe = atom<boolean | null>(null)
+export const demoSwipeAtom = atom<boolean | null>(null)
+
+export const activityPageAtom = atom(0)
 
 function useDemoSwipes(
   isDemo: boolean,
@@ -188,7 +190,7 @@ function useDemoSwipes(
   pageCount: number,
   setPage: (num: number) => void,
 ) {
-  const [demoSwipeValue, setDemoSwipeValue] = useAtom(demoSwipe)
+  const [demoSwipeValue, setDemoSwipeValue] = useAtom(demoSwipeAtom)
   const isDemoingSwipes = demoSwipeValue ?? isDemo
 
   const dirRef = useRef(1)
@@ -267,6 +269,8 @@ function App({
   const slideLog = useAnimation()
   const [isDraggingLog, setDraggingLog] = useState(false)
 
+  const setActivityPage = useSetAtom(activityPageAtom)
+
   function blur() {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
@@ -290,7 +294,10 @@ function App({
   }
 
   function handlePageChange(page: number) {
+    // TODO: unify jotai page state and route
+    // (trigger route on jotai state changes)
     setPage(page)
+    setActivityPage(page)
     blur()
     if (page < pageCount - 1) {
       cleanupManualDraft()
