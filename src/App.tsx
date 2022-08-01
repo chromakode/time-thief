@@ -200,7 +200,7 @@ function useDemoSwipes(
     if (!isDemoingSwipes) {
       return
     }
-    function simulateSwipe() {
+    const interval = setInterval(() => {
       const curPage = pageRef.current
       if (curPage === pageCount - 1) {
         dirRef.current = -1
@@ -208,9 +208,7 @@ function useDemoSwipes(
         dirRef.current = 1
       }
       setPage(curPage + dirRef.current)
-    }
-    const interval = setInterval(simulateSwipe, 3000)
-    simulateSwipe()
+    }, 3000)
     return () => {
       clearInterval(interval)
     }
