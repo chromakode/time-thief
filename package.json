@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.2.0",
+    "bowser": "^2.11.0",
     "dayjs": "^1.11.3",
     "events": "^3.3.0",
     "file-saver": "^2.0.5",

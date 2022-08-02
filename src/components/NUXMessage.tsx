@@ -1,4 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react'
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {
   Box,
   HStack,
@@ -14,11 +20,12 @@ import { useAllDocs, useDoc, usePouch } from 'use-pouchdb'
 import MessageBox from './MessageBox'
 import { AnimatePresence } from 'framer-motion'
 import MotionBox from './MotionBox'
-import { MdArticle, MdFavorite } from 'react-icons/md'
+import { MdArticle, MdFavorite, MdIosShare, MdMoreVert } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
 import { useAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
+import Bowser from 'bowser'
 import Markdown from './Markdown'
 
 type NUXHook = () => ReactNode | undefined
@@ -324,26 +331,67 @@ function useNUXAboutPrompts() {
 function useNUXHowToInstall() {
   const [isSeen, setSeen] = useNUXSeen('how-to-install')
 
-  const isBrowser = useMediaQuery('display-mode: browser')
+  const isInstalled = !useMediaQuery('display-mode: browser')
   const [installPromptEvent] = useAtom(installPromptEventAtom)
+  const browser = useMemo(() => Bowser.getParser(navigator.userAgent), [])
+  const osName = browser.getOSName(true)
+  const isTablet = browser.getPlatformType(true) === 'tablet'
+
+  const canInstall =
+    installPromptEvent || osName === 'ios' || osName === 'android'
 
   const handleFinish = useCallback(() => {
     installPromptEvent?.prompt()
     setSeen()
   }, [installPromptEvent, setSeen])
 
-  if (isSeen || !isBrowser || !installPromptEvent) {
+  if (isSeen || isInstalled || !canInstall) {
     return
   }
 
   return (
     <MessageBox key="how-to-install" onFinish={handleFinish}>
       <MessageText>
-        The easier it is to open your journal, the better TIME THIEF works.
+        The easier it is to open your journal, the better{' '}
+        <Text as="span" textStyle="brand">
+          TIME THIEF
+        </Text>{' '}
+        works.
       </MessageText>
       {installPromptEvent && (
         <MessageText>
-          Would you like to add TIME THIEF to your home screen?
+          Would you like to add{' '}
+          <Text as="span" textStyle="brand">
+            TIME THIEF
+          </Text>{' '}
+          to your home screen?
+        </MessageText>
+      )}
+      {osName === 'ios' && (
+        <MessageText>
+          {`To add it to your ${isTablet ? 'iPad' : 'iPhone'}, tap`}
+          <Icon
+            as={MdIosShare}
+            display="inline-block"
+            verticalAlign="text-bottom"
+            fontSize="3xl"
+            mx="2"
+          />
+          and "Add to Home Screen"
+        </MessageText>
+      )}
+      {osName === 'android' && (
+        <MessageText>
+          {`To add it to your Android ${
+            isTablet ? 'tablet' : 'phone'
+          }, tap the `}{' '}
+          <Icon
+            as={MdMoreVert}
+            display="inline-block"
+            verticalAlign="text-bottom"
+            fontSize="3xl"
+          />{' '}
+          menu and "Install app"
         </MessageText>
       )}
     </MessageBox>
