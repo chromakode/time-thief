@@ -63,6 +63,8 @@ export default function MessageBox({
     }
   }, [onFinish, page, pageCount])
 
+  const transition = { type: 'string', duration: 0.4 }
+
   return (
     <>
       {isModal && (
@@ -73,6 +75,8 @@ export default function MessageBox({
             bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.65 }}
+            exit={{ opacity: 0 }}
+            transition={transition}
             pointerEvents="none"
             zIndex="overlay"
           />
@@ -86,6 +90,7 @@ export default function MessageBox({
           opacity: 1,
         }}
         exit={{ height: 0, opacity: 0 }}
+        transition={transition}
         bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
         zIndex="popover"
       >
