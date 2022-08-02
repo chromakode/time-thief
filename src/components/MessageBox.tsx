@@ -38,7 +38,8 @@ export default function MessageBox({
   const [page, setPage] = useState(0)
   const dragMotionValue = useMotionValue(0)
 
-  const pageCount = React.Children.count(children)
+  const filteredChildren = React.Children.toArray(children).filter((x) => x)
+  const pageCount = filteredChildren.length
 
   const handlePageChange = useCallback(
     (nextPage: number) => {
@@ -155,7 +156,7 @@ export default function MessageBox({
                   onPageChange={handlePageChange}
                   dragMotionValue={dragMotionValue}
                 >
-                  {React.Children.map(children, (child) => (
+                  {filteredChildren.map((child) => (
                     <Center w={width} flexShrink="0" px="4">
                       {child}
                     </Center>

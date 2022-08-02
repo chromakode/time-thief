@@ -159,6 +159,7 @@ function useNUXFirstTime() {
 
 function useNUXFirstWritten() {
   const [isSeen, setSeen] = useNUXSeen('first-written')
+  const [isLogSeen] = useNUXSeen('log-viewed')
 
   const [isEligible, setIsEligible] = useState(false)
   const [initialPage, setInitialPage] = useState<number | null>(null)
@@ -195,17 +196,19 @@ function useNUXFirstWritten() {
         </MessageText>
         <Text fontSize="lg">No internet required!</Text>
       </VStack>
-      <MessageText>
-        Tap the log
-        <Icon
-          as={MdArticle}
-          display="inline-block"
-          verticalAlign="text-bottom"
-          fontSize="3xl"
-          mx="2"
-        />
-        to reflect on your day.
-      </MessageText>
+      {!isLogSeen && (
+        <MessageText>
+          Tap the log
+          <Icon
+            as={MdArticle}
+            display="inline-block"
+            verticalAlign="text-bottom"
+            fontSize="3xl"
+            mx="2"
+          />
+          to reflect on your day.
+        </MessageText>
+      )}
     </MessageBox>
   )
 }
