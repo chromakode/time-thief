@@ -156,8 +156,8 @@ export default function MessageBox({
                   onPageChange={handlePageChange}
                   dragMotionValue={dragMotionValue}
                 >
-                  {filteredChildren.map((child) => (
-                    <Center w={width} flexShrink="0" px="4">
+                  {filteredChildren.map((child, idx) => (
+                    <Center key={idx} w={width} flexShrink="0" px="4">
                       {child}
                     </Center>
                   ))}
