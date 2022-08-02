@@ -503,6 +503,11 @@ function App({
   )
 }
 
+type BeforeInstallPromptEvent = Event & { prompt: () => void }
+export const installPromptEventAtom = atom<BeforeInstallPromptEvent | null>(
+  null,
+)
+
 function AppWrapper({
   isShowingLog,
   isShowingSettings,
@@ -512,6 +517,19 @@ function AppWrapper({
 }) {
   const [searchParams] = useSearchParams()
   const isDemo = searchParams.has('demo')
+
+  const setPromptEvent = useSetAtom(installPromptEventAtom)
+
+  useEffect(() => {
+    function handleInstallPrompt(ev: Event) {
+      // TODO: use a real type def for event
+      setPromptEvent(ev as BeforeInstallPromptEvent)
+    }
+    window.addEventListener('beforeinstallprompt', handleInstallPrompt)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleInstallPrompt)
+    }
+  }, [setPromptEvent])
 
   let content = (
     <App

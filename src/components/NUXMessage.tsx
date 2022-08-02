@@ -6,6 +6,7 @@ import {
   Text,
   TextProps,
   useColorMode,
+  useMediaQuery,
   useTimeout,
   VStack,
 } from '@chakra-ui/react'
@@ -16,7 +17,7 @@ import MotionBox from './MotionBox'
 import { MdArticle, MdFavorite } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
 import { useAtom } from 'jotai'
-import { activityPageAtom, demoSwipeAtom } from '../App'
+import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
 import Markdown from './Markdown'
 
@@ -320,6 +321,34 @@ function useNUXAboutPrompts() {
   )
 }
 
+function useNUXHowToInstall() {
+  const [isSeen, setSeen] = useNUXSeen('how-to-install')
+
+  const isBrowser = useMediaQuery('display-mode: browser')
+  const [installPromptEvent] = useAtom(installPromptEventAtom)
+
+  const handleFinish = useCallback(() => {
+    installPromptEvent?.prompt()
+    setSeen()
+  }, [installPromptEvent, setSeen])
+
+  if (isSeen || !isBrowser || !installPromptEvent) {
+    return
+  }
+
+  return (
+    <MessageBox key="how-to-install" onFinish={handleFinish}>
+      <MessageText>
+        The easier it is to open your journal, the better TIME THIEF will work.
+        Here's how.
+      </MessageText>
+      {installPromptEvent && (
+        <MessageText>Tap to add TIME THIEF to your home screen.</MessageText>
+      )}
+    </MessageBox>
+  )
+}
+
 export default function NUXMessage() {
   const content = useNUXMessage([
     useNUXFirstTime,
@@ -327,6 +356,7 @@ export default function NUXMessage() {
     useNUXLogViewed,
     useNUXHowToManual,
     useNUXAboutPrompts,
+    useNUXHowToInstall,
   ])
   return <AnimatePresence>{content}</AnimatePresence>
 }
