@@ -18,6 +18,7 @@ import RemainingTime from './RemainingTime'
 import { useAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom } from '../App'
 import { useLocation } from 'react-router-dom'
+import Markdown from './Markdown'
 
 type NUXHook = () => ReactNode | undefined
 
@@ -53,7 +54,7 @@ function MessageText({
 }: { children: ReactNode } & TextProps) {
   return (
     <Text fontSize="2xl" fontWeight="550" textAlign="center" {...props}>
-      {children}
+      <Markdown>{children}</Markdown>
     </Text>
   )
 }
@@ -131,7 +132,9 @@ function useNUXFirstTime() {
             },
           }}
         >
-          <Text fontSize="lg">(swipe or tap to continue...)</Text>
+          <Text fontSize="lg">
+            <Markdown>(swipe or tap to continue...)</Markdown>
+          </Text>
         </MotionBox>
       </VStack>
       <MessageText>Swipe left and right to navigate.</MessageText>
@@ -188,7 +191,7 @@ function useNUXFirstWritten() {
       <MessageText>Awesome, you wrote your first note!</MessageText>
       <VStack spacing="1">
         <MessageText>
-          Everything is auto-saved privately on your device.{' '}
+          Everything is auto-saved privately on your device.
         </MessageText>
         <Text fontSize="lg">No internet required!</Text>
       </VStack>
@@ -263,14 +266,14 @@ function useNUXHowToManual() {
         You're encouraged to reinterpret them or take a contrarian stance.
       </MessageText>
       <MessageText>
-        If you're not feeling any of them, don't sweat it — you can always write
-        more later.
+        If you're not feeling any of them, don't sweat it -- you can always
+        write more later.
       </MessageText>
       <MessageText>
-        Got something else to say, or a photo you can’t miss?
+        Got something else to say, or a photo you can't miss?
       </MessageText>
       <MessageText>
-        Swipe left past the last prompt to add an extra page to your journal.{' '}
+        Swipe left past the last prompt to add an extra page to your journal.
       </MessageText>
       <MessageText>You can add as many extra pages as you want.</MessageText>
     </MessageBox>
