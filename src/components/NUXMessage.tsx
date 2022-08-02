@@ -200,7 +200,8 @@ function useNUXFirstWritten() {
         <Icon
           as={MdArticle}
           display="inline-block"
-          verticalAlign="middle"
+          verticalAlign="text-bottom"
+          fontSize="3xl"
           mx="2"
         />
         to reflect on your day.
