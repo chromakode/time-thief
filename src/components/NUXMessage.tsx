@@ -200,7 +200,7 @@ function useNUXFirstWritten() {
     [isSeen, entityCount],
   )
 
-  if (!isEligible) {
+  if (isSeen || !isEligible) {
     return
   }
 
@@ -300,7 +300,7 @@ function useNUXAboutPrompts() {
     [isSeen, entityCount],
   )
 
-  if (!isEligible) {
+  if (isSeen || !isEligible) {
     return
   }
 
