@@ -48,6 +48,39 @@ function useNUXSeen(name: string, delay: number = 1000): [boolean, () => void] {
   return [isSeen, setSeen]
 }
 
+function useEntityCount() {
+  const entities = useAllDocs({
+    startkey: '0',
+    endkey: '9\ufff0',
+  })
+  return entities.rows.length
+}
+
+function usePageChangeTrigger<T extends any[]>(
+  predicate: (...args: T) => boolean,
+  deps: T,
+) {
+  const [isEligible, setIsEligible] = useState(false)
+  const [initialPage, setInitialPage] = useState<number | null>(null)
+
+  const [currentPage] = useAtom(activityPageAtom)
+
+  useEffect(() => {
+    if (predicate(...deps)) {
+      setInitialPage(currentPage)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, predicate, ...deps])
+
+  useEffect(() => {
+    if (initialPage !== null && currentPage !== initialPage) {
+      setIsEligible(true)
+    }
+  }, [currentPage, initialPage])
+
+  return isEligible
+}
+
 function MessageText({
   children,
   ...props
@@ -160,30 +193,14 @@ function useNUXFirstTime() {
 function useNUXFirstWritten() {
   const [isSeen, setSeen] = useNUXSeen('first-written')
   const [isLogSeen] = useNUXSeen('log-viewed')
+  const entityCount = useEntityCount()
 
-  const [isEligible, setIsEligible] = useState(false)
-  const [initialPage, setInitialPage] = useState<number | null>(null)
+  const isEligible = usePageChangeTrigger(
+    (isSeen, entityCount) => !isSeen && entityCount > 0,
+    [isSeen, entityCount],
+  )
 
-  const entities = useAllDocs({
-    startkey: '0',
-    endkey: '9\ufff0',
-  })
-
-  const [currentPage] = useAtom(activityPageAtom)
-
-  useEffect(() => {
-    if (!isSeen && entities.rows.length > 0) {
-      setInitialPage(currentPage)
-    }
-  }, [currentPage, entities.rows.length, isSeen])
-
-  useEffect(() => {
-    if (initialPage !== null && currentPage !== initialPage) {
-      setIsEligible(true)
-    }
-  }, [currentPage, entities.rows.length, initialPage, isSeen])
-
-  if (isSeen || !isEligible) {
+  if (!isEligible) {
     return
   }
 
@@ -264,16 +281,6 @@ function useNUXHowToManual() {
   return (
     <MessageBox key="how-to-manual" onFinish={setSeen}>
       <MessageText>
-        By the way, prompts are just a starting point for inspiration.
-      </MessageText>
-      <MessageText>
-        You're encouraged to reinterpret them or take a contrarian stance.
-      </MessageText>
-      <MessageText>
-        If you're not feeling any of them, don't sweat it -- you can always
-        write more later.
-      </MessageText>
-      <MessageText>
         Got something else to say, or a photo you can't miss?
       </MessageText>
       <MessageText>
@@ -284,12 +291,42 @@ function useNUXHowToManual() {
   )
 }
 
+function useNUXAboutPrompts() {
+  const [isSeen, setSeen] = useNUXSeen('about-prompts')
+  const entityCount = useEntityCount()
+
+  const isEligible = usePageChangeTrigger(
+    (isSeen, entityCount) => !isSeen && entityCount > 3,
+    [isSeen, entityCount],
+  )
+
+  if (!isEligible) {
+    return
+  }
+
+  return (
+    <MessageBox key="about-prompts" onFinish={setSeen}>
+      <MessageText>
+        By the way, prompts are just a starting point for inspiration.
+      </MessageText>
+      <MessageText>
+        You're encouraged to reinterpret them or take a contrarian stance.
+      </MessageText>
+      <MessageText>
+        If you're not feeling any of them, don't sweat it -- you can always
+        write more later.
+      </MessageText>
+    </MessageBox>
+  )
+}
+
 export default function NUXMessage() {
   const content = useNUXMessage([
     useNUXFirstTime,
     useNUXFirstWritten,
     useNUXLogViewed,
     useNUXHowToManual,
+    useNUXAboutPrompts,
   ])
   return <AnimatePresence>{content}</AnimatePresence>
 }
