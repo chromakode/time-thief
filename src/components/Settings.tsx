@@ -49,7 +49,7 @@ export default function Settings({
         <ModalCloseButton />
         <ModalBody display="flex" flexDir="column" alignItems="center">
           <VStack spacing="4" mt="16">
-            <Image src={logoWithBorderURL} w="48" mx="auto" />
+            <Image src={logoWithBorderURL} w="48" h="48" mx="auto" />
             <Text textStyle="brand" fontSize="5xl">
               TIME THIEF
             </Text>
