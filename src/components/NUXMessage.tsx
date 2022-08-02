@@ -330,22 +330,29 @@ function useNUXAboutPrompts() {
 
 function useNUXHowToInstall() {
   const [isSeen, setSeen] = useNUXSeen('how-to-install')
+  const entityCount = useEntityCount()
 
   const isInstalled = !useMediaQuery('display-mode: browser')
+
   const [installPromptEvent] = useAtom(installPromptEventAtom)
+
   const browser = useMemo(() => Bowser.getParser(navigator.userAgent), [])
   const osName = browser.getOSName(true)
   const isTablet = browser.getPlatformType(true) === 'tablet'
-
   const canInstall =
     installPromptEvent || osName === 'ios' || osName === 'android'
+
+  const isEligible = usePageChangeTrigger(
+    (isSeen, entityCount) => !isSeen && entityCount > 1,
+    [isSeen, entityCount],
+  )
 
   const handleFinish = useCallback(() => {
     installPromptEvent?.prompt()
     setSeen()
   }, [installPromptEvent, setSeen])
 
-  if (isSeen || isInstalled || !canInstall) {
+  if (isSeen || isInstalled || !canInstall || !isEligible) {
     return
   }
 
