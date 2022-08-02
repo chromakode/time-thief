@@ -339,11 +339,12 @@ function useNUXHowToInstall() {
   return (
     <MessageBox key="how-to-install" onFinish={handleFinish}>
       <MessageText>
-        The easier it is to open your journal, the better TIME THIEF will work.
-        Here's how.
+        The easier it is to open your journal, the better TIME THIEF works.
       </MessageText>
       {installPromptEvent && (
-        <MessageText>Tap to add TIME THIEF to your home screen.</MessageText>
+        <MessageText>
+          Would you like to add TIME THIEF to your home screen?
+        </MessageText>
       )}
     </MessageBox>
   )
