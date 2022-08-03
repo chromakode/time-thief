@@ -1,6 +1,6 @@
 import { IconButton, useBreakpointValue } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
-import { MdArrowBack, MdArrowForward } from 'react-icons/md'
+import { MdAdd, MdArrowBack, MdArrowForward } from 'react-icons/md'
 import MotionBox from './MotionBox'
 
 export default function PageArrows({
@@ -53,7 +53,7 @@ export default function PageArrows({
           exit={{ scale: 0, opacity: 0 }}
         >
           <IconButton
-            icon={<MdArrowForward />}
+            icon={page === pageCount - 1 ? <MdAdd /> : <MdArrowForward />}
             aria-label="Previous prompt"
             fontSize="3xl"
             onClick={nextPage}
