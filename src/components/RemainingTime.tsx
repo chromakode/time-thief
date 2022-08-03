@@ -56,9 +56,9 @@ export default function RemainingTime({
             height: 200,
             translateX: -100,
             translateY: 100,
-            opacity: [0, 0.25, 1, 0],
+            opacity: [0, 1, 0],
           }}
-          transition={{ duration: 1.5 }}
+          transition={{ ease: 'easeOut', duration: 1.75 }}
         />
       </AnimatePresence>
     </Flex>
