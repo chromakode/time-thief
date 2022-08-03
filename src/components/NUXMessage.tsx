@@ -280,9 +280,10 @@ function useNUXLogViewed() {
 function useNUXHowToManual() {
   const [isSeen, setSeen] = useNUXSeen('how-to-manual')
 
+  const entityCount = useEntityCount()
   const [currentPage] = useAtom(activityPageAtom)
 
-  if (isSeen || currentPage !== 2) {
+  if (isSeen || entityCount < 1 || currentPage !== 2) {
     return
   }
 
