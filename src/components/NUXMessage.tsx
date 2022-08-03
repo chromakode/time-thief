@@ -94,7 +94,13 @@ function MessageText({
   ...props
 }: { children: ReactNode } & TextProps) {
   return (
-    <Text fontSize="2xl" fontWeight="550" textAlign="center" {...props}>
+    <Text
+      fontSize="2xl"
+      lineHeight="short"
+      fontWeight="550"
+      textAlign="center"
+      {...props}
+    >
       <Markdown>{children}</Markdown>
     </Text>
   )
