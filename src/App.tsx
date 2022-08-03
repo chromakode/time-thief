@@ -1,5 +1,6 @@
 import {
   ChakraProvider,
+  Container,
   Flex,
   IconButton,
   LightMode,
@@ -21,7 +22,14 @@ import {
   useTransform,
 } from 'framer-motion'
 import { reduce } from 'lodash'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { MdArticle } from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from './Activities'
@@ -240,6 +248,16 @@ function useDemoSwipes(
   return stopDemoSwipes
 }
 
+function ActivityContainer({ children }: { children: ReactNode }) {
+  return (
+    <Flex w="100vw" h="full" flexShrink="0">
+      <Container w="full" maxW="container.lg">
+        {children}
+      </Container>
+    </Flex>
+  )
+}
+
 function App({
   isDemo,
   isShowingLog,
@@ -334,7 +352,6 @@ function App({
     () => [
       ...activities.map((activity, idx) => (
         <Activity
-          w={width}
           key={`${seed}-${idx}-${activity.id}`}
           activity={activity}
           seed={seed}
@@ -343,7 +360,6 @@ function App({
       )),
       ...manualEntityIds.map((id) => (
         <Activity
-          w={width}
           key={id}
           activity={manualActivity}
           seed={seed}
@@ -351,7 +367,7 @@ function App({
         />
       )),
     ],
-    [activities, manualActivity, manualEntityIds, seed, width],
+    [activities, manualActivity, manualEntityIds, seed],
   )
 
   const backgroundColor = colorMode === 'dark' ? 'primary.800' : 'primary.50'
@@ -403,18 +419,20 @@ function App({
                     lastPage={
                       manualActivity &&
                       !manualEntityDraftId && (
-                        <Activity
-                          w={width}
-                          flexShrink="0"
-                          key="manual-draft"
-                          activity={manualActivity}
-                          seed={seed}
-                          idx={activities.length}
-                        />
+                        <ActivityContainer>
+                          <Activity
+                            key="manual-draft"
+                            activity={manualActivity}
+                            seed={seed}
+                            idx={activities.length}
+                          />
+                        </ActivityContainer>
                       )
                     }
                   >
-                    {activityContent}
+                    {activityContent.map((child) => (
+                      <ActivityContainer>{child}</ActivityContainer>
+                    ))}
                   </Carousel>
                 </MotionBox>
               </AnimatePresence>
@@ -426,6 +444,7 @@ function App({
             h="10vh"
             minH="12"
             w="full"
+            maxW="container.lg"
             px="8"
             alignItems="center"
             justifyContent="space-around"

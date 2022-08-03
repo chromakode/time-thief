@@ -62,6 +62,11 @@ export const baseTheme = extendTheme(
         fontVariationSettings: '"GRAD" 75, "opsz" 28',
       },
     },
+    sizes: {
+      container: {
+        lg: 'max(640px, 56.25vh)',
+      },
+    },
     components: {
       Button: {
         variants: {

@@ -2,6 +2,7 @@ import {
   AspectRatio,
   Badge,
   Box,
+  Container,
   Flex,
   Heading,
   HStack,
@@ -296,7 +297,7 @@ export default function Log() {
           size="sm"
         />
       </HStack>
-      {logContent}
+      <Container maxW="container.lg">{logContent}</Container>
       <Box ref={endRef} w="full" h="10vh" />
     </Box>
   )
