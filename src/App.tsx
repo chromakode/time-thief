@@ -53,6 +53,7 @@ import Settings from './components/Settings'
 import NUXMessage from './components/NUXMessage'
 import RemainingTime from './components/RemainingTime'
 import { atom, useAtom, useSetAtom } from 'jotai'
+import PageArrows from './components/PageArrows'
 
 interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -165,7 +166,7 @@ function useRouteState({
   const page =
     Number.isInteger(locationHashPage) &&
     locationHashPage > 0 &&
-    locationHashPage < maxPages
+    locationHashPage <= maxPages
       ? locationHashPage
       : 0
 
@@ -283,8 +284,8 @@ function App({
   const ref = useRef<HTMLDivElement>(null)
   const [width = 0, height = 0] = useSize(ref)
 
-  const pageCount = activities.length + manualEntityIds.length
-  const lastPage = pageCount - (manualEntityDraftId ? 1 : 0)
+  const pageCount =
+    activities.length + manualEntityIds.length - (manualEntityDraftId ? 1 : 0)
   const { page, setPage, setShowingLog, dismissSettings } = useRouteState({
     maxPages: pageCount,
     isShowingLog,
@@ -294,7 +295,7 @@ function App({
 
   const dragControls = useDragControls()
   const dragMotionValue = useMotionValue(0)
-  const dragDraftRange = [-(lastPage - 1) * width, -lastPage * width]
+  const dragDraftRange = [-(pageCount - 1) * width, -pageCount * width]
   const dragProgressMotionValue = useTransform(
     dragMotionValue,
     dragDraftRange,
@@ -341,6 +342,14 @@ function App({
     createManualDraft()
     setPage(page + 1)
   }
+
+  const prevPage = useCallback(() => {
+    setPage(page - 1)
+  }, [page, setPage])
+
+  const nextPage = useCallback(() => {
+    setPage(page + 1)
+  }, [page, setPage])
 
   useEffect(() => {
     slideLog.start(isShowingLog ? 'open' : 'closed')
@@ -462,7 +471,7 @@ function App({
             <ActivityPips
               activityCount={activities.length}
               page={page}
-              lastPage={lastPage}
+              lastPage={pageCount}
               opacity={ready ? 1 : 0}
               dragProgressMotionValue={dragProgressMotionValue}
               onGotoPage={setPage}
@@ -489,6 +498,12 @@ function App({
           </SimpleGrid>
         </VStack>
         {!isDemo && <NUXMessage />}
+        <PageArrows
+          page={page}
+          pageCount={pageCount}
+          nextPage={nextPage}
+          prevPage={prevPage}
+        />
       </Flex>
       {ready && (
         <MotionBox
