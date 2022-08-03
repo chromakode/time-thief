@@ -196,6 +196,7 @@ export default function AttachmentImage({
           w="full"
           h="full"
           objectFit="contain"
+          draggable="false"
         />
       </Flex>
     ),
