@@ -6,6 +6,7 @@ import {
   Portal,
   useColorMode,
 } from '@chakra-ui/react'
+import usePrevious from '@react-hook/previous'
 import useSize from '@react-hook/size'
 import { useMotionValue } from 'framer-motion'
 import React, {
@@ -28,7 +29,7 @@ export default function MessageBox({
   children,
 }: {
   isModal?: boolean
-  onPageChange?: (nextPage: number) => void
+  onPageChange?: (nextPage: number, prevPage: number | undefined) => void
   onFinish?: () => void
   children: ReactNode
 }) {
@@ -36,6 +37,7 @@ export default function MessageBox({
   const { colorMode } = useColorMode()
   const [width = 0] = useSize(ref)
   const [page, setPage] = useState(0)
+  const prevPage = usePrevious(page)
   const dragMotionValue = useMotionValue(0)
 
   const filteredChildren = React.Children.toArray(children).filter((x) => x)
@@ -44,9 +46,9 @@ export default function MessageBox({
   const handlePageChange = useCallback(
     (nextPage: number) => {
       setPage(nextPage)
-      onPageChange?.(nextPage)
+      onPageChange?.(nextPage, prevPage)
     },
-    [onPageChange],
+    [onPageChange, prevPage],
   )
 
   const handleNext = useCallback(() => {
@@ -54,9 +56,9 @@ export default function MessageBox({
       onFinish?.()
     } else {
       setPage(page + 1)
-      onPageChange?.(page + 1)
+      onPageChange?.(page + 1, prevPage)
     }
-  }, [onFinish, onPageChange, page, pageCount])
+  }, [onFinish, onPageChange, page, pageCount, prevPage])
 
   useEffect(() => {
     if (page === pageCount) {

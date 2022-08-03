@@ -127,6 +127,17 @@ function useActivities(): [ActivityState, number | null] {
   return [activityState, remainingSeconds]
 }
 
+// For now, we sync router state to the atom. Would be cool to someday use
+// Jotai for more route state control. Use separate atoms to prevent infinite loops.
+const actualPageAtom = atom(0)
+const destPageAtom = atom<number | null>(null)
+export const activityPageAtom = atom(
+  (get) => get(actualPageAtom),
+  (_, set, update: number) => {
+    set(destPageAtom, update)
+  },
+)
+
 function useRouteState({
   maxPages,
   isShowingLog,
@@ -136,6 +147,9 @@ function useRouteState({
 }) {
   const location = useLocation()
   const navigate = useNavigate()
+
+  const setActualPageAtom = useSetAtom(actualPageAtom)
+  const [destPageFromAtom, setDestPageAtom] = useAtom(destPageAtom)
 
   const { pathname, search } = location
   const prevPathname = usePrevious(pathname)
@@ -150,9 +164,17 @@ function useRouteState({
   const setPage = useCallback(
     (nextPage: number) => {
       navigate(`${search}#${nextPage}`, { replace: true })
+      setActualPageAtom(page)
     },
-    [navigate, search],
+    [navigate, page, search, setActualPageAtom],
   )
+
+  useEffect(() => {
+    if (destPageFromAtom !== null && page !== destPageFromAtom) {
+      setPage(destPageFromAtom)
+      setDestPageAtom(null)
+    }
+  }, [destPageFromAtom, page, setDestPageAtom, setPage])
 
   const setShowingLog = useCallback(
     (newShowingLog: boolean) => {
@@ -181,8 +203,6 @@ function useRouteState({
 }
 
 export const demoSwipeAtom = atom<boolean | null>(null)
-
-export const activityPageAtom = atom(0)
 
 function useDemoSwipes(
   isDemo: boolean,
@@ -267,8 +287,6 @@ function App({
   const slideLog = useAnimation()
   const [isDraggingLog, setDraggingLog] = useState(false)
 
-  const setActivityPage = useSetAtom(activityPageAtom)
-
   function blur() {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
@@ -295,7 +313,6 @@ function App({
     // TODO: unify jotai page state and route
     // (trigger route on jotai state changes)
     setPage(page)
-    setActivityPage(page)
     blur()
     if (page < pageCount - 1) {
       cleanupManualDraft()

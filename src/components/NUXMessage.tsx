@@ -22,7 +22,7 @@ import { AnimatePresence } from 'framer-motion'
 import MotionBox from './MotionBox'
 import { MdArticle, MdFavorite, MdIosShare, MdMoreVert } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
-import { useAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
 import Bowser from 'bowser'
@@ -115,13 +115,18 @@ function useNUXFirstTime() {
     }
   }, [])
 
-  const [, setDemoSwipeValue] = useAtom(demoSwipeAtom)
+  const setDemoSwipeValue = useSetAtom(demoSwipeAtom)
+  const setActivityPage = useSetAtom(activityPageAtom)
 
   const handlePageChange = useCallback(
-    (nextPage: number) => {
+    (nextPage: number, prevPage: number | undefined) => {
       if (nextPage === 1) {
         setDemoSwipeValue(true)
         return
+      }
+
+      if (prevPage === 1) {
+        setActivityPage(0)
       }
 
       if (nextPage === 2) {
@@ -130,7 +135,7 @@ function useNUXFirstTime() {
 
       setDemoSwipeValue(null)
     },
-    [setDemoSwipeValue],
+    [setActivityPage, setDemoSwipeValue],
   )
 
   const handleFinish = useCallback(() => {
