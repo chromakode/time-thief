@@ -22,7 +22,6 @@ import {
   TextProps,
   useColorMode,
   useMediaQuery,
-  useTimeout,
   useToken,
   VStack,
 } from '@chakra-ui/react'
@@ -32,7 +31,7 @@ import { AnimatePresence } from 'framer-motion'
 import MotionBox from './MotionBox'
 import { MdArticle, MdFavorite, MdIosShare, MdMoreVert } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
-import { useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useSetAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
 import isMobileConstructor from 'ismobilejs'
@@ -47,21 +46,35 @@ function useNUXMessage(nuxHooks: NUXHook[]) {
   return results.find((r) => r !== undefined)
 }
 
-function useNUXSeen(name: string, delay: number = 1000): [boolean, () => void] {
+const lastNUXSeenAtom = atom(0)
+
+function useNUXSeen(
+  name: string,
+  {
+    minDelay = 1000,
+    delaySinceLastNUX = 15 * 1000,
+  }: { minDelay?: number; delaySinceLastNUX?: number } = {},
+): [boolean, () => void] {
   const id = `$nux/${name}`
 
   const db = usePouch()
   const { doc, loading } = useDoc(id)
 
+  const [ready, setReady] = useState(false)
+  const [lastNUXSeen, setLastNUXSeen] = useAtom(lastNUXSeenAtom)
+
   const setSeen = React.useCallback(() => {
     db.put({ _id: id, seen: Date.now() })
-  }, [db, id])
+    setLastNUXSeen(Date.now())
+  }, [db, id, setLastNUXSeen])
 
-  // 1s initial delay
-  const [ready, setReady] = useState(false)
-  useTimeout(() => {
-    setReady(true)
-  }, delay)
+  useEffect(() => {
+    setReady(false)
+    const timeout = setTimeout(() => {
+      setReady(true)
+    }, Math.max(minDelay, lastNUXSeen + delaySinceLastNUX - Date.now()))
+    return () => clearTimeout(timeout)
+  }, [delaySinceLastNUX, lastNUXSeen, minDelay])
 
   const isSeen = !ready || loading || doc != null
 
@@ -125,7 +138,7 @@ function MessageText({
 function useNUXFirstTime() {
   const { colorMode } = useColorMode()
 
-  const [isSeen, setSeen] = useNUXSeen('first-time')
+  const [isSeen, setSeen] = useNUXSeen('first-time', { delaySinceLastNUX: 0 })
 
   const [seconds, setSeconds] = useState(60)
   useEffect(() => {
@@ -266,7 +279,7 @@ function useNUXFirstWritten() {
 }
 
 function useNUXLogViewed() {
-  const [isSeen, setSeen] = useNUXSeen('log-viewed')
+  const [isSeen, setSeen] = useNUXSeen('log-viewed', { delaySinceLastNUX: 0 })
 
   const location = useLocation()
   const isViewingLog = location.pathname === '/app/log'
