@@ -461,7 +461,6 @@ function useNUXMobileBestExperience() {
   const [isSeen, setSeen] = useNUXSeen('mobile-best-experience')
 
   const isMobile = useIsMobile()
-  const location = useLocation()
   const { colorMode } = useColorMode()
   const primary700 = useToken(
     'colors',
@@ -472,7 +471,7 @@ function useNUXMobileBestExperience() {
     return
   }
 
-  const href = window.location.origin + location.pathname
+  const href = window.location.origin + '/app'
 
   return (
     <Modal
@@ -501,7 +500,7 @@ function useNUXMobileBestExperience() {
               <QRCodeSVG
                 value={href}
                 size={256}
-                level="Q"
+                level="H"
                 fgColor={primary700}
                 bgColor="transparent"
                 imageSettings={{
@@ -517,7 +516,7 @@ function useNUXMobileBestExperience() {
                 fontWeight="semibold"
                 opacity=".75"
               >
-                {window.location.host + location.pathname}
+                {window.location.host + '/app'}
               </Link>
             </VStack>
             <MessageText>
