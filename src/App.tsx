@@ -173,9 +173,9 @@ function useRouteState({
   const setPage = useCallback(
     (nextPage: number) => {
       navigate(`${search}#${nextPage}`, { replace: true })
-      setActualPageAtom(page)
+      setActualPageAtom(nextPage)
     },
-    [navigate, page, search, setActualPageAtom],
+    [navigate, search, setActualPageAtom],
   )
 
   useEffect(() => {
