@@ -292,14 +292,27 @@ function useNUXHowToManual() {
   const [isSeen, setSeen] = useNUXSeen('how-to-manual')
 
   const entityCount = useEntityCount()
-  const [currentPage] = useAtom(activityPageAtom)
+  const [currentPage, setActivityPage] = useAtom(activityPageAtom)
 
-  if (isSeen || entityCount < 1 || currentPage !== 2) {
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      if (nextPage === 1) {
+        setActivityPage(3)
+      }
+    },
+    [setActivityPage],
+  )
+
+  if (isSeen || entityCount < 1 || currentPage < 2) {
     return
   }
 
   return (
-    <MessageBox key="how-to-manual" onFinish={setSeen}>
+    <MessageBox
+      key="how-to-manual"
+      onPageChange={handlePageChange}
+      onFinish={setSeen}
+    >
       <MessageText>
         Got something else to say, or a photo you can't miss?
       </MessageText>
