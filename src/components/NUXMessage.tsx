@@ -501,7 +501,7 @@ function useNUXMobileBestExperience() {
               <QRCodeSVG
                 value={href}
                 size={256}
-                level="M"
+                level="Q"
                 fgColor={primary700}
                 bgColor="transparent"
                 imageSettings={{
@@ -511,7 +511,12 @@ function useNUXMobileBestExperience() {
                   excavate: true,
                 }}
               />
-              <Link href={href} fontSize="xl" fontWeight="semibold">
+              <Link
+                href={href}
+                fontSize="xl"
+                fontWeight="semibold"
+                opacity=".75"
+              >
                 {window.location.host + location.pathname}
               </Link>
             </VStack>
