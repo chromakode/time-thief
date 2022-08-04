@@ -6,7 +6,7 @@ import weightedChoice from './utils/weightedChoice'
 export type ActivityData = any // TODO
 export type ConfigData = any // TODO
 export type ActivityDefinition = any
-export type Choices = Array<any> // add weighting'
+export type Choices = Array<any>
 
 const SEED_DURATION = 15 * 60 * 1000
 

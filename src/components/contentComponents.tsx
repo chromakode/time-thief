@@ -9,7 +9,7 @@ import SelectOption from './content/SelectOption'
 import Steps from './content/Steps'
 import ContentTitle from './content/Title'
 
-// TODO: per component type typescc
+// TODO: per component type types
 
 export interface ContentComponentProps {
   db: PouchDB.Database

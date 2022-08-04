@@ -97,7 +97,7 @@ export default function MessageBox({
         bg={colorMode === 'dark' ? 'primary.800' : 'primary.50'}
         zIndex="popover"
       >
-        <Flex h={`${MESSAGE_HEIGHT}`} w="full" flexDir="column" p="3" pt="0">
+        <Flex h={MESSAGE_HEIGHT} w="full" flexDir="column" p="3" pt="0">
           <Flex
             h="full"
             borderColor="primary.600"
