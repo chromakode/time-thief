@@ -440,7 +440,9 @@ function App({
                     }
                   >
                     {activityContent.map((child) => (
-                      <ActivityContainer>{child}</ActivityContainer>
+                      <ActivityContainer key={child.key}>
+                        {child}
+                      </ActivityContainer>
                     ))}
                   </Carousel>
                 </MotionBox>

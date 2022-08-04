@@ -23,6 +23,7 @@ export default function PageArrows({
     <AnimatePresence initial={false}>
       {show && (
         <MotionBox
+          key="back-arrow"
           position="absolute"
           left="8"
           top="50%"
@@ -44,6 +45,7 @@ export default function PageArrows({
       )}
       {show && (
         <MotionBox
+          key="forward-arrow"
           position="absolute"
           right="8"
           top="50%"
