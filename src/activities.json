@@ -165,7 +165,7 @@
         {
           "type": "title",
           "text": "Take a daily self-portrait.",
-          "subtitle": "We'll turn this into a montage!\nUse the guides to line up your eyes in each shot."
+          "subtitle": "We'll turn this into a montage!\nUse the guides to line up your eyes."
         },
         {
           "type": "input/photo/portrait-with-guides",

@@ -177,7 +177,7 @@ export default function LandingPage() {
             borderRadius="6px"
             overflow="hidden"
           >
-            <AspectRatio w="360px" ratio={1 / 2} bgColor="primary.50">
+            <AspectRatio w="365px" ratio={1 / 2} bgColor="primary.50">
               <iframe src="/app?demo" title="TIME THIEF Preview" />
             </AspectRatio>
             <Text

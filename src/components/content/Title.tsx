@@ -14,7 +14,7 @@ export default function ContentTitle(
     set({ title: text }, { dirty: false })
   }, [entityDoc._rev, entityDoc.title, set, text])
   return (
-    <Center h="20vh" px="4" flexShrink="0">
+    <Center h="20vh" px="2" flexShrink="0">
       <VStack textAlign="center" whiteSpace="pre-wrap">
         <Heading textStyle="title">
           <Markdown>{text}</Markdown>
