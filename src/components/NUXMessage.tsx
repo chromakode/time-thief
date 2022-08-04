@@ -7,13 +7,23 @@ import React, {
 } from 'react'
 import {
   Box,
+  Button,
   HStack,
   Icon,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   TextProps,
   useColorMode,
   useMediaQuery,
   useTimeout,
+  useToken,
   VStack,
 } from '@chakra-ui/react'
 import { useAllDocs, useDoc, usePouch } from 'use-pouchdb'
@@ -25,8 +35,10 @@ import RemainingTime from './RemainingTime'
 import { useAtom, useSetAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
-import Bowser from 'bowser'
+import isMobileConstructor from 'ismobilejs'
+import { QRCodeSVG } from 'qrcode.react'
 import Markdown from './Markdown'
+import logoURL from '../logo.svg'
 
 type NUXHook = () => ReactNode | undefined
 
@@ -62,6 +74,10 @@ function useEntityCount() {
     endkey: '9\ufff0',
   })
   return entities.rows.length
+}
+
+function useIsMobile() {
+  return useMemo(() => isMobileConstructor(window.navigator), [])
 }
 
 function usePageChangeTrigger<T extends any[]>(
@@ -361,11 +377,9 @@ function useNUXHowToInstall() {
 
   const [installPromptEvent] = useAtom(installPromptEventAtom)
 
-  const browser = useMemo(() => Bowser.getParser(navigator.userAgent), [])
-  const osName = browser.getOSName(true)
-  const isTablet = browser.getPlatformType(true) === 'tablet'
-  const canInstall =
-    installPromptEvent || osName === 'ios' || osName === 'android'
+  const isMobile = useIsMobile()
+  const isTablet = isMobile.tablet
+  const canInstall = installPromptEvent || isMobile.apple || isMobile.android
 
   const isEligible = usePageChangeTrigger(
     (isSeen, entityCount) => !isSeen && entityCount > 1,
@@ -399,7 +413,7 @@ function useNUXHowToInstall() {
           to your home screen?
         </MessageText>
       )}
-      {osName === 'ios' && (
+      {isMobile.apple && (
         <MessageText>
           {`To add it to your ${isTablet ? 'iPad' : 'iPhone'}, tap`}
           <Icon
@@ -412,7 +426,7 @@ function useNUXHowToInstall() {
           and "Add to Home Screen"
         </MessageText>
       )}
-      {osName === 'android' && (
+      {isMobile.android && (
         <MessageText>
           {`To add it to your Android ${
             isTablet ? 'tablet' : 'phone'
@@ -430,8 +444,83 @@ function useNUXHowToInstall() {
   )
 }
 
+function useNUXMobileBestExperience() {
+  const [isSeen, setSeen] = useNUXSeen('mobile-best-experience')
+
+  const isMobile = useIsMobile()
+  const location = useLocation()
+  const { colorMode } = useColorMode()
+  const primary700 = useToken(
+    'colors',
+    colorMode === 'dark' ? 'primary.100' : 'primary.700',
+  )
+
+  if (isSeen || isMobile.any) {
+    return
+  }
+
+  const href = window.location.origin + location.pathname
+
+  return (
+    <Modal
+      size="xl"
+      isOpen
+      isCentered
+      closeOnOverlayClick={false}
+      onClose={setSeen}
+    >
+      <ModalOverlay backdropFilter="auto" backdropBlur="lg" />
+      <ModalContent textAlign="center" py="2">
+        <ModalHeader fontSize="3xl" pb="0">
+          <Text as="span" textStyle="brand">
+            TIME THIEF
+          </Text>{' '}
+          works best on your phone.
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody mx="4">
+          <VStack spacing="8">
+            <MessageText>
+              So you can open it spontaneously throughout your day and easily
+              snap photos.
+            </MessageText>
+            <VStack>
+              <QRCodeSVG
+                value={href}
+                size={256}
+                level="M"
+                fgColor={primary700}
+                bgColor="transparent"
+                imageSettings={{
+                  src: logoURL,
+                  width: 72,
+                  height: 72,
+                  excavate: true,
+                }}
+              />
+              <Link href={href} fontSize="xl" fontWeight="semibold">
+                {window.location.host + location.pathname}
+              </Link>
+            </VStack>
+            <MessageText>
+              It also works great in a browser, but -- the best journal is the
+              one you carry with you.
+            </MessageText>
+          </VStack>
+        </ModalBody>
+        <ModalFooter justifyContent="center" mt="4">
+          <Button size="lg" fontSize="xl" width="full" onClick={setSeen}>
+            Got it!
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
+}
+
 export default function NUXMessage() {
   const content = useNUXMessage([
+    useNUXMobileBestExperience,
     useNUXFirstTime,
     useNUXFirstWritten,
     useNUXLogViewed,
