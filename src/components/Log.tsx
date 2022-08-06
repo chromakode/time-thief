@@ -200,7 +200,7 @@ export default function Log() {
           color={colorMode === 'dark' ? 'primary.100' : 'primary.700'}
           m="8"
           spacing="8"
-          mt="20vh"
+          mt="15vh"
           align="flex-start"
         >
           <Text>After your first day, your journal will appear here.</Text>
