@@ -217,7 +217,7 @@ export default function PhotoPortraitGuides(
         justifyContent="center"
       >
         {!isCameraOpen &&
-          (false && docs.length ? (
+          (docs.length ? (
             <Montage
               docs={docs}
               field={field}
