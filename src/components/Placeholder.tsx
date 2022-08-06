@@ -31,7 +31,7 @@ export default function Placeholder({
       {...props}
       sx={{
         path: {
-          'stroke-width': '2px !important',
+          'stroke-width': '1.75px !important',
           'vector-effect': 'non-scaling-stroke !important',
         },
       }}
