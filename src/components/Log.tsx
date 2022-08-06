@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom'
 import { useAllDocs, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
 import Markdown from './Markdown'
+import Placeholder from './Placeholder'
 
 function formatDate(date: Date) {
   return dayjs(date).calendar(null, {
@@ -194,7 +195,6 @@ export default function Log() {
         (row) => formatDate(row.doc?.created),
       )
       return !loading && isEmpty(byDate) ? (
-        // TODO: an art would be nice here
         <VStack
           fontSize="3xl"
           color={colorMode === 'dark' ? 'primary.100' : 'primary.700'}
@@ -203,8 +203,16 @@ export default function Log() {
           mt="20vh"
           align="flex-start"
         >
-          <Text>After your first day, your journal will appear here. 🌟</Text>
+          <Text>After your first day, your journal will appear here.</Text>
           <Text>Keep writing!</Text>
+          <Placeholder
+            type="kawasaki-rose-doodle"
+            w="full"
+            h="30vh"
+            opacity=".75"
+            preserveAspectRatio="xMidYMid slice"
+            alignSelf="center"
+          />
         </VStack>
       ) : (
         <VStack align="flex-start" px="4" spacing="8">

@@ -6,6 +6,7 @@ import { ReactComponent as BikeSelfieDoodle } from '../art/bike-selfie-doodle.sv
 import { ReactComponent as SelfPortraitDoodle } from '../art/self-portrait-doodle.svg'
 import { ReactComponent as SomeoneWithDoodle } from '../art/someone-with-doodle.svg'
 import { ReactComponent as SkyDoodle } from '../art/sky-doodle.svg'
+import { ReactComponent as KawasakiRoseDoodle } from '../art/kawasaki-rose-doodle.svg'
 
 const SVG = chakra('svg')
 
@@ -15,6 +16,7 @@ const placeholders: Record<string, FunctionComponent> = {
   'self-portrait-doodle': SelfPortraitDoodle,
   'someone-with-doodle': SomeoneWithDoodle,
   'sky-doodle': SkyDoodle,
+  'kawasaki-rose-doodle': KawasakiRoseDoodle,
 }
 
 export default function Placeholder({
