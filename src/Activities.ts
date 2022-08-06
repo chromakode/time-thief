@@ -72,7 +72,7 @@ class Activities {
       lastActivityTimes,
     )
 
-    const manualActivity = traversal.run([this.data.manualActivity], 1)[0]
+    const manualActivity = traversal.flattenChoices(this.data.manualActivity)
     const activities = traversal.run(this.data.activities)
 
     return { activities, manualActivity, seed, now, endTime, timeOfDay }
@@ -105,7 +105,7 @@ class Traversal {
 
   run(activities: [ActivityDefinition], count = 3): ActivityData[] {
     const selected = this._choice(activities, count)
-    return map(selected, (act) => this._flattenChoices(act))
+    return map(selected, (act) => this.flattenChoices(act))
   }
 
   _getWeight(activity: any) {
@@ -181,14 +181,14 @@ class Traversal {
     })
   }
 
-  _flattenChoices(obj: any): any {
+  flattenChoices(obj: any): any {
     if (obj.type === 'choice') {
       const choice = this._choice(obj.choices)[0]
-      return this._flattenChoices(choice)
+      return this.flattenChoices(choice)
     } else if (isPlainObject(obj)) {
-      return mapValues(obj, (v) => this._flattenChoices(v))
+      return mapValues(obj, (v) => this.flattenChoices(v))
     } else if (isArray(obj)) {
-      return map(obj, (v) => this._flattenChoices(v))
+      return map(obj, (v) => this.flattenChoices(v))
     } else {
       return obj
     }
