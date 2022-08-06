@@ -7,6 +7,7 @@ import {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
+import Placeholder from '../Placeholder'
 
 export default function PhotoInput(
   {
@@ -14,6 +15,7 @@ export default function PhotoInput(
     field,
     capture,
     autostart,
+    placeholder,
     saveAttachment,
   }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
@@ -64,16 +66,22 @@ export default function PhotoInput(
         alignItems="stretch"
         justifyContent="stretch"
       >
-        <AttachmentImage
-          key={imgURL}
-          docId={entityDoc._id}
-          attachmentId={field}
-          digest={imageDigest === oldDigest ? undefined : imageDigest}
-          fallbackSrc={imgURL}
-          borderRadius="4"
-          maxH="full"
-          w="full"
-        />
+        {imgURL || imageDigest ? (
+          <AttachmentImage
+            key={imgURL}
+            docId={entityDoc._id}
+            attachmentId={field}
+            digest={imageDigest === oldDigest ? undefined : imageDigest}
+            fallbackSrc={imgURL}
+            borderRadius="4"
+            maxH="full"
+            w="full"
+          />
+        ) : (
+          placeholder && (
+            <Placeholder type={placeholder} h="full" pb="16" opacity=".75" />
+          )
+        )}
       </Flex>
       <Flex position="relative" alignItems="center">
         <InputGroup w="auto" onClick={handleCaptureClick}>

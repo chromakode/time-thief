@@ -82,7 +82,8 @@
         {
           "type": "input/photo",
           "field": "photo",
-          "capture": "user"
+          "capture": "user",
+          "placeholder": "bike-selfie-doodle"
         }
       ],
       "entity": {
@@ -90,29 +91,62 @@
       }
     },
     {
-      "id": "photo",
+      "id": "photo-sky",
+      "conditions": {
+        "exclusiveTags": ["photo"]
+      },
       "content": [
         {
-          "type": "choice",
-          "choices": [
-            {
-              "type": "title",
-              "text": "Take a photo of where you are."
-            },
-            {
-              "type": "title",
-              "text": "Take a photo of someone you're with."
-            },
-            {
-              "type": "title",
-              "text": "Take a photo of the sky."
-            }
-          ]
+          "type": "title",
+          "text": "Take a photo of the sky."
         },
         {
           "type": "input/photo",
           "field": "photo",
-          "capture": "environment"
+          "capture": "environment",
+          "placeholder": "sky-doodle"
+        }
+      ],
+      "entity": {
+        "type": "photo"
+      }
+    },
+    {
+      "id": "photo-someone-with",
+      "conditions": {
+        "exclusiveTags": ["photo"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "Take a photo of someone you're with."
+        },
+        {
+          "type": "input/photo",
+          "field": "photo",
+          "capture": "environment",
+          "placeholder": "someone-with-doodle"
+        }
+      ],
+      "entity": {
+        "type": "photo"
+      }
+    },
+    {
+      "id": "photo-where-you-are",
+      "conditions": {
+        "exclusiveTags": ["photo"]
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "Take a photo of where you are."
+        },
+        {
+          "type": "input/photo",
+          "field": "photo",
+          "capture": "environment",
+          "placeholder": "desk-doodle"
         }
       ],
       "entity": {
@@ -134,7 +168,8 @@
         },
         {
           "type": "input/photo/portrait-with-guides",
-          "field": "photo"
+          "field": "photo",
+          "placeholder": "self-portrait-doodle"
         }
       ],
       "entity": {

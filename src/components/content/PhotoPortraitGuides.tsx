@@ -30,6 +30,7 @@ import {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
+import Placeholder from '../Placeholder'
 
 const ChakraVideo = chakra('video')
 
@@ -115,7 +116,13 @@ function Montage({
 }
 
 export default function PhotoPortraitGuides(
-  { entityDoc, field, spec, saveAttachment }: ContentComponentProps,
+  {
+    entityDoc,
+    field,
+    spec,
+    placeholder,
+    saveAttachment,
+  }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
   const { docs } = useFind<any>({
@@ -209,15 +216,18 @@ export default function PhotoPortraitGuides(
         alignItems="center"
         justifyContent="center"
       >
-        {!isCameraOpen && (
-          <Montage
-            docs={docs}
-            field={field}
-            borderRadius="4"
-            maxH="full"
-            transform="scaleX(-1)"
-          />
-        )}
+        {!isCameraOpen &&
+          (false && docs.length ? (
+            <Montage
+              docs={docs}
+              field={field}
+              borderRadius="4"
+              maxH="full"
+              transform="scaleX(-1)"
+            />
+          ) : (
+            <Placeholder type={placeholder} h="full" pb="16" opacity=".75" />
+          ))}
         {tookPhoto && (
           <Flex mt="4" alignItems="center" fontSize="large">
             <Icon as={MdCheck} mr="1" />
