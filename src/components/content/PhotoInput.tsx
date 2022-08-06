@@ -56,8 +56,10 @@ export default function PhotoInput(
     }
   }, [autostart])
 
+  const hasImage = imgURL || imageDigest
+
   return (
-    <VStack px="4" flex="1" spacing="4" w="full">
+    <VStack px="4" flex="1" spacing="4" w="full" minH="0">
       <Flex
         flexGrow="1"
         flexBasis="0"
@@ -66,23 +68,27 @@ export default function PhotoInput(
         alignItems="stretch"
         justifyContent="stretch"
       >
-        {imgURL || imageDigest ? (
-          <AttachmentImage
-            key={imgURL}
-            docId={entityDoc._id}
-            attachmentId={field}
-            digest={imageDigest === oldDigest ? undefined : imageDigest}
-            fallbackSrc={imgURL}
-            borderRadius="4"
-            maxH="full"
-            w="full"
-          />
-        ) : (
-          placeholder && (
-            <Placeholder type={placeholder} h="full" pb="16" opacity=".75" />
-          )
-        )}
+        <AttachmentImage
+          key={imgURL}
+          docId={entityDoc._id}
+          attachmentId={field}
+          digest={imageDigest === oldDigest ? undefined : imageDigest}
+          fallbackSrc={imgURL}
+          borderRadius="4"
+          maxH="full"
+          w="full"
+        />
       </Flex>
+      {!hasImage && placeholder && (
+        <Placeholder
+          type={placeholder}
+          position="relative"
+          top="-8"
+          w="auto"
+          h="auto"
+          opacity=".75"
+        />
+      )}
       <Flex position="relative" alignItems="center">
         <InputGroup w="auto" onClick={handleCaptureClick}>
           <input
