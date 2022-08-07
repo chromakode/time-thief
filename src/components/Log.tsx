@@ -210,8 +210,6 @@ export default function Log() {
             w="full"
             h="30vh"
             opacity=".75"
-            preserveAspectRatio="xMidYMid slice"
-            alignSelf="center"
           />
         </VStack>
       ) : (

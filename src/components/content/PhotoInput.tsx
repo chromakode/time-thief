@@ -60,25 +60,27 @@ export default function PhotoInput(
 
   return (
     <VStack px="4" flex="1" spacing="4" w="full" minH="0">
-      <Flex
-        flexGrow="1"
-        flexBasis="0"
-        w="full"
-        overflow="hidden"
-        alignItems="stretch"
-        justifyContent="stretch"
-      >
-        <AttachmentImage
-          key={imgURL}
-          docId={entityDoc._id}
-          attachmentId={field}
-          digest={imageDigest === oldDigest ? undefined : imageDigest}
-          fallbackSrc={imgURL}
-          borderRadius="4"
-          maxH="full"
+      {hasImage && (
+        <Flex
+          flexGrow="1"
+          flexBasis="0"
           w="full"
-        />
-      </Flex>
+          overflow="hidden"
+          alignItems="stretch"
+          justifyContent="stretch"
+        >
+          <AttachmentImage
+            key={imgURL}
+            docId={entityDoc._id}
+            attachmentId={field}
+            digest={imageDigest === oldDigest ? undefined : imageDigest}
+            fallbackSrc={imgURL}
+            borderRadius="4"
+            maxH="full"
+            w="full"
+          />
+        </Flex>
+      )}
       {!hasImage && placeholder && (
         <Placeholder
           type={placeholder}
@@ -86,6 +88,8 @@ export default function PhotoInput(
           top="-8"
           w="auto"
           h="auto"
+          flex="1"
+          minH="0"
           opacity=".75"
         />
       )}
