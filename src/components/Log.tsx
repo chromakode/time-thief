@@ -197,7 +197,7 @@ export default function Log() {
       return !loading && isEmpty(byDate) ? (
         <VStack
           fontSize="3xl"
-          color={colorMode === 'dark' ? 'primary.100' : 'primary.700'}
+          color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
           m="8"
           spacing="8"
           mt="15vh"
