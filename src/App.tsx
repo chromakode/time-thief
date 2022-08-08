@@ -21,7 +21,6 @@ import {
   useMotionValue,
   useTransform,
 } from 'framer-motion'
-import { reduce } from 'lodash'
 import React, {
   ReactNode,
   useCallback,
@@ -31,9 +30,6 @@ import React, {
   useState,
 } from 'react'
 import { MdArticle } from 'react-icons/md'
-import { useFind } from 'use-pouchdb'
-import Activities, { ActivityDefinition } from './Activities'
-import activityData from './activities.json'
 import './App.css'
 import Activity from './components/Activity'
 import ActivityPips from './components/ActivityPips'
@@ -51,90 +47,12 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { appTheme } from './theme'
 import Settings from './components/Settings'
 import NUXMessage from './components/NUXMessage'
-import RemainingTime from './components/RemainingTime'
+import RemainingTime, {
+  ActivityRemainingTime,
+} from './components/RemainingTime'
 import { atom, useAtom, useSetAtom } from 'jotai'
 import PageArrows from './components/PageArrows'
-
-interface ActivityState {
-  activities: Array<ActivityDefinition>
-  manualActivity: ActivityDefinition
-  seed: string
-  now: number
-  endTime: number
-  timeOfDay: string
-}
-
-function useLastActivityTimes() {
-  // TODO: prototype. replace with a stored view
-
-  const { docs, loading } = useFind<any>({
-    index: {
-      fields: ['activity', 'created'],
-    },
-    selector: { activity: { $exists: true } },
-    sort: ['activity', 'created'],
-    fields: ['activity', 'created'],
-  })
-
-  return useMemo(
-    () =>
-      loading
-        ? null
-        : reduce(
-            docs,
-            (result, value) => {
-              const key = value.activity
-              result[key] = Math.max(result[key] ?? 0, value.created)
-              return result
-            },
-            {} as { [key: string]: number },
-          ),
-    [docs, loading],
-  )
-}
-
-function useActivities(): [ActivityState, number | null] {
-  const [now, setNow] = useState(() => Date.now())
-  const lastActivityTimes = useLastActivityTimes()
-  const [activities] = useState(() => new Activities(activityData))
-  const [activityState, setActivityState] = useState<ActivityState>(() => ({
-    activities: [],
-    manualActivity: null,
-    seed: '',
-    now,
-    endTime: 0,
-    timeOfDay: 'unknown',
-  }))
-
-  useEffect(() => {
-    let timeout: number
-    function tick() {
-      const now = Date.now()
-      if (
-        lastActivityTimes !== null &&
-        (activityState === null || now > activityState.endTime)
-      ) {
-        setActivityState(activities.chooseActivities({ lastActivityTimes }))
-      }
-      setNow(now)
-      timeout = window.setTimeout(
-        tick,
-        Math.max(500, 1000 - (Date.now() % 1000)),
-      )
-    }
-    tick()
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [activities, activityState, lastActivityTimes])
-
-  const remainingSeconds =
-    activityState.endTime !== 0
-      ? Math.round((activityState.endTime - now) / 1000)
-      : null
-
-  return [activityState, remainingSeconds]
-}
+import { useActivities } from './useActivities'
 
 // For now, we sync router state to the atom. Would be cool to someday use
 // Jotai for more route state control. Use separate atoms to prevent infinite loops.
@@ -269,8 +187,7 @@ function App({
   isShowingSettings: boolean
 }) {
   const { colorMode } = useColorMode()
-  const [{ activities, manualActivity, seed }, remainingSeconds] =
-    useActivities()
+  const { activities, manualActivity, seed } = useActivities()
   const {
     manualEntityIds,
     manualEntityDraftId,
@@ -471,14 +388,7 @@ function App({
             onTouchStart={handleStartLogDrag}
             sx={{ touchAction: 'none' }}
           >
-            {remainingSeconds == null ? (
-              <Text />
-            ) : (
-              <RemainingTime
-                remainingSeconds={remainingSeconds}
-                justifySelf="start"
-              />
-            )}
+            <ActivityRemainingTime justifySelf="start" />
             <ActivityPips
               activityCount={activities.length}
               page={page}
