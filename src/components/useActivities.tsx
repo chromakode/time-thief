@@ -1,9 +1,8 @@
 import { atom, useAtom, useSetAtom } from 'jotai'
-import { reduce } from 'lodash'
-import { useEffect, useMemo, useState } from 'react'
-import { useFind } from 'use-pouchdb'
+import { useEffect, useState } from 'react'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
+import { useLastActivityTimes } from './useActivityDB'
 
 export interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -11,35 +10,6 @@ export interface ActivityState {
   seed: string
   endTime: number
   timeOfDay: string
-}
-
-export function useLastActivityTimes() {
-  // TODO: prototype. replace with a stored view
-
-  const { docs, loading } = useFind<any>({
-    index: {
-      fields: ['activity', 'created'],
-    },
-    selector: { activity: { $exists: true } },
-    sort: ['activity', 'created'],
-    fields: ['activity', 'created'],
-  })
-
-  return useMemo(
-    () =>
-      loading
-        ? null
-        : reduce(
-            docs,
-            (result, value) => {
-              const key = value.activity
-              result[key] = Math.max(result[key] ?? 0, value.created)
-              return result
-            },
-            {} as { [key: string]: number },
-          ),
-    [docs, loading],
-  )
 }
 
 export const nowAtom = atom(Date.now())

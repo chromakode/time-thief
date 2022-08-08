@@ -1,5 +1,6 @@
+import { reduce } from 'lodash'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { usePouch, useAllDocs, useDoc } from 'use-pouchdb'
+import { usePouch, useAllDocs, useDoc, useFind } from 'use-pouchdb'
 import { getClientId } from '../utils/getClientId'
 
 type EntityInfo = {
@@ -117,4 +118,33 @@ export function useManualEntities({
     cleanupManualDraft,
     createManualDraft,
   }
+}
+
+export function useLastActivityTimes() {
+  // TODO: prototype. replace with a stored view
+
+  const { docs, loading } = useFind<any>({
+    index: {
+      fields: ['activity', 'created'],
+    },
+    selector: { activity: { $exists: true } },
+    sort: ['activity', 'created'],
+    fields: ['activity', 'created'],
+  })
+
+  return useMemo(
+    () =>
+      loading
+        ? null
+        : reduce(
+            docs,
+            (result, value) => {
+              const key = value.activity
+              result[key] = Math.max(result[key] ?? 0, value.created)
+              return result
+            },
+            {} as { [key: string]: number },
+          ),
+    [docs, loading],
+  )
 }
