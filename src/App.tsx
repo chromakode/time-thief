@@ -278,7 +278,7 @@ function App({
     slideLog.start(isShowingLog ? 'open' : 'closed')
   }, [isShowingLog, slideLog])
 
-  const ready = width !== 0 && seed && manualEntitiesLoaded
+  const ready = width !== 0 && activities.length > 0 && manualEntitiesLoaded
 
   const activityContent = useMemo(
     () => [
