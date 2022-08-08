@@ -5,7 +5,6 @@ import {
   IconButton,
   LightMode,
   SimpleGrid,
-  Text,
   useColorMode,
   useLatestRef,
   usePrevious,
@@ -47,12 +46,10 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { appTheme } from './theme'
 import Settings from './components/Settings'
 import NUXMessage from './components/NUXMessage'
-import RemainingTime, {
-  ActivityRemainingTime,
-} from './components/RemainingTime'
+import { ActivityRemainingTime } from './components/RemainingTime'
 import { atom, useAtom, useSetAtom } from 'jotai'
 import PageArrows from './components/PageArrows'
-import { useActivities } from './useActivities'
+import { useActivities } from './components/useActivities'
 
 // For now, we sync router state to the atom. Would be cool to someday use
 // Jotai for more route state control. Use separate atoms to prevent infinite loops.

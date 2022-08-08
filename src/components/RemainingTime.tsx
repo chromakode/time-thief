@@ -2,7 +2,7 @@ import { BoxProps, Flex, Text, useColorMode } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
-import { remainingSecondsAtom } from '../useActivities'
+import { remainingSecondsAtom } from './useActivities'
 import MotionBox from './MotionBox'
 
 export default function RemainingTime({

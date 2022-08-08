@@ -2,8 +2,8 @@ import { atom, useAtom, useSetAtom } from 'jotai'
 import { reduce } from 'lodash'
 import { useEffect, useMemo, useState } from 'react'
 import { useFind } from 'use-pouchdb'
-import Activities, { ActivityDefinition } from './Activities'
-import activityData from './activities.json'
+import Activities, { ActivityDefinition } from '../Activities'
+import activityData from '../activities.json'
 
 export interface ActivityState {
   activities: Array<ActivityDefinition>
