@@ -1,7 +1,35 @@
-import { reduce } from 'lodash'
+import { isEqual } from 'lodash'
+import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { usePouch, useAllDocs, useDoc, useFind } from 'use-pouchdb'
+import { useAllDocs, useDoc, usePouch, useView } from 'use-pouchdb'
 import { getClientId } from '../utils/getClientId'
+
+export async function setupDB(db: PouchDB.Database) {
+  const appDesignDoc = {
+    _id: '_design/app',
+    views: {
+      activityTimes: {
+        map: `(doc) => {
+          emit(doc.activity, doc.created)
+        }`,
+        reduce: `(keys, values, rereduce) => Math.max(...values)`,
+      },
+    },
+  }
+
+  let existingDesignDoc
+  try {
+    existingDesignDoc = await db.get(appDesignDoc._id)
+  } catch {}
+  if (!isEqual(existingDesignDoc, appDesignDoc)) {
+    await db.put({ ...existingDesignDoc, ...appDesignDoc })
+  }
+
+  const syncEndpoint = localStorage['syncEndpoint']
+  if (syncEndpoint) {
+    PouchDB.sync(db, syncEndpoint, { live: true, retry: true })
+  }
+}
 
 type EntityInfo = {
   seed: string
@@ -121,30 +149,16 @@ export function useManualEntities({
 }
 
 export function useLastActivityTimes() {
-  // TODO: prototype. replace with a stored view
-
-  const { docs, loading } = useFind<any>({
-    index: {
-      fields: ['activity', 'created'],
-    },
-    selector: { activity: { $exists: true } },
-    sort: ['activity', 'created'],
-    fields: ['activity', 'created'],
+  const { rows, loading } = useView('app/activityTimes', {
+    group: true,
+    group_level: 1,
   })
 
   return useMemo(
     () =>
       loading
         ? null
-        : reduce(
-            docs,
-            (result, value) => {
-              const key = value.activity
-              result[key] = Math.max(result[key] ?? 0, value.created)
-              return result
-            },
-            {} as { [key: string]: number },
-          ),
-    [docs, loading],
+        : Object.fromEntries(rows.map(({ key, value }) => [key, value])),
+    [loading, rows],
   )
 }

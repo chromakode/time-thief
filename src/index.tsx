@@ -12,17 +12,14 @@ import './utils/devUtils'
 import 'image-capture'
 import AppRoutes from './AppRoutes'
 import { BrowserRouter } from 'react-router-dom'
+import { setupDB } from './components/useActivityDB'
 
 PouchDB.plugin(PouchFind)
 dayjs.extend(calendar)
 dayjs.extend(relativeTime)
 
 export const _db = new PouchDB('entities')
-
-const syncEndpoint = localStorage['syncEndpoint']
-if (syncEndpoint) {
-  PouchDB.sync(_db, syncEndpoint, { live: true, retry: true })
-}
+setupDB(_db)
 
 const root = createRoot(document.getElementById('root')!)
 root.render(
