@@ -41,8 +41,8 @@ export default function Placeholder({
           opacity={shouldShow ? 1 : 0}
           sx={{
             path: {
-              'stroke-width': '1.75px !important',
-              'vector-effect': 'non-scaling-stroke !important',
+              strokeWidth: '1.75px !important',
+              vectorEffect: 'non-scaling-stroke !important',
             },
           }}
         />
