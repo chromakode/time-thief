@@ -1,22 +1,28 @@
-import React, { Fragment, ReactNode } from 'react'
+import React, { Fragment, ReactNode, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkSmartypants from 'remark-smartypants'
 
+const components = { p: Fragment }
+const remarkPlugins = [remarkSmartypants]
+
 export default function Markdown({ children }: { children: ReactNode }) {
-  return (
-    <>
-      {React.Children.map(children, (child) =>
-        typeof child === 'string' && !child.match(/^\s+$/) ? (
-          <ReactMarkdown
-            components={{ p: Fragment }}
-            remarkPlugins={[remarkSmartypants]}
-          >
-            {child}
-          </ReactMarkdown>
-        ) : (
-          child
-        ),
-      )}
-    </>
+  return useMemo(
+    () => (
+      <>
+        {React.Children.map(children, (child) =>
+          typeof child === 'string' && !child.match(/^\s+$/) ? (
+            <ReactMarkdown
+              components={components}
+              remarkPlugins={remarkPlugins}
+            >
+              {child}
+            </ReactMarkdown>
+          ) : (
+            child
+          ),
+        )}
+      </>
+    ),
+    [children],
   )
 }
