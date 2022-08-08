@@ -41,9 +41,14 @@ export function useActivities(): ActivityState {
       const now = Date.now()
       if (
         lastActivityTimes !== null &&
-        (activityState === null || now > activityState.endTime)
+        (!activityState.activities.length || now > activityState.endTime)
       ) {
         setActivityState(activities.chooseActivities({ lastActivityTimes }))
+      } else if (activityState.endTime === 0) {
+        setActivityState({
+          ...activityState,
+          ...activities.getSeed(),
+        })
       }
       setNow(now)
       timeout = window.setTimeout(
