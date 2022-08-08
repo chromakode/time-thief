@@ -306,11 +306,11 @@ function App({
   const slideLog = useAnimation()
   const [isDraggingLog, setDraggingLog] = useState(false)
 
-  function blur() {
+  const blur = useCallback(() => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
-  }
+  }, [])
 
   const logLongPressProps = useLongPress(() => {
     localStorage['syncEndpoint'] = window.prompt(
@@ -319,29 +319,38 @@ function App({
     )
   })
 
-  function handleStartDrag(event: React.PointerEvent) {
-    stopDemoSwipes()
-    dragControls.start(event)
-  }
+  const handleStartDrag = useCallback(
+    (event: React.PointerEvent) => {
+      stopDemoSwipes()
+      dragControls.start(event)
+    },
+    [dragControls, stopDemoSwipes],
+  )
 
-  function handleStartLogDrag(event: React.TouchEvent) {
-    dragLogControls.start(event)
-  }
+  const handleStartLogDrag = useCallback(
+    (event: React.TouchEvent) => {
+      dragLogControls.start(event)
+    },
+    [dragLogControls],
+  )
 
-  function handlePageChange(page: number) {
-    // TODO: unify jotai page state and route
-    // (trigger route on jotai state changes)
-    setPage(page)
-    blur()
-    if (page < pageCount - 1) {
-      cleanupManualDraft()
-    }
-  }
+  const handlePageChange = useCallback(
+    (page: number) => {
+      // TODO: unify jotai page state and route
+      // (trigger route on jotai state changes)
+      setPage(page)
+      blur()
+      if (page < pageCount - 1) {
+        cleanupManualDraft()
+      }
+    },
+    [blur, cleanupManualDraft, pageCount, setPage],
+  )
 
-  function handleCreateManualEntity() {
+  const handleCreateManualEntity = useCallback(() => {
     createManualDraft()
     setPage(page + 1)
-  }
+  }, [createManualDraft, page, setPage])
 
   const prevPage = useCallback(() => {
     setPage(page - 1)
