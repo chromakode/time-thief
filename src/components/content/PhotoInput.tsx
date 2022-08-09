@@ -81,7 +81,7 @@ export default function PhotoInput(
           />
         </Flex>
       )}
-      {!hasImage && placeholder && (
+      {!hasImage && (
         <Placeholder
           type={placeholder}
           position="relative"
