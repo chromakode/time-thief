@@ -125,7 +125,7 @@
           "type": "input/photo",
           "field": "photo",
           "capture": "environment",
-          "placeholder": "someone-with-doodle"
+          "placeholder": "sunglasses-doodle"
         }
       ],
       "entity": {

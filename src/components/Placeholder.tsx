@@ -3,7 +3,7 @@ import React, { FunctionComponent, useRef } from 'react'
 import { ReactComponent as DeskDoodle } from '../art/desk-doodle.svg'
 import { ReactComponent as BikeSelfieDoodle } from '../art/bike-selfie-doodle.svg'
 import { ReactComponent as SelfPortraitDoodle } from '../art/self-portrait-doodle.svg'
-import { ReactComponent as SomeoneWithDoodle } from '../art/someone-with-doodle.svg'
+import { ReactComponent as SunglassesDoodle } from '../art/sunglasses-doodle.svg'
 import { ReactComponent as SkyDoodle } from '../art/sky-doodle.svg'
 import { ReactComponent as KawasakiRoseDoodle } from '../art/kawasaki-rose-doodle.svg'
 import useSize from '@react-hook/size'
@@ -14,7 +14,7 @@ const placeholders: Record<string, FunctionComponent> = {
   'desk-doodle': DeskDoodle,
   'bike-selfie-doodle': BikeSelfieDoodle,
   'self-portrait-doodle': SelfPortraitDoodle,
-  'someone-with-doodle': SomeoneWithDoodle,
+  'sunglasses-doodle': SunglassesDoodle,
   'sky-doodle': SkyDoodle,
   'kawasaki-rose-doodle': KawasakiRoseDoodle,
 }
