@@ -434,7 +434,7 @@ function App({
           boxShadow="dark-lg"
           drag="y"
           dragDirectionLock
-          dragConstraints={{ top: 0, bottom: height + 10 }}
+          dragConstraints={{ top: 0, bottom: height }}
           dragControls={dragLogControls}
           transition={{
             y: { type: 'spring', duration: 0.5, bounce: 0 },
