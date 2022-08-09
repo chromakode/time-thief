@@ -439,7 +439,11 @@ function App({
           transition={{
             y: { type: 'spring', duration: 0.5, bounce: 0 },
           }}
-          variants={{ open: { y: 0 }, closed: { y: height + 10 } }}
+          variants={{
+            open: { y: 0, opacity: 1 },
+            closed: { y: height, opacity: 0 },
+          }}
+          whileDrag={{ opacity: 1 }}
           animate={slideLog}
           initial={isShowingLog ? 'open' : 'closed'}
           onDirectionLock={(axis) => {
