@@ -457,10 +457,10 @@ function App({
             const swipe = Math.abs(offset.y) * velocity.y
 
             let showingLog = isShowingLog
-            if (swipe < -velocityThreshold || offset.y < -threshold) {
-              showingLog = true
-            } else if (swipe > velocityThreshold || offset.y > 0) {
+            if (swipe > velocityThreshold) {
               showingLog = false
+            } else if (swipe < -velocityThreshold || offset.y < -threshold) {
+              showingLog = true
             }
 
             slideLog.start(showingLog ? 'open' : 'closed')
