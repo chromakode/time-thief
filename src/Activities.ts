@@ -16,6 +16,7 @@ const rarityToWeight = new Map([
   ['common', 1],
   ['uncommon', 0.5],
   ['rare', 0.25],
+  ['x-rare', 0.125],
 ])
 
 function hoursToTimeOfDay(

@@ -300,7 +300,7 @@
     },
     {
       "id": "journal-haiku",
-      "rarity": "rare",
+      "rarity": "x-rare",
       "conditions": {
         "frequency": "day"
       },
