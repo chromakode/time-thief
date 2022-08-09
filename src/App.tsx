@@ -452,6 +452,10 @@ function App({
             }
           }}
           onDragEnd={(ev, { offset, velocity }) => {
+            if (ev.type === 'pointercancel') {
+              slideLog.start(isShowingLog ? 'open' : 'closed')
+              return
+            }
             const velocityThreshold = 5000
             const threshold = 30
             const swipe = Math.abs(offset.y) * velocity.y
