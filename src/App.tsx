@@ -467,6 +467,7 @@ function App({
             setShowingLog(showingLog)
             setDraggingLog(false)
           }}
+          pointerEvents={isShowingLog ? 'auto' : 'none'}
         >
           <Log />
         </MotionBox>
