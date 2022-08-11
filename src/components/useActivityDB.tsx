@@ -152,6 +152,7 @@ export function useLastActivityTimes() {
   const { rows, loading } = useView('app/activityTimes', {
     group: true,
     group_level: 1,
+    stale: 'update_after',
   })
 
   return useMemo(
