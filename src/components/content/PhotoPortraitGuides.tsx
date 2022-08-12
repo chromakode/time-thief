@@ -206,6 +206,9 @@ export default function PhotoPortraitGuides(
 
   // TODO error state
 
+  const eyeGuideX = '45%'
+  const eyeGuideY = '45%'
+
   return (
     <VStack px="4" flex="1" spacing="4">
       <Flex
@@ -251,29 +254,53 @@ export default function PhotoPortraitGuides(
         >
           <Box flex="3" m="1" position="relative">
             {isLandscape ? (
-              <Box
-                position="absolute"
-                inset="0"
-                transform="scaleX(-1)"
-                filter="invert(1) contrast(175%)"
-                mixBlendMode="overlay"
-                zIndex="overlay"
-              >
-                {isCameraOpen &&
-                  latestPhotos.map((doc) => (
-                    <AttachmentImage
-                      key={doc._id}
-                      position="absolute"
-                      inset="0"
-                      opacity={1 / latestPhotos.length}
-                      docId={doc._id}
-                      attachmentId={field}
-                      digest={doc._attachments?.[field].digest}
-                      pointerEvents="none"
-                      showPlaceholder={false}
-                    />
-                  ))}
-              </Box>
+              <>
+                <Box
+                  position="absolute"
+                  left={eyeGuideX}
+                  top={eyeGuideY}
+                  w="2"
+                  h="2"
+                  bg="primary.500"
+                  borderRadius="full"
+                  zIndex="overlay"
+                  mixBlendMode="difference"
+                />
+                <Box
+                  position="absolute"
+                  right={eyeGuideX}
+                  top={eyeGuideY}
+                  w="2"
+                  h="2"
+                  bg="primary.500"
+                  borderRadius="full"
+                  zIndex="overlay"
+                  mixBlendMode="difference"
+                />
+                <Box
+                  position="absolute"
+                  inset="0"
+                  transform="scaleX(-1)"
+                  filter="invert(1) contrast(175%)"
+                  mixBlendMode="overlay"
+                  zIndex="overlay"
+                >
+                  {isCameraOpen &&
+                    latestPhotos.map((doc) => (
+                      <AttachmentImage
+                        key={doc._id}
+                        position="absolute"
+                        inset="0"
+                        opacity={1 / latestPhotos.length}
+                        docId={doc._id}
+                        attachmentId={field}
+                        digest={doc._attachments?.[field].digest}
+                        pointerEvents="none"
+                        showPlaceholder={false}
+                      />
+                    ))}
+                </Box>
+              </>
             ) : (
               <Center
                 position="absolute"
