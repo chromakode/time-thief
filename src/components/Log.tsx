@@ -22,7 +22,7 @@ import { groupBy, isEmpty, reverse, throttle } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdMoreVert, MdSettings } from 'react-icons/md'
 import { Link } from 'react-router-dom'
-import { useAllDocs, usePouch } from 'use-pouchdb'
+import { useFind, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
 import Markdown from './Markdown'
 import Placeholder from './Placeholder'
@@ -178,56 +178,55 @@ export default function Log() {
     { rootMargin: '500px 0px 500px 0px' },
   )
   const [count, setCount] = useState(50)
-  const { rows, loading, update_seq } = useAllDocs<any>({
-    include_docs: true,
-    descending: true,
-    limit: count,
-    update_seq: true,
-  })
 
   const beforeDate = dayjs().startOf('day')
-  const logContent = useMemo(
-    () => {
-      const byDate = groupBy(
-        rows.filter(
-          (row) => !row.id.startsWith('$') && row.doc.created < beforeDate,
-        ),
-        (row) => formatDate(row.doc?.created),
-      )
-      return !loading && isEmpty(byDate) ? (
-        <VStack
-          fontSize="3xl"
-          color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
-          m="8"
-          spacing="8"
-          mt="15vh"
-          align="flex-start"
-        >
-          <Text>After your first day, your journal will appear here.</Text>
-          <Text>Keep writing!</Text>
-          <Placeholder
-            type="kawasaki-rose-doodle"
-            w="full"
-            h="30vh"
-            opacity=".75"
-          />
-        </VStack>
-      ) : (
-        <VStack align="flex-start" px="4" spacing="8">
-          {Object.entries(byDate).map(([dateText, rows], idx) => (
-            <LogDay
-              key={dateText}
-              dateText={dateText}
-              docs={rows.map((row) => row.doc)}
-              preRender={idx === 0}
-            />
-          ))}
-        </VStack>
-      )
+  const { docs, loading } = useFind<any>({
+    index: {
+      fields: ['created'],
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [beforeDate.toNow(), update_seq, rows.length],
-  )
+    selector: {},
+    limit: count,
+    sort: [{ created: 'desc' }],
+  })
+
+  const logContent = useMemo(() => {
+    const byDate = groupBy(
+      docs.filter(
+        (doc) => !doc._id.startsWith('$') && doc.created < beforeDate,
+      ),
+      (doc) => formatDate(doc.created),
+    )
+    return !loading && isEmpty(byDate) ? (
+      <VStack
+        fontSize="3xl"
+        color={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
+        m="8"
+        spacing="8"
+        mt="15vh"
+        align="flex-start"
+      >
+        <Text>After your first day, your journal will appear here.</Text>
+        <Text>Keep writing!</Text>
+        <Placeholder
+          type="kawasaki-rose-doodle"
+          w="full"
+          h="30vh"
+          opacity=".75"
+        />
+      </VStack>
+    ) : (
+      <VStack align="flex-start" px="4" spacing="8">
+        {Object.entries(byDate).map(([dateText, docs], idx) => (
+          <LogDay
+            key={dateText}
+            dateText={dateText}
+            docs={docs}
+            preRender={idx === 0}
+          />
+        ))}
+      </VStack>
+    )
+  }, [beforeDate, colorMode, docs, loading])
 
   const loadMore = useMemo(
     () =>
@@ -238,10 +237,10 @@ export default function Log() {
   )
 
   useEffect(() => {
-    if (!loading && count === rows.length && isEndIntersecting) {
+    if (!loading && count === docs.length && isEndIntersecting) {
       loadMore()
     }
-  }, [loading, isEndIntersecting, loadMore, count, rows.length])
+  }, [loading, isEndIntersecting, loadMore, count, docs.length])
 
   // Prevent scroll when swiping down so drag gesture handler can take effect
   useEffect(() => {
