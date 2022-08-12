@@ -13,6 +13,7 @@ export const baseTheme = extendTheme(
       },
     },
     config: {
+      initialColorMode: 'light',
       useSystemColorMode: true,
     },
     colors: {
