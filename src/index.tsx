@@ -12,21 +12,22 @@ import './utils/devUtils'
 import 'image-capture'
 import AppRoutes from './AppRoutes'
 import { BrowserRouter } from 'react-router-dom'
-import { setupDB } from './components/useActivityDB'
+import { Provider as PouchProvider } from 'use-pouchdb'
 
 PouchDB.plugin(PouchFind)
 dayjs.extend(calendar)
 dayjs.extend(relativeTime)
 
 export const _db = new PouchDB('entities')
-setupDB(_db)
 
 const root = createRoot(document.getElementById('root')!)
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <PouchProvider pouchdb={_db}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </PouchProvider>
   </React.StrictMode>,
 )
 

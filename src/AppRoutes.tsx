@@ -22,6 +22,10 @@ export default function AppRoutes() {
           path="settings"
           element={<App isShowingLog isShowingSettings />}
         />
+        <Route
+          path="settings/experiments"
+          element={<App isShowingLog isShowingSettings isShowingExperiments />}
+        />
       </Route>
     </Routes>
   )

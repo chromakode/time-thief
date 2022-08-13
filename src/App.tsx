@@ -38,13 +38,12 @@ import MotionBox from './components/MotionBox'
 import {
   parseIdxFromEntityId,
   useManualEntities,
+  useSetupDB,
 } from './components/useActivityDB'
-import useLongPress from './utils/useLongPress'
-import { Provider as PouchProvider } from 'use-pouchdb'
-import { _db } from '.'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { appTheme } from './theme'
 import Settings from './components/Settings'
+import Experiments from './experiments/Experiments'
 import NUXMessage from './components/NUXMessage'
 import { ActivityRemainingTime } from './components/RemainingTime'
 import { atom, useAtom, useSetAtom } from 'jotai'
@@ -123,7 +122,15 @@ function useRouteState({
     }
   }, [navigate, prevPathname])
 
-  return { page, setPage, setShowingLog, dismissSettings }
+  const dismissExperiments = useCallback(() => {
+    if (prevPathname === '/app/settings') {
+      navigate(-1)
+    } else {
+      navigate(`/app/settings`, { replace: true })
+    }
+  }, [navigate, prevPathname])
+
+  return { page, setPage, setShowingLog, dismissSettings, dismissExperiments }
 }
 
 export const demoSwipeAtom = atom<boolean | null>(null)
@@ -178,10 +185,12 @@ function App({
   isDemo,
   isShowingLog,
   isShowingSettings,
+  isShowingExperiments,
 }: {
   isDemo: boolean
   isShowingLog: boolean
   isShowingSettings: boolean
+  isShowingExperiments: boolean
 }) {
   const { colorMode } = useColorMode()
   const { activities, manualActivity, seed } = useActivities()
@@ -200,10 +209,11 @@ function App({
 
   const pageCount =
     activities.length + manualEntityIds.length - (manualEntityDraftId ? 1 : 0)
-  const { page, setPage, setShowingLog, dismissSettings } = useRouteState({
-    maxPages: pageCount,
-    isShowingLog,
-  })
+  const { page, setPage, setShowingLog, dismissSettings, dismissExperiments } =
+    useRouteState({
+      maxPages: pageCount,
+      isShowingLog,
+    })
 
   const stopDemoSwipes = useDemoSwipes(isDemo, page, pageCount, setPage)
 
@@ -225,13 +235,6 @@ function App({
       document.activeElement.blur()
     }
   }, [])
-
-  const logLongPressProps = useLongPress(() => {
-    localStorage['syncEndpoint'] = window.prompt(
-      'sync endpoint',
-      localStorage['syncEndpoint'] ?? '',
-    )
-  })
 
   const handleStartDrag = useCallback(
     (event: React.PointerEvent) => {
@@ -411,7 +414,6 @@ function App({
               borderRadius="full"
               size="lg"
               mr="-2"
-              {...logLongPressProps}
             />
           </SimpleGrid>
         </VStack>
@@ -477,6 +479,10 @@ function App({
         </MotionBox>
       )}
       <Settings isShowing={isShowingSettings} onClose={dismissSettings} />
+      <Experiments
+        isShowing={isShowingExperiments}
+        onClose={dismissExperiments}
+      />
     </>
   )
 }
@@ -489,10 +495,14 @@ export const installPromptEventAtom = atom<BeforeInstallPromptEvent | null>(
 function AppWrapper({
   isShowingLog,
   isShowingSettings,
+  isShowingExperiments,
 }: {
   isShowingLog?: boolean
   isShowingSettings?: boolean
+  isShowingExperiments?: boolean
 }) {
+  useSetupDB()
+
   const [searchParams] = useSearchParams()
   const isDemo = searchParams.has('demo')
 
@@ -514,17 +524,14 @@ function AppWrapper({
       isDemo={isDemo}
       isShowingLog={isShowingLog === true}
       isShowingSettings={isShowingSettings === true}
+      isShowingExperiments={isShowingExperiments === true}
     />
   )
   if (isDemo) {
     content = <LightMode>{content}</LightMode>
   }
 
-  return (
-    <PouchProvider pouchdb={_db}>
-      <ChakraProvider theme={appTheme}>{content}</ChakraProvider>
-    </PouchProvider>
-  )
+  return <ChakraProvider theme={appTheme}>{content}</ChakraProvider>
 }
 
 export default AppWrapper

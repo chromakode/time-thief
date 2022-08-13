@@ -1,34 +1,66 @@
+import { useAsyncEffect } from '@react-hook/async'
+import { atom, useSetAtom } from 'jotai'
 import { isEqual } from 'lodash'
 import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAllDocs, useDoc, usePouch, useView } from 'use-pouchdb'
 import { getClientId } from '../utils/getClientId'
 
-export async function setupDB(db: PouchDB.Database) {
-  const appDesignDoc = {
-    _id: '_design/app',
-    views: {
-      activityTimes: {
-        map: `(doc) => {
+export const syncStateAtom = atom<
+  null | 'disabled' | 'initializing' | 'syncing' | 'idle' | 'error'
+>(null)
+
+export function useSetupDB() {
+  const db = usePouch<any>()
+
+  const setSyncState = useSetAtom(syncStateAtom)
+
+  const { status } = useAsyncEffect(async () => {
+    const appDesignDoc = {
+      _id: '_design/app',
+      views: {
+        activityTimes: {
+          map: `(doc) => {
           emit(doc.activity, doc.created)
         }`,
-        reduce: `(keys, values, rereduce) => Math.max(...values)`,
+          reduce: `(keys, values, rereduce) => Math.max(...values)`,
+        },
       },
-    },
-  }
+    }
 
-  let existingDesignDoc
-  try {
-    existingDesignDoc = await db.get(appDesignDoc._id)
-  } catch {}
-  if (!isEqual(existingDesignDoc, appDesignDoc)) {
-    await db.put({ ...existingDesignDoc, ...appDesignDoc })
-  }
+    let existingDesignDoc
+    try {
+      existingDesignDoc = await db.get(appDesignDoc._id)
+    } catch {}
+    if (!isEqual(existingDesignDoc, appDesignDoc)) {
+      await db.put({ ...existingDesignDoc, ...appDesignDoc })
+    }
 
-  const syncEndpoint = localStorage['syncEndpoint']
-  if (syncEndpoint) {
-    PouchDB.sync(db, syncEndpoint, { live: true, retry: true })
-  }
+    const syncEndpoint = localStorage['syncEndpoint']
+    if (syncEndpoint && syncEndpoint.startsWith('https://')) {
+      setSyncState('initializing')
+      const initialSync = db.replicate.to(syncEndpoint)
+      initialSync.on('error', (ev) => {
+        setSyncState('error')
+      })
+      await initialSync
+
+      const syncEvents = PouchDB.sync(db, syncEndpoint, {
+        live: true,
+        retry: true,
+      })
+      syncEvents.on('active', () => {
+        setSyncState('syncing')
+      })
+      syncEvents.on('paused', () => {
+        setSyncState('idle')
+      })
+    } else {
+      setSyncState('disabled')
+    }
+  }, [])
+
+  return status
 }
 
 type EntityInfo = {
