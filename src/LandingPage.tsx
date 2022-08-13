@@ -252,8 +252,9 @@ export default function LandingPage() {
               <Text as="h2" textStyle="hero" fontSize="2xl">
                 When you open your journal, there's{' '}
                 <Text as="span" color="primary.500">
-                  inspiration waiting for you.
+                  inspiration waiting for you
                 </Text>
+                .
               </Text>
               <Text>
                 TIME THIEF generates randomized writing prompts to help you jump
