@@ -1,3 +1,8 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self' 'unsafe-eval'"
+
 [[redirects]]
   from = "/discord"
   to = "https://discord.gg/4W5Ddkk6CU"
