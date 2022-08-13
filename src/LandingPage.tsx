@@ -250,19 +250,18 @@ export default function LandingPage() {
             </AspectRatio>
             <VStack alignItems="flex-start" spacing="3" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
-                How it works:{' '}
+                Whenever you open your journal, there's{' '}
                 <Text as="span" color="primary.500">
-                  every 15 minutes, you get 3 new prompts
+                  inspiration waiting for you.
                 </Text>
-                .
               </Text>
               <Text>
-                Whenever you open your journal, there's inspiration waiting for
-                you.
+                TIME THIEF generates randomized writing prompts to help you jump
+                in and write.
               </Text>
               <Text>
                 Write as little or as much as you'd like &mdash; don't overthink
-                it!
+                it.
               </Text>
               <HStack>
                 <Icon as={MdLock} boxSize="6" />
