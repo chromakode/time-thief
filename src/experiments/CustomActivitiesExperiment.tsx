@@ -9,7 +9,7 @@ export default function CustomActivitiesExperiment() {
         <Text as="span" textStyle="brand">
           TIME THIEF
         </Text>
-        's rule engine.
+        's rules engine.
       </Text>
       <Textarea h="32" placeholder="Coming soon." variant="filled" disabled />
     </VStack>
