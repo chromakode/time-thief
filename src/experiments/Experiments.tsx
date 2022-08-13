@@ -11,6 +11,7 @@ import {
   Link as ChakraLink,
   Text,
   Heading,
+  Container,
 } from '@chakra-ui/react'
 import { MdArrowBack } from 'react-icons/md'
 import CustomActivitiesExperiment from './CustomActivitiesExperiment'
@@ -43,27 +44,29 @@ export default function Settings({
           <Icon as={MdArrowBack} fontSize="2xl" />
         </ModalCloseButton>
         <ModalBody display="flex" flexDir="column" alignItems="center">
-          <VStack
-            my="8"
-            w="full"
-            fontSize="lg"
-            alignItems="stretch"
-            spacing="12"
-          >
-            <VStack borderColor="primary.200" borderWidth="1px" p="6">
-              <Heading size="xl">Here be dragons</Heading>
-              <Text textAlign="center">
-                These features are still under development and could cause bugs.
-                Interested in testing or learning more? Ask on the{' '}
-                <ChakraLink href="/discord" fontWeight="semibold">
-                  Discord
-                </ChakraLink>
-                .
-              </Text>
+          <Container maxW="container.lg">
+            <VStack
+              my="8"
+              w="full"
+              fontSize="lg"
+              alignItems="stretch"
+              spacing="12"
+            >
+              <VStack borderColor="primary.200" borderWidth="1px" p="6">
+                <Heading size="xl">Here be dragons</Heading>
+                <Text textAlign="center">
+                  These features are still under development and could cause
+                  bugs. Interested in testing or learning more? Ask on the{' '}
+                  <ChakraLink href="/discord" fontWeight="semibold">
+                    Discord
+                  </ChakraLink>
+                  .
+                </Text>
+              </VStack>
+              <SyncExperiment />
+              <CustomActivitiesExperiment />
             </VStack>
-            <SyncExperiment />
-            <CustomActivitiesExperiment />
-          </VStack>
+          </Container>
         </ModalBody>
       </ModalContent>
     </Modal>
