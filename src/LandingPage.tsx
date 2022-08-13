@@ -250,7 +250,7 @@ export default function LandingPage() {
             </AspectRatio>
             <VStack alignItems="flex-start" spacing="3" flex="1">
               <Text as="h2" textStyle="hero" fontSize="2xl">
-                Whenever you open your journal, there's{' '}
+                When you open your journal, there's{' '}
                 <Text as="span" color="primary.500">
                   inspiration waiting for you.
                 </Text>
