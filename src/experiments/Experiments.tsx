@@ -50,7 +50,7 @@ export default function Settings({
             alignItems="stretch"
             spacing="12"
           >
-            <VStack>
+            <VStack borderColor="primary.200" borderWidth="1px" p="6">
               <Heading size="xl">Here be dragons</Heading>
               <Text textAlign="center">
                 These features are still under development and could cause bugs.
