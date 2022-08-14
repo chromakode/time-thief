@@ -5,3 +5,7 @@
 TIME THIEF is a calm, habit-forming offline journal.
 
 Every 15 minutes, 3 prompts (called "activities") are deterministically generated using a [rules engine](src/activities.json). Journal entries are stored locally in a PouchDB.
+
+### Sync server
+
+An optional [sync server configuration](./sync-server) is provided to roll your own backup service.

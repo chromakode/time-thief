@@ -1,0 +1,28 @@
+services:
+  caddy:
+    image: caddy:2.5.2
+    restart: unless-stopped
+    environment:
+      SYNC_HOSTNAME: ${SYNC_HOSTNAME:?}
+    ports:
+      - '1234:1234'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - $PWD/caddy_data:/data
+      - $PWD/run_caddy.sh:/run_caddy.sh
+    command: /run_caddy.sh
+
+  couchdb:
+    image: couchdb:3.2.2
+    restart: unless-stopped
+    environment:
+      COUCHDB_USER: ${COUCHDB_ADMIN_USER:?}
+      COUCHDB_PASSWORD: ${COUCHDB_ADMIN_PASSWORD:?}
+      SYNC_HOSTNAME: ${SYNC_HOSTNAME:?}
+      SYNC_USER: ${SYNC_USER:?}
+      SYNC_PASSWORD: ${SYNC_PASSWORD:?}
+    volumes:
+      - $PWD/couchdb_data:/opt/couchdb/data
+      - $PWD/run_couchdb.sh:/run_couchdb.sh
+    command: /run_couchdb.sh
