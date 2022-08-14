@@ -1,8 +1,9 @@
 import { useAsyncEffect } from '@react-hook/async'
-import { atom, useSetAtom } from 'jotai'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { isEqual } from 'lodash'
 import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import slugify from 'slugify'
 import { useAllDocs, useDoc, usePouch, useView } from 'use-pouchdb'
 import { getClientId } from '../utils/getClientId'
 
@@ -10,10 +11,20 @@ export const syncStateAtom = atom<
   null | 'disabled' | 'initializing' | 'syncing' | 'idle' | 'error'
 >(null)
 
+export const authorNameAtom = atom<string | null>(null)
+export const authorSuffixAtom = atom<string>((get) => {
+  const name = get(authorNameAtom)
+  if (name === null) {
+    return ''
+  }
+  return '@' + slugify(name)
+})
+
 export function useSetupDB() {
   const db = usePouch<any>()
 
   const setSyncState = useSetAtom(syncStateAtom)
+  const setAuthorName = useSetAtom(authorNameAtom)
 
   const { status } = useAsyncEffect(async () => {
     const appDesignDoc = {
@@ -35,6 +46,14 @@ export function useSetupDB() {
     if (!isEqual(existingDesignDoc, appDesignDoc)) {
       await db.put({ ...existingDesignDoc, ...appDesignDoc })
     }
+
+    // Multiplayer: check for a client info document. If it contains an author
+    // name, we're in multiplayer mode.
+    let clientInfo
+    try {
+      clientInfo = await db.get(`$client/${getClientId()}`)
+    } catch {}
+    setAuthorName(clientInfo?.authorName ?? null)
 
     const syncEndpoint = localStorage['syncEndpoint']
     if (syncEndpoint && syncEndpoint.startsWith('https://')) {
@@ -65,14 +84,15 @@ export function useSetupDB() {
 
 type EntityInfo = {
   seed: string
+  authorSuffix: string
   type: string
   activity: string
   idx: number | string
 }
 
 export function getEntityId(entityInfo: EntityInfo) {
-  const { seed, idx, type } = entityInfo
-  return `${seed}-${idx}:${type}`
+  const { seed, authorSuffix, idx, type } = entityInfo
+  return `${seed}${authorSuffix}-${idx}:${type}`
 }
 
 export function parseIdxFromEntityId(entityId: string) {
@@ -124,26 +144,27 @@ export function useManualEntities({
   seed: string
   manualActivity: any | null
 }) {
+  const authorSuffix = useAtomValue(authorSuffixAtom)
   const [loaded, setLoaded] = useState(false)
   const [draftId, setDraftId] = useState<string | null>(null)
 
   const { rows, loading } = useAllDocs<any>({
-    startkey: `${seed}-manual`,
-    endkey: `${seed}-manual\ufff0`,
-    update_seq: true,
+    startkey: `${seed}${authorSuffix}-manual`,
+    endkey: `${seed}${authorSuffix}-manual\ufff0`,
   })
 
   const createManualDraft = useCallback(() => {
     const created = Date.now()
     const entityInfo = {
       seed,
+      authorSuffix: authorSuffix,
       type: manualActivity?.entity.type,
       activity: manualActivity?.id,
       idx: `manual${created}`,
     }
     const entityId = getEntityId(entityInfo)
     setDraftId(entityId)
-  }, [manualActivity?.entity.type, manualActivity?.id, seed])
+  }, [authorSuffix, manualActivity?.entity.type, manualActivity?.id, seed])
 
   const cleanupManualDraft = useCallback(() => {
     setDraftId(null)

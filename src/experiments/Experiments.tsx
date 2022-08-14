@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { MdArrowBack } from 'react-icons/md'
 import CustomActivitiesExperiment from './CustomActivitiesExperiment'
+import MultiplayerExperiment from './MultiplayerExperiment'
 import SyncExperiment from './SyncExperiment'
 
 export default function Settings({
@@ -64,6 +65,7 @@ export default function Settings({
                 </Text>
               </VStack>
               <SyncExperiment />
+              <MultiplayerExperiment />
               <CustomActivitiesExperiment />
             </VStack>
           </Container>

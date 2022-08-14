@@ -22,7 +22,7 @@ import { groupBy, isEmpty, reverse, throttle } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MdMoreVert, MdSettings } from 'react-icons/md'
 import { Link } from 'react-router-dom'
-import { useFind, usePouch } from 'use-pouchdb'
+import { useAllDocs, useFind, usePouch } from 'use-pouchdb'
 import AttachmentImage from './AttachmentImage'
 import Markdown from './Markdown'
 import Placeholder from './Placeholder'
@@ -72,10 +72,12 @@ function LogMenu({ entity }: { entity: any }) {
 function LogDay({
   dateText,
   docs,
+  clientInfoMap,
   preRender,
 }: {
   dateText: string
   docs: any[]
+  clientInfoMap: Record<string, { authorName: string | null }>
   preRender?: boolean
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -111,42 +113,55 @@ function LogDay({
             )}
           </Flex>
           <VStack align="flex-start" spacing="6" w="full">
-            {chronoDocs.map((entity) => (
-              <VStack key={entity._id} align="flex-start" w="full">
-                <HStack spacing="1.5">
-                  <Text whiteSpace="nowrap" opacity=".75" userSelect="all">
-                    {dayjs(entity.created).format('h:mm a')}
-                  </Text>
-                  <LogMenu entity={entity} />
-                </HStack>
-                {entity.title && (
-                  <Heading as="h3" size="md" textStyle="title" userSelect="all">
-                    <Markdown>{entity.title}</Markdown>
-                  </Heading>
-                )}
-                {entity.content && (
-                  <Text fontSize="lg" whiteSpace="pre-wrap" userSelect="all">
-                    {entity.content}
-                  </Text>
-                )}
-                {entity._attachments?.['photo'] && (
-                  <AspectRatio
-                    ratio={entity.photo.width / entity.photo.height}
-                    w="full"
-                  >
-                    <AttachmentImage
-                      docId={entity._id}
-                      attachmentId="photo"
-                      digest={entity._attachments['photo'].digest}
-                      borderRadius="4"
+            {chronoDocs.map((entity) => {
+              const authorName = clientInfoMap[entity.client]?.authorName
+              return (
+                <VStack key={entity._id} align="flex-start" w="full">
+                  <HStack spacing="1.5">
+                    <Text whiteSpace="nowrap" opacity=".75" userSelect="all">
+                      {dayjs(entity.created).format('h:mm a')}
+                    </Text>
+                    {authorName && (
+                      <Text opacity=".75" userSelect="all">
+                        by {authorName}
+                      </Text>
+                    )}
+                    <LogMenu entity={entity} />
+                  </HStack>
+                  {entity.title && (
+                    <Heading
+                      as="h3"
+                      size="md"
+                      textStyle="title"
+                      userSelect="all"
+                    >
+                      <Markdown>{entity.title}</Markdown>
+                    </Heading>
+                  )}
+                  {entity.content && (
+                    <Text fontSize="lg" whiteSpace="pre-wrap" userSelect="all">
+                      {entity.content}
+                    </Text>
+                  )}
+                  {entity._attachments?.['photo'] && (
+                    <AspectRatio
+                      ratio={entity.photo.width / entity.photo.height}
                       w="full"
-                      h="full"
-                      objectFit="cover"
-                    />
-                  </AspectRatio>
-                )}
-              </VStack>
-            ))}
+                    >
+                      <AttachmentImage
+                        docId={entity._id}
+                        attachmentId="photo"
+                        digest={entity._attachments['photo'].digest}
+                        borderRadius="4"
+                        w="full"
+                        h="full"
+                        objectFit="cover"
+                      />
+                    </AspectRatio>
+                  )}
+                </VStack>
+              )
+            })}
           </VStack>
         </>
       ) : (
@@ -159,6 +174,7 @@ function LogDay({
       startTime,
       chronoDocs,
       boundingClientRect?.height,
+      clientInfoMap,
     ],
   )
 
@@ -189,6 +205,18 @@ export default function Log() {
     sort: [{ created: 'desc' }],
   })
 
+  const { rows: clientInfoRows } = useAllDocs<any>({
+    startkey: `$client/`,
+    endkey: `$client/\ufff0`,
+    include_docs: true,
+  })
+  const clientInfoMap = useMemo(
+    () =>
+      Object.fromEntries(
+        clientInfoRows.map(({ id, doc }) => [id.split('/')[1], doc]),
+      ),
+    [clientInfoRows],
+  )
   const logContent = useMemo(() => {
     const byDate = groupBy(
       docs.filter(
@@ -221,12 +249,13 @@ export default function Log() {
             key={dateText}
             dateText={dateText}
             docs={docs}
+            clientInfoMap={clientInfoMap}
             preRender={idx === 0}
           />
         ))}
       </VStack>
     )
-  }, [beforeDate, colorMode, docs, loading])
+  }, [beforeDate, clientInfoMap, colorMode, docs, loading])
 
   const loadMore = useMemo(
     () =>

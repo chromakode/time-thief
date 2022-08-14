@@ -1,10 +1,11 @@
 import { BoxProps, Spinner, VStack } from '@chakra-ui/react'
+import { useAtomValue } from 'jotai'
 import { debounce, merge } from 'lodash'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ActivityDefinition } from '../Activities'
 import deepTemplate from '../utils/deepTemplate'
 import contentComponents from './contentComponents'
-import { useEntity } from './useActivityDB'
+import { authorSuffixAtom, useEntity } from './useActivityDB'
 
 export default function Activity({
   activity,
@@ -16,8 +17,10 @@ export default function Activity({
   seed: string
   idx: number | string
 } & BoxProps) {
+  const authorSuffix = useAtomValue(authorSuffixAtom)
   const { entityDoc, saveEntity } = useEntity({
     seed,
+    authorSuffix,
     idx,
     type: activity.entity.type,
     activity: activity.id,

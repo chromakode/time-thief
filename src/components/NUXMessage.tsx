@@ -31,13 +31,14 @@ import { AnimatePresence } from 'framer-motion'
 import MotionBox from './MotionBox'
 import { MdArticle, MdFavorite, MdIosShare, MdMoreVert } from 'react-icons/md'
 import RemainingTime from './RemainingTime'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { activityPageAtom, demoSwipeAtom, installPromptEventAtom } from '../App'
 import { useLocation } from 'react-router-dom'
 import isMobileConstructor from 'ismobilejs'
 import { QRCodeSVG } from 'qrcode.react'
 import Markdown from './Markdown'
 import logoURL from '../logo.svg'
+import { authorSuffixAtom } from './useActivityDB'
 
 type NUXHook = () => ReactNode | undefined
 
@@ -55,7 +56,8 @@ function useNUXSeen(
     delaySinceLastNUX = 15 * 1000,
   }: { minDelay?: number; delaySinceLastNUX?: number } = {},
 ): [boolean, () => void] {
-  const id = `$nux/${name}`
+  const authorSuffix = useAtomValue(authorSuffixAtom)
+  const id = `$nux/${name}${authorSuffix}`
 
   const db = usePouch()
   const { doc, loading } = useDoc(id)
