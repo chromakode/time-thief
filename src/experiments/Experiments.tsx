@@ -51,13 +51,17 @@ export default function Settings({
               w="full"
               fontSize="lg"
               alignItems="stretch"
-              spacing="12"
+              spacing="8"
             >
-              <VStack borderColor="primary.200" borderWidth="1px" p="6">
+              <VStack
+                borderColor="primary.200"
+                borderWidth="1px"
+                p={{ base: '4', xl: '6' }}
+              >
                 <Heading size="xl">Here be dragons</Heading>
                 <Text textAlign="center">
-                  These features are still under development and could cause
-                  bugs. Interested in testing or learning more? Ask on the{' '}
+                  These features are not final and could be buggy. Interested in
+                  testing or learning more? Ask on the{' '}
                   <ChakraLink href="/discord" fontWeight="semibold">
                     Discord
                   </ChakraLink>
