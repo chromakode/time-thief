@@ -37,7 +37,7 @@ export default function MultiplayerExperiment() {
       <VStack alignItems="flex-start" w="full">
         <Heading size="md">Multiplayer</Heading>
         <Text>
-          Collaborate on a synced journal with others! Effectively a vulcan mind
+          Collaborate on a synced journal with others! Safer than a vulcan mind
           meld.
         </Text>
         <Input
