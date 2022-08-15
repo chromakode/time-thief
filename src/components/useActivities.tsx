@@ -38,8 +38,9 @@ export function useActivities(): ActivityState {
   const [activityState, setActivityState] = useAtom(activityStateAtom)
 
   useEffect(() => {
-    let timeout: number
+    let timeout: number | undefined
     let endTime = 0
+
     function tick() {
       const now = Date.now()
       let nextState
@@ -59,8 +60,21 @@ export function useActivities(): ActivityState {
       timeout = window.setTimeout(tick, Math.max(500, 1000 - (now % 1000)))
     }
     tick()
+
+    function handleVisibilityChange(ev: Event) {
+      const isVisible = document.visibilityState === 'visible'
+      if (isVisible && timeout === undefined) {
+        tick()
+      } else if (!isVisible && timeout !== undefined) {
+        clearTimeout(timeout)
+        timeout = undefined
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       clearTimeout(timeout)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [activities, lastActivityTimes, setActivityState, setNow])
 
