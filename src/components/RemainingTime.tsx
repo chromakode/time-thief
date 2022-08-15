@@ -1,26 +1,63 @@
 import { BoxProps, Flex, Text, useColorMode } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
-import { useAtom } from 'jotai'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { remainingSecondsAtom } from './useActivities'
+import { useAtom, useAtomValue } from 'jotai'
+import { useMemo } from 'react'
 import MotionBox from './MotionBox'
+import {
+  endTimeAtom,
+  pageVisibleIdxAtom,
+  remainingSecondsAtom,
+} from './useActivities'
 
 export default function RemainingTime({
   remainingSeconds,
   ...props
 }: { remainingSeconds: number } & BoxProps) {
   const { colorMode } = useColorMode()
+  const endTime = useAtomValue(endTimeAtom)
+  const pageVisibleIdx = useAtomValue(pageVisibleIdxAtom)
 
   const remainingMinutes = Math.ceil(remainingSeconds / 60)
 
-  let pulseKey
+  const nowSeconds = Math.ceil(Date.now() / 1000)
+  let pulseKey = 0
   if (remainingSeconds <= 10) {
-    pulseKey = remainingSeconds
+    pulseKey = nowSeconds
   } else if (remainingSeconds <= 60) {
-    pulseKey = Math.ceil(remainingSeconds / 10) * 10
+    pulseKey = endTime - Math.ceil(remainingSeconds / 10) * 10
   } else if (remainingMinutes <= 3) {
-    pulseKey = remainingMinutes * 60
+    pulseKey = endTime - remainingMinutes * 60
   }
+
+  const pulse = useMemo(
+    () => (
+      <MotionBox
+        position="absolute"
+        left="50%"
+        bottom="50%"
+        key={pulseKey}
+        borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
+        borderRadius="9999px"
+        initial={{
+          width: 60,
+          height: 60,
+          translateX: -30,
+          translateY: 30,
+          opacity: 0,
+          borderWidth: 1,
+        }}
+        exit={{
+          width: 200,
+          height: 200,
+          translateX: -100,
+          translateY: 100,
+          opacity: [0, 1, 0],
+        }}
+        transition={{ ease: 'easeOut', duration: 1.75 }}
+      />
+    ),
+    [colorMode, pulseKey],
+  )
 
   return (
     <Flex justifySelf="flex-start" position="relative">
@@ -35,32 +72,7 @@ export default function RemainingTime({
           ? `${remainingMinutes}m`
           : `${remainingSeconds}s`}
       </Text>
-      <AnimatePresence>
-        <MotionBox
-          position="absolute"
-          left="50%"
-          bottom="50%"
-          key={pulseKey}
-          borderColor={colorMode === 'dark' ? 'primary.200' : 'primary.600'}
-          borderRadius="9999px"
-          initial={{
-            width: 60,
-            height: 60,
-            translateX: -30,
-            translateY: 30,
-            opacity: 0,
-            borderWidth: 1,
-          }}
-          exit={{
-            width: 200,
-            height: 200,
-            translateX: -100,
-            translateY: 100,
-            opacity: [0, 1, 0],
-          }}
-          transition={{ ease: 'easeOut', duration: 1.75 }}
-        />
-      </AnimatePresence>
+      <AnimatePresence key={pageVisibleIdx}>{pulse}</AnimatePresence>
     </Flex>
   )
 }

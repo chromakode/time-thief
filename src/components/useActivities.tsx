@@ -1,5 +1,6 @@
 import { atom, useAtom, useSetAtom } from 'jotai'
-import { useEffect, useRef, useState } from 'react'
+import { atomWithReducer } from 'jotai/utils'
+import { useEffect, useState } from 'react'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
 import { useLastActivityTimes } from './useActivityDB'
@@ -24,18 +25,21 @@ export const defaultActivityState = {
 
 export const activityStateAtom = atom<ActivityState>(defaultActivityState)
 
-const endTimeAtom = atom((get) => get(activityStateAtom).endTime)
+export const endTimeAtom = atom((get) => get(activityStateAtom).endTime)
 
 export const remainingSecondsAtom = atom((get) => {
   const endTime = get(endTimeAtom)
-  return endTime !== 0 ? Math.round((endTime - get(nowAtom)) / 1000) : null
+  return endTime !== 0 ? Math.ceil((endTime - get(nowAtom)) / 1000) : null
 })
+
+export const pageVisibleIdxAtom = atomWithReducer(0, (prev) => prev + 1)
 
 export function useActivities(): ActivityState {
   const lastActivityTimes = useLastActivityTimes()
   const [activities] = useState(() => new Activities(activityData))
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
+  const incPageVisibleIdx = useSetAtom(pageVisibleIdxAtom)
 
   useEffect(() => {
     let timeout: number | undefined
@@ -57,13 +61,14 @@ export function useActivities(): ActivityState {
         endTime = nextState.endTime
       }
       setNow(now)
-      timeout = window.setTimeout(tick, Math.max(500, 1000 - (now % 1000)))
+      timeout = window.setTimeout(tick, Math.max(50, 1000 - (now % 1000)))
     }
     tick()
 
     function handleVisibilityChange(ev: Event) {
       const isVisible = document.visibilityState === 'visible'
       if (isVisible && timeout === undefined) {
+        incPageVisibleIdx()
         tick()
       } else if (!isVisible && timeout !== undefined) {
         clearTimeout(timeout)
@@ -76,7 +81,13 @@ export function useActivities(): ActivityState {
       clearTimeout(timeout)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [activities, lastActivityTimes, setActivityState, setNow])
+  }, [
+    activities,
+    incPageVisibleIdx,
+    lastActivityTimes,
+    setActivityState,
+    setNow,
+  ])
 
   return activityState
 }
