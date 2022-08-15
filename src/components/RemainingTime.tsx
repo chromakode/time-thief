@@ -1,7 +1,7 @@
 import { BoxProps, Flex, Text, useColorMode } from '@chakra-ui/react'
 import { AnimatePresence } from 'framer-motion'
 import { useAtom } from 'jotai'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { remainingSecondsAtom } from './useActivities'
 import MotionBox from './MotionBox'
 
@@ -10,19 +10,17 @@ export default function RemainingTime({
   ...props
 }: { remainingSeconds: number } & BoxProps) {
   const { colorMode } = useColorMode()
-  const [pulseKey, setPulseKey] = useState<number | undefined>()
 
   const remainingMinutes = Math.ceil(remainingSeconds / 60)
 
-  useEffect(() => {
-    if (remainingSeconds <= 10) {
-      setPulseKey(remainingSeconds)
-    } else if (remainingSeconds <= 60) {
-      setPulseKey(Math.ceil(remainingSeconds / 10) * 10)
-    } else if (remainingMinutes <= 3) {
-      setPulseKey(remainingMinutes * 60)
-    }
-  }, [remainingSeconds, remainingMinutes])
+  let pulseKey
+  if (remainingSeconds <= 10) {
+    pulseKey = remainingSeconds
+  } else if (remainingSeconds <= 60) {
+    pulseKey = Math.ceil(remainingSeconds / 10) * 10
+  } else if (remainingMinutes <= 3) {
+    pulseKey = remainingMinutes * 60
+  }
 
   return (
     <Flex justifySelf="flex-start" position="relative">
