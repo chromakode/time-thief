@@ -72,6 +72,7 @@ export default function RemainingTime({
           ? `${remainingMinutes}m`
           : `${remainingSeconds}s`}
       </Text>
+      {/* Change the key of the AnimatePresence to clear out old pulses when the page is hidden. */}
       <AnimatePresence key={pageVisibleIdx}>{pulse}</AnimatePresence>
     </Flex>
   )
