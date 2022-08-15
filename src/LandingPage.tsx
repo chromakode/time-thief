@@ -15,9 +15,10 @@ import {
 } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 import { FaDiscord, FaGithub } from 'react-icons/fa'
-import { MdLock } from 'react-icons/md'
+import { MdLock, MdVisibilityOff } from 'react-icons/md'
 import howItWorksURL from './art/how-it-works-doodle.svg'
 import journalingHabitURL from './art/journaling-habit-doodle.svg'
+import personalPrivateURL from './art/personal-private-doodle.svg'
 import logoURL from './logoWithBorder.svg'
 
 export const GITHUB_URL = 'https://github.com/chromakode/time-thief'
@@ -264,12 +265,6 @@ export default function LandingPage() {
                 Write as little or as much as you'd like &mdash; don't overthink
                 it.
               </Text>
-              <HStack>
-                <Icon as={MdLock} boxSize="6" />
-                <Text>
-                  Your journal is stored privately and never leaves your device.
-                </Text>
-              </HStack>
             </VStack>
           </Flex>
           <Flex
@@ -307,10 +302,52 @@ export default function LandingPage() {
               </Text>
             </VStack>
           </Flex>
+          <Flex
+            w="full"
+            flexDir={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'flex-start', md: 'center' }}
+          >
+            <AspectRatio
+              ratio={16 / 9}
+              w={{ base: 'calc(100% + 4rem)', md: '24rem' }}
+              ml={{ base: '-8', md: 'unset' }}
+              mr={{ base: 'unset', md: '16', xl: '24' }}
+              mb={{ base: '8', md: '0' }}
+            >
+              <Image
+                src={personalPrivateURL}
+                borderRadius={{ base: '0', md: '2xl' }}
+              />
+            </AspectRatio>
+            <VStack alignItems="flex-start" spacing="3" flex="1">
+              <Text as="h2" textStyle="hero" fontSize="2xl">
+                <Text as="span" color="primary.500">
+                  Personal
+                </Text>{' '}
+                and{' '}
+                <Text as="span" color="primary.500">
+                  private
+                </Text>
+                .
+              </Text>
+              <HStack>
+                <Icon as={MdLock} boxSize="5" />
+                <Text>
+                  Your journal is stored locally and never leaves your device.
+                </Text>
+              </HStack>
+              <HStack>
+                <Icon as={MdVisibilityOff} boxSize="5" />
+                <Text>TIME THIEF does not collect behavioral data.</Text>
+              </HStack>
+            </VStack>
+          </Flex>
           <Stack
             spacing="6"
+            pt="16"
             direction={{ base: 'column', md: 'row' }}
             w={{ base: 'full', md: 'auto' }}
+            alignContent="center"
           >
             {[
               {

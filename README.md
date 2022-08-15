@@ -8,4 +8,4 @@ Every 15 minutes, 3 prompts (called "activities") are deterministically generate
 
 ### Sync server
 
-An optional [sync server configuration](./sync-server) is provided to roll your own backup service.
+By default, TIME THIEF doesn't transmit any data from your device. An optional [sync server configuration](./sync-server) is provided to roll your own private backup service.
