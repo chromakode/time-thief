@@ -42,6 +42,7 @@ export function useActivities(): ActivityState {
   const incPageVisibleIdx = useSetAtom(pageVisibleIdxAtom)
   const endTimeRef = useRef(0)
 
+  // FIXME: lastActivityTimes causes frequent rerenders
   useEffect(() => {
     let timeout: number | undefined
     function tick() {
