@@ -1,5 +1,5 @@
 import { atom, useAtom, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
 import { useLastActivityTimes } from './useActivityDB'
@@ -37,38 +37,32 @@ export function useActivities(): ActivityState {
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
 
-  const endTime = activityState.endTime
-
   useEffect(() => {
     let timeout: number
+    let endTime = 0
     function tick() {
       const now = Date.now()
+      let nextState
       if (lastActivityTimes !== null && (endTime > 0 || now > endTime)) {
-        setActivityState(activities.chooseActivities({ lastActivityTimes }))
+        nextState = activities.chooseActivities({ lastActivityTimes })
       } else if (endTime === 0) {
-        setActivityState({
+        nextState = {
           ...defaultActivityState,
           ...activities.getSeed(),
-        })
+        }
+      }
+      if (nextState) {
+        setActivityState(nextState)
+        endTime = nextState.endTime
       }
       setNow(now)
-      timeout = window.setTimeout(
-        tick,
-        Math.max(500, 1000 - (Date.now() % 1000)),
-      )
+      timeout = window.setTimeout(tick, Math.max(500, 1000 - (now % 1000)))
     }
     tick()
     return () => {
       clearTimeout(timeout)
     }
-  }, [
-    activities,
-    activityState,
-    endTime,
-    lastActivityTimes,
-    setActivityState,
-    setNow,
-  ])
+  }, [activities, lastActivityTimes, setActivityState, setNow])
 
   return activityState
 }
