@@ -1,6 +1,6 @@
 import { atom, useAtom, useSetAtom } from 'jotai'
 import { atomWithReducer } from 'jotai/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
 import { useLastActivityTimes } from './useActivityDB'
@@ -40,13 +40,14 @@ export function useActivities(): ActivityState {
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
   const incPageVisibleIdx = useSetAtom(pageVisibleIdxAtom)
+  const endTimeRef = useRef(0)
 
   useEffect(() => {
     let timeout: number | undefined
-    let endTime = 0
-
     function tick() {
       const now = Date.now()
+      const endTime = endTimeRef.current
+
       let nextState
       if (lastActivityTimes !== null && (endTime > 0 || now > endTime)) {
         nextState = activities.chooseActivities({ lastActivityTimes })
@@ -58,7 +59,7 @@ export function useActivities(): ActivityState {
       }
       if (nextState) {
         setActivityState(nextState)
-        endTime = nextState.endTime
+        endTimeRef.current = nextState.endTime
       }
       setNow(now)
       timeout = window.setTimeout(tick, Math.max(50, 1000 - (now % 1000)))
