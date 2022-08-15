@@ -283,7 +283,8 @@ function App({
 
   useEffect(() => {
     setPage(0)
-  }, [seed, setPage])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed])
 
   const ready = width !== 0 && activities.length > 0 && manualEntitiesLoaded
 
