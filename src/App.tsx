@@ -281,6 +281,10 @@ function App({
     slideLog.start(isShowingLog ? 'open' : 'closed')
   }, [isShowingLog, slideLog])
 
+  useEffect(() => {
+    setPage(0)
+  }, [seed, setPage])
+
   const ready = width !== 0 && activities.length > 0 && manualEntitiesLoaded
 
   const activityContent = useMemo(
