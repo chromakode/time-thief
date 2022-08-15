@@ -14,13 +14,15 @@ export interface ActivityState {
 
 export const nowAtom = atom(Date.now())
 
-export const activityStateAtom = atom<ActivityState>({
+export const defaultActivityState = {
   activities: [],
   manualActivity: null,
   seed: '',
   endTime: 0,
   timeOfDay: 'unknown',
-})
+}
+
+export const activityStateAtom = atom<ActivityState>(defaultActivityState)
 
 const endTimeAtom = atom((get) => get(activityStateAtom).endTime)
 
@@ -35,18 +37,17 @@ export function useActivities(): ActivityState {
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
 
+  const endTime = activityState.endTime
+
   useEffect(() => {
     let timeout: number
     function tick() {
       const now = Date.now()
-      if (
-        lastActivityTimes !== null &&
-        (!activityState.activities.length || now > activityState.endTime)
-      ) {
+      if (lastActivityTimes !== null && (endTime > 0 || now > endTime)) {
         setActivityState(activities.chooseActivities({ lastActivityTimes }))
-      } else if (activityState.endTime === 0) {
+      } else if (endTime === 0) {
         setActivityState({
-          ...activityState,
+          ...defaultActivityState,
           ...activities.getSeed(),
         })
       }
@@ -60,7 +61,14 @@ export function useActivities(): ActivityState {
     return () => {
       clearTimeout(timeout)
     }
-  }, [activities, activityState, lastActivityTimes, setActivityState, setNow])
+  }, [
+    activities,
+    activityState,
+    endTime,
+    lastActivityTimes,
+    setActivityState,
+    setNow,
+  ])
 
   return activityState
 }
