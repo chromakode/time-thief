@@ -344,7 +344,7 @@ export default function LandingPage() {
           </Flex>
           <Stack
             spacing="6"
-            pt="16"
+            pt={{ base: '0', md: '16' }}
             direction={{ base: 'column', md: 'row' }}
             w={{ base: 'full', md: 'auto' }}
             alignContent="center"
