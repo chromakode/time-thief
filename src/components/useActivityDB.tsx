@@ -4,7 +4,7 @@ import { isEqual } from 'lodash'
 import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import slugify from 'slugify'
-import { useAllDocs, useDoc, usePouch, useView } from 'use-pouchdb'
+import { useAllDocs, useDoc, usePouch } from 'use-pouchdb'
 import { getClientId } from '../utils/getClientId'
 
 export const syncStateAtom = atom<
