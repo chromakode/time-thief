@@ -1,9 +1,10 @@
 import { atom, useAtom, useSetAtom } from 'jotai'
 import { atomWithReducer } from 'jotai/utils'
 import { useEffect, useRef, useState } from 'react'
+import { usePouch } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
-import { useLastActivityTimes } from './useActivityDB'
+import { getLastActivityTimes } from './useActivityDB'
 
 export interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -35,22 +36,23 @@ export const remainingSecondsAtom = atom((get) => {
 export const pageVisibleIdxAtom = atomWithReducer(0, (prev) => prev + 1)
 
 export function useActivities(): ActivityState {
-  const lastActivityTimes = useLastActivityTimes()
+  const db = usePouch()
   const [activities] = useState(() => new Activities(activityData))
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
   const incPageVisibleIdx = useSetAtom(pageVisibleIdxAtom)
   const endTimeRef = useRef(0)
 
-  // FIXME: lastActivityTimes causes frequent rerenders
   useEffect(() => {
     let timeout: number | undefined
-    function tick() {
+
+    async function tick() {
       const now = Date.now()
       const endTime = endTimeRef.current
 
       let nextState
-      if (lastActivityTimes !== null && (endTime > 0 || now > endTime)) {
+      if (endTime === 0 || now > endTime) {
+        const lastActivityTimes = await getLastActivityTimes(db)
         nextState = activities.chooseActivities({ lastActivityTimes })
       } else if (endTime === 0) {
         nextState = {
@@ -83,13 +85,7 @@ export function useActivities(): ActivityState {
       clearTimeout(timeout)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [
-    activities,
-    incPageVisibleIdx,
-    lastActivityTimes,
-    setActivityState,
-    setNow,
-  ])
+  }, [activities, db, incPageVisibleIdx, setActivityState, setNow])
 
   return activityState
 }
