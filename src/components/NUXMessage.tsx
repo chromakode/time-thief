@@ -233,8 +233,16 @@ function useNUXFirstTime() {
         <MessageText>Every 15 minutes, you get 3 new prompts.</MessageText>
       </VStack>
       <HStack fontSize="xl" spacing="1">
-        <MessageText>Don't overthink it! Just write.</MessageText>
-        <MdFavorite />
+        <MessageText>
+          Don't overthink it! Just write.
+          <Icon
+            as={MdFavorite}
+            display="inline-block"
+            verticalAlign="text-bottom"
+            fontSize="3xl"
+            mx="2"
+          />
+        </MessageText>
       </HStack>
     </MessageBox>
   )
