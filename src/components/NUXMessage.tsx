@@ -394,7 +394,8 @@ function useNUXHowToInstall() {
 
   const isMobile = useIsMobile()
   const isTablet = isMobile.tablet
-  const canInstall = installPromptEvent || isMobile.apple || isMobile.android
+  const canInstall =
+    installPromptEvent || isMobile.apple.device || isMobile.android.device
 
   const isEligible = usePageChangeTrigger(
     (isSeen, entityCount) => !isSeen && entityCount > 1,
@@ -428,7 +429,7 @@ function useNUXHowToInstall() {
           to your home screen?
         </MessageText>
       )}
-      {isMobile.apple && (
+      {isMobile.apple.device && (
         <MessageText>
           {`To add it to your ${isTablet ? 'iPad' : 'iPhone'}, tap`}
           <Icon
@@ -441,7 +442,7 @@ function useNUXHowToInstall() {
           and "Add to Home Screen"
         </MessageText>
       )}
-      {isMobile.android && (
+      {isMobile.android.device && (
         <MessageText>
           {`To add it to your Android ${
             isTablet ? 'tablet' : 'phone'
