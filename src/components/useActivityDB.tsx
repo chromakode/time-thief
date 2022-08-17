@@ -55,7 +55,9 @@ export function useSetupDB() {
       initialSync.on('error', (ev) => {
         setSyncState('error')
       })
-      await initialSync
+      try {
+        await initialSync
+      } catch (err) {}
 
       const syncEvents = PouchDB.sync(db, syncEndpoint, {
         live: true,
