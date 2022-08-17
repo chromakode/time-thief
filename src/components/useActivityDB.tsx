@@ -39,13 +39,7 @@ export function useSetupDB() {
       },
     }
 
-    let existingDesignDoc
-    try {
-      existingDesignDoc = await db.get(appDesignDoc._id)
-    } catch {}
-    if (!isEqual(existingDesignDoc, appDesignDoc)) {
-      await db.put({ ...existingDesignDoc, ...appDesignDoc })
-    }
+    await db.upsert(appDesignDoc._id, () => appDesignDoc)
 
     // Multiplayer: check for a client info document. If it contains an author
     // name, we're in multiplayer mode.

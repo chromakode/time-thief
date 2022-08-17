@@ -1,10 +1,12 @@
 import {
+  Center,
   ChakraProvider,
   Container,
   Flex,
   IconButton,
   LightMode,
   SimpleGrid,
+  Spinner,
   useColorMode,
   useLatestRef,
   usePrevious,
@@ -178,6 +180,16 @@ function ActivityContainer({ children }: { children: ReactNode }) {
         {children}
       </Container>
     </Flex>
+  )
+}
+
+function LoadingSpinner() {
+  const { colorMode } = useColorMode()
+  const backgroundColor = colorMode === 'dark' ? 'primary.800' : 'primary.50'
+  return (
+    <Center h="full" bg={backgroundColor}>
+      <Spinner size="xl" />
+    </Center>
   )
 }
 
@@ -506,7 +518,7 @@ function AppWrapper({
   isShowingSettings?: boolean
   isShowingExperiments?: boolean
 }) {
-  useSetupDB()
+  const dbStatus = useSetupDB()
 
   const [searchParams] = useSearchParams()
   const isDemo = searchParams.has('demo')
@@ -524,14 +536,20 @@ function AppWrapper({
     }
   }, [setPromptEvent])
 
-  let content = (
-    <App
-      isDemo={isDemo}
-      isShowingLog={isShowingLog === true}
-      isShowingSettings={isShowingSettings === true}
-      isShowingExperiments={isShowingExperiments === true}
-    />
-  )
+  let content
+  if (dbStatus === 'success') {
+    content = (
+      <App
+        isDemo={isDemo}
+        isShowingLog={isShowingLog === true}
+        isShowingSettings={isShowingSettings === true}
+        isShowingExperiments={isShowingExperiments === true}
+      />
+    )
+  } else {
+    content = <LoadingSpinner />
+  }
+
   if (isDemo) {
     content = <LightMode>{content}</LightMode>
   }

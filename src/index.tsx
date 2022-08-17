@@ -3,6 +3,7 @@ import calendar from 'dayjs/plugin/calendar'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import PouchDB from 'pouchdb'
 import PouchFind from 'pouchdb-find'
+import PouchUpsert from 'pouchdb-upsert'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
@@ -15,6 +16,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Provider as PouchProvider } from 'use-pouchdb'
 
 PouchDB.plugin(PouchFind)
+PouchDB.plugin(PouchUpsert)
 dayjs.extend(calendar)
 dayjs.extend(relativeTime)
 
