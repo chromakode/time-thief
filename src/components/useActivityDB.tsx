@@ -1,6 +1,5 @@
 import { useAsyncEffect } from '@react-hook/async'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { isEqual } from 'lodash'
 import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import slugify from 'slugify'
