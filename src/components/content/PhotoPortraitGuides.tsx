@@ -265,7 +265,7 @@ function CameraUI({
     : baseOverlayProps
 
   const eyeGuideX = '44%'
-  const eyeGuideY = '43%'
+  const eyeGuideY = '45%'
   const eyeGuideSize = `${Math.max(8, constrainedWidth * 0.015)}px`
 
   return (
