@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Button,
   Center,
   chakra,
@@ -13,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { useAsync } from '@react-hook/async'
 import useIntersectionObserver from '@react-hook/intersection-observer'
+import useSize from '@react-hook/size'
 import { findLastIndex } from 'lodash'
 import React, { Ref, useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
@@ -22,7 +24,6 @@ import {
   MdClose,
   MdPause,
   MdPlayArrow,
-  MdRotateLeft,
 } from 'react-icons/md'
 import { useFind } from 'use-pouchdb'
 import AttachmentImage from '../AttachmentImage'
@@ -30,7 +31,13 @@ import {
   ContentComponentProps,
   ContentComponentRef,
 } from '../contentComponents'
+import MotionBox from '../MotionBox'
 import Placeholder from '../Placeholder'
+
+// For now, we assume that all cameras are natively 4:3. This makes the layout
+// logic much simpler.
+const ASPECT_RATIO = 4 / 3
+const ASPECT_RATIO_INV = 1 / ASPECT_RATIO
 
 const ChakraVideo = chakra('video')
 
@@ -115,6 +122,261 @@ function Montage({
   )
 }
 
+function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
+  const [{ value: stream }, start] = useAsync(async () => {
+    await new Promise<void>(flushSync)
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' },
+    })
+    try {
+      await cameraUIRef.current?.requestFullscreen({ navigationUI: 'hide' })
+    } catch (err) {
+      console.warn('failed to request fullscreen', err)
+    }
+    const videoTrack = stream.getVideoTracks()[0]
+    const capabilities = videoTrack.getCapabilities()
+    const maxWidth = capabilities.width?.max
+    videoTrack.applyConstraints({
+      width: maxWidth,
+      height: maxWidth ? maxWidth * ASPECT_RATIO_INV : undefined,
+    })
+    return stream
+  })
+
+  const end = useCallback(async () => {
+    for (const track of stream?.getTracks() ?? []) {
+      track.stop()
+    }
+    try {
+      await document.exitFullscreen()
+    } catch (err) {
+      console.warn('failed to exit fullscreen', err)
+    }
+  }, [stream])
+
+  const capture = useCallback(async () => {
+    if (!stream) {
+      return
+    }
+    const capture = new ImageCapture(stream?.getVideoTracks()[0])
+    const blob = await capture.takePhoto()
+    end()
+    return blob
+  }, [end, stream])
+
+  const handleFullscreenChange = useCallback(() => {
+    if (document.fullscreenElement !== cameraUIRef.current) {
+      end()
+    }
+  }, [cameraUIRef, end])
+
+  useEffect(() => {
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [handleFullscreenChange])
+
+  return { stream, start, end, capture }
+}
+
+function CameraUI({
+  docs,
+  field,
+  currentPhotoId,
+  stream,
+  onCapture,
+  onCancel,
+}: {
+  docs: any[]
+  field: string
+  currentPhotoId: string
+  stream: MediaStream | undefined
+  onCapture: () => void
+  onCancel: () => void
+}) {
+  const latestPhotoIdx = findLastIndex(
+    docs,
+    (doc) => doc._id !== currentPhotoId,
+  )
+  const latestPhotos = docs.slice(
+    Math.max(0, latestPhotoIdx - 10),
+    latestPhotoIdx,
+  )
+
+  const imageFrameRef = useRef<HTMLDivElement>(null)
+  const [isLandscape] = useMediaQuery('(orientation: landscape)')
+
+  // TODO: This approach is a bit overcomplicated. I decided to rotate only the
+  // image overlay portions of the UI, since the camera video needs to be
+  // untransformed. It would probably simplify the layout to rotate and
+  // transform the entire UI, and then un-rotate the camera view. A big
+  // advantage would be to be able to use width/height consistently everywhere
+  // rather than transposing them below.
+
+  const [frameWidth, frameHeight] = useSize(imageFrameRef)
+
+  const orientedWidth = isLandscape ? frameWidth : frameHeight
+  const orientedHeight = isLandscape ? frameHeight : frameWidth
+
+  const constrainedWidth = Math.min(
+    orientedWidth,
+    ASPECT_RATIO * orientedHeight,
+  )
+  const constrainedHeight = Math.min(
+    ASPECT_RATIO_INV * orientedWidth,
+    orientedHeight,
+  )
+
+  const absoluteWidth = isLandscape ? constrainedWidth : constrainedHeight
+  const absoluteHeight = isLandscape ? constrainedHeight : constrainedWidth
+
+  const baseOverlayProps: BoxProps = {
+    position: 'absolute',
+    inset: '0',
+    width: constrainedWidth,
+    height: constrainedHeight,
+    zIndex: 'overlay',
+  }
+  const rotateOverlayProps = !isLandscape
+    ? {
+        transform: `rotate(90deg) translateY(-100%)`,
+        transformOrigin: 'top left',
+        ...baseOverlayProps,
+      }
+    : baseOverlayProps
+
+  const eyeGuideX = '44%'
+  const eyeGuideY = '43%'
+  const eyeGuideSize = `${Math.max(8, constrainedWidth * 0.015)}px`
+
+  return (
+    <Flex
+      flexDir={isLandscape ? 'row' : 'column'}
+      bg="black"
+      position="absolute"
+      inset="0"
+      userSelect="none"
+    >
+      <Center ref={imageFrameRef} flex="3" overflow="hidden">
+        <Box w={absoluteWidth} h={absoluteHeight} position="relative">
+          <Flex
+            mixBlendMode="difference"
+            {...rotateOverlayProps}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Box
+              position="absolute"
+              left={eyeGuideX}
+              top={eyeGuideY}
+              w={eyeGuideSize}
+              h={eyeGuideSize}
+              transform="translate(-50%, -50%)"
+              bg="white"
+              borderRadius="full"
+            />
+            <Box
+              position="absolute"
+              right={eyeGuideX}
+              top={eyeGuideY}
+              w={eyeGuideSize}
+              h={eyeGuideSize}
+              transform="translate(-50%, -50%)"
+              bg="white"
+              borderRadius="full"
+              mixBlendMode="difference"
+            />
+          </Flex>
+          <Box {...rotateOverlayProps} zIndex="toast">
+            <Flex
+              position="absolute"
+              left="0"
+              right="0"
+              bottom="8"
+              justifyContent="center"
+            >
+              <Text
+                px="3"
+                py="1"
+                borderRadius="md"
+                bg="primary.50"
+                color="primary.500"
+                fontSize="md"
+                fontWeight="bold"
+              >
+                Line up your eyes with the dots.
+              </Text>
+            </Flex>
+          </Box>
+          <Box
+            filter="invert(1) brightness(.9) contrast(200%)"
+            mixBlendMode="luminosity"
+            {...rotateOverlayProps}
+          >
+            <Box position="absolute" inset="0" transform="scaleX(-1)">
+              {latestPhotos.map((doc) => (
+                <AttachmentImage
+                  key={doc._id}
+                  position="absolute"
+                  inset="0"
+                  opacity={1 / latestPhotos.length}
+                  docId={doc._id}
+                  attachmentId={field}
+                  digest={doc._attachments?.[field].digest}
+                  pointerEvents="none"
+                  showPlaceholder={false}
+                />
+              ))}
+            </Box>
+          </Box>
+          <Video
+            position="absolute"
+            inset="0"
+            srcObject={stream}
+            transform="scaleX(-1)"
+          />
+        </Box>
+      </Center>
+      <MotionBox
+        display="flex"
+        flex="1"
+        flexDir={isLandscape ? 'column' : 'row'}
+        justifyContent="center"
+        alignItems="center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.35 }}
+      >
+        <IconButton
+          onClick={onCapture}
+          aria-label="Take picture"
+          icon={<MdCamera />}
+          fontSize="3xl"
+          boxSize="16"
+          m="4"
+          variant="outline"
+          color="primary.200"
+          _hover={{ bg: 'none' }}
+          _active={{ bg: 'primary.700' }}
+        />
+        <IconButton
+          onClick={onCancel}
+          aria-label="Cancel"
+          icon={<MdClose />}
+          fontSize="3xl"
+          boxSize="16"
+          m="4"
+          variant="ghost"
+          color="primary.200"
+          _hover={{ bg: 'none' }}
+          _active={{ bg: 'none' }}
+        />
+      </MotionBox>
+    </Flex>
+  )
+}
+
 export default function PhotoPortraitGuides(
   {
     entityDoc,
@@ -134,80 +396,32 @@ export default function PhotoPortraitGuides(
     },
     sort: ['type', 'created'],
   })
-  const latestPhotoIdx = findLastIndex(docs, (doc) => doc._id !== entityDoc._id)
-  const latestPhotos = docs.slice(
-    Math.max(0, latestPhotoIdx - 10),
-    latestPhotoIdx,
-  )
   const tookPhoto = !!entityDoc._attachments?.[field]
-
-  const cameraUIRef = useRef<HTMLDivElement>(null)
   const [isCameraOpen, setCameraOpen] = useState(false)
 
-  const [isLandscape] = useMediaQuery('(orientation: landscape)')
+  const cameraUIRef = useRef<HTMLDivElement>(null)
+  const camera = useCamera(cameraUIRef)
 
-  const [{ value: stream }, startCamera] = useAsync(async () => {
+  const handleStartCamera = useCallback(() => {
     setCameraOpen(true)
-    await new Promise<void>(flushSync)
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' },
-    })
-    try {
-      await cameraUIRef.current?.requestFullscreen({ navigationUI: 'hide' })
-    } catch (err) {
-      console.warn('failed to request fullscreen', err)
-    }
-    const videoTrack = stream.getVideoTracks()[0]
-    const capabilities = videoTrack.getCapabilities()
-    videoTrack.applyConstraints({
-      width: capabilities.width?.max,
-      height: capabilities.height?.max,
-    })
-    return stream
-  })
+    camera.start()
+  }, [camera])
 
-  const endCamera = useCallback(async () => {
-    setCameraOpen(false)
-    for (const track of stream?.getTracks() ?? []) {
-      track.stop()
-    }
-    await document.exitFullscreen()
-  }, [stream])
-
-  const handleFullscreenChange = useCallback(() => {
-    if (document.fullscreenElement !== cameraUIRef.current) {
-      endCamera()
-    }
-  }, [endCamera])
-
-  useEffect(() => {
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
-    }
-  }, [handleFullscreenChange])
-
-  const handleCapture = useCallback(async () => {
-    if (!stream) {
+  const handleCaptureCamera = useCallback(async () => {
+    const blob = await camera.capture()
+    if (!blob) {
+      // TODO error state
       return
     }
-    const capture = new ImageCapture(stream?.getVideoTracks()[0])
-    const blob = await capture.takePhoto()
+    setCameraOpen(false)
+    camera.end()
     saveAttachment(field, blob)
-    endCamera()
-  }, [endCamera, field, saveAttachment, stream])
+  }, [camera, field, saveAttachment])
 
-  const showWithDelay = {
-    opacity: isCameraOpen ? 1 : 0,
-    transitionProperty: 'opacity',
-    transitionDuration: '350ms',
-    transitionDelay: '150ms',
-  }
-
-  // TODO error state
-
-  const eyeGuideX = '45%'
-  const eyeGuideY = '45%'
+  const handleCancelCamera = useCallback(() => {
+    setCameraOpen(false)
+    camera.end()
+  }, [camera])
 
   return (
     <VStack px="4" flex="1" spacing="4">
@@ -238,131 +452,27 @@ export default function PhotoPortraitGuides(
           </Flex>
         )}
       </Flex>
-      <Button onClick={startCamera} fontSize="3xl" h="16">
+      <Button onClick={handleStartCamera} fontSize="3xl" h="16">
         Start camera
       </Button>
       <Portal>
-        <Flex
+        <Box
           ref={cameraUIRef}
-          visibility={isCameraOpen ? 'visible' : 'hidden'}
-          pointerEvents={isCameraOpen ? 'auto' : 'none'}
-          flexDir={isLandscape ? 'row' : 'column'}
-          bg="black"
-          position="fixed"
+          position={isCameraOpen ? 'fixed' : 'static'}
           inset="0"
           zIndex="popover"
         >
-          <Box flex="3" m="1" position="relative">
-            {isLandscape ? (
-              <>
-                <Box
-                  position="absolute"
-                  left={eyeGuideX}
-                  top={eyeGuideY}
-                  w="2"
-                  h="2"
-                  bg="primary.500"
-                  borderRadius="full"
-                  zIndex="overlay"
-                  mixBlendMode="difference"
-                />
-                <Box
-                  position="absolute"
-                  right={eyeGuideX}
-                  top={eyeGuideY}
-                  w="2"
-                  h="2"
-                  bg="primary.500"
-                  borderRadius="full"
-                  zIndex="overlay"
-                  mixBlendMode="difference"
-                />
-                <Box
-                  position="absolute"
-                  inset="0"
-                  transform="scaleX(-1)"
-                  filter="invert(1) contrast(175%)"
-                  mixBlendMode="overlay"
-                  zIndex="overlay"
-                >
-                  {isCameraOpen &&
-                    latestPhotos.map((doc) => (
-                      <AttachmentImage
-                        key={doc._id}
-                        position="absolute"
-                        inset="0"
-                        opacity={1 / latestPhotos.length}
-                        docId={doc._id}
-                        attachmentId={field}
-                        digest={doc._attachments?.[field].digest}
-                        pointerEvents="none"
-                        showPlaceholder={false}
-                      />
-                    ))}
-                </Box>
-              </>
-            ) : (
-              <Center
-                position="absolute"
-                inset="0"
-                zIndex="overlay"
-                {...showWithDelay}
-              >
-                <VStack
-                  color="white"
-                  background="blackAlpha.500"
-                  p="6"
-                  borderRadius="xl"
-                  backdropFilter="auto"
-                  backdropBlur="lg"
-                >
-                  <Icon as={MdRotateLeft} boxSize="20" />
-                  <Text fontSize="3xl" fontWeight="700">
-                    Rotate to landscape
-                  </Text>
-                </VStack>
-              </Center>
-            )}
-            <Video
-              srcObject={stream}
-              w="full"
-              h="full"
-              transform="scaleX(-1)"
+          {isCameraOpen && (
+            <CameraUI
+              docs={docs}
+              field={field}
+              currentPhotoId={entityDoc._id}
+              stream={camera.stream}
+              onCapture={handleCaptureCamera}
+              onCancel={handleCancelCamera}
             />
-          </Box>
-          <Flex
-            flex="1"
-            flexDir={isLandscape ? 'column' : 'row'}
-            justifyContent="center"
-            alignItems="center"
-            {...showWithDelay}
-          >
-            <IconButton
-              onClick={handleCapture}
-              aria-label="Take picture"
-              icon={<MdCamera />}
-              fontSize="3xl"
-              boxSize="16"
-              m="4"
-              variant="outline"
-              color="primary.200"
-              _hover={{ bg: 'none' }}
-              _active={{ bg: 'primary.700' }}
-            />
-            <IconButton
-              onClick={endCamera}
-              aria-label="Cancel"
-              icon={<MdClose />}
-              fontSize="3xl"
-              boxSize="16"
-              m="4"
-              variant="ghost"
-              color="primary.200"
-              _hover={{ bg: 'none' }}
-              _active={{ bg: 'none' }}
-            />
-          </Flex>
-        </Flex>
+          )}
+        </Box>
       </Portal>
     </VStack>
   )
