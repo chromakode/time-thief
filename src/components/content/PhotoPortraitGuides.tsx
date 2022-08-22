@@ -123,6 +123,13 @@ function Montage({
 }
 
 function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
+  const DEFAULT_WIDTH = 1280
+  const DEFAULT_HEIGHT = 960
+  const constraintsRef = useRef<{ width: number; height: number }>({
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT,
+  })
+
   const [{ value: stream }, start] = useAsync(async () => {
     await new Promise<void>(flushSync)
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -133,13 +140,19 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
     } catch (err) {
       console.warn('failed to request fullscreen', err)
     }
+
     const videoTrack = stream.getVideoTracks()[0]
     const capabilities = videoTrack.getCapabilities()
-    const maxWidth = capabilities.width?.max
-    videoTrack.applyConstraints({
-      width: maxWidth,
-      height: maxWidth ? maxWidth * ASPECT_RATIO_INV : undefined,
-    })
+    const maxWidth = capabilities.width?.max ?? DEFAULT_WIDTH
+    const maxHeight = capabilities.height?.max ?? DEFAULT_HEIGHT
+    const constraints = {
+      width: Math.min(maxWidth, Math.round(maxHeight * ASPECT_RATIO)),
+      height: Math.min(maxHeight, Math.round(maxWidth * ASPECT_RATIO_INV)),
+    }
+    constraintsRef.current = constraints
+
+    videoTrack.applyConstraints(constraints)
+
     return stream
   })
 
@@ -158,8 +171,13 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
     if (!stream) {
       return
     }
-    const capture = new ImageCapture(stream?.getVideoTracks()[0])
-    const blob = await capture.takePhoto()
+    const videoTrack = stream?.getVideoTracks()[0]
+    const capture = new ImageCapture(videoTrack)
+    const { width, height } = constraintsRef.current
+    const blob = await capture.takePhoto({
+      imageWidth: width,
+      imageHeight: height,
+    })
     end()
     return blob
   }, [end, stream])
