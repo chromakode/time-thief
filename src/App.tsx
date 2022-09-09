@@ -31,7 +31,6 @@ import React, {
   useState,
 } from 'react'
 import { MdArticle } from 'react-icons/md'
-import './App.css'
 import Activity from './components/Activity'
 import ActivityPips from './components/ActivityPips'
 import Carousel from './components/Carousel'
