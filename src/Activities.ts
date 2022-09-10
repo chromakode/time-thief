@@ -140,7 +140,9 @@ class Traversal {
       }
 
       for (const [condType, condValue] of Object.entries(c['conditions'])) {
-        if (condType === 'timeOfDay') {
+        if (condType === 'enabled') {
+          return condValue !== false
+        } else if (condType === 'timeOfDay') {
           if (
             condValue instanceof Array &&
             !condValue.includes(this.timeOfDay)
