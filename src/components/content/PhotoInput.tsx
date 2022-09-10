@@ -119,7 +119,9 @@ export default function PhotoInput(
           <input
             ref={chooseInputRef}
             type="file"
-            accept="image/*"
+            // On Android, raw files show up as dupes in the uploader picker.
+            // Let's filter them out by allowlisting specific image types.
+            accept="image/jpeg,image/png,image/webm,image/avif"
             onChange={handleChange}
             hidden
           />
