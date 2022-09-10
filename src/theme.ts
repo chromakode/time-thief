@@ -45,6 +45,11 @@ export const baseTheme = extendTheme(
         fontStretch: '70%',
         fontVariationSettings: '"GRAD" -18, "opsz" 60',
       },
+      time: {
+        fontWeight: 600,
+        fontStretch: '70%',
+        fontVariationSettings: '"GRAD" -18, "opsz" 32',
+      },
       brand: {
         fontWeight: 650,
         fontVariationSettings: '"GRAD" 150, "slnt" -8, "YOPQ" 40, "opsz" 72',

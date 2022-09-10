@@ -62,7 +62,7 @@ export default function RemainingTime({
   return (
     <Flex justifySelf="flex-start" position="relative">
       <Text
-        textStyle="title"
+        textStyle="time"
         whiteSpace="pre"
         minW="6"
         textAlign="center"
