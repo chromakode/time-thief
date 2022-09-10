@@ -45,6 +45,12 @@ export function RenderSteps(
       console.warn('Unknown component type:', item.type)
       return undefined
     }
+
+    const extraProps: { reserveButtonSpace?: boolean } = {}
+    if (item.type === 'title' && step > 0) {
+      extraProps.reserveButtonSpace = true
+    }
+
     return (
       <Component
         ref={(ref: ContentComponentRef) => {
@@ -52,6 +58,7 @@ export function RenderSteps(
         }}
         key={idx}
         {...props}
+        {...extraProps}
         spec={item}
         {...item}
       />

@@ -1,4 +1,4 @@
-import { Center, Heading, VStack } from '@chakra-ui/react'
+import { Box, Center, Heading, VStack } from '@chakra-ui/react'
 import { Ref, useEffect } from 'react'
 import {
   ContentComponentProps,
@@ -7,7 +7,7 @@ import {
 import Markdown from '../Markdown'
 
 export default function ContentTitle(
-  { entityDoc, text, subtitle, set }: ContentComponentProps,
+  { entityDoc, text, subtitle, set, reserveButtonSpace }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
   useEffect(() => {
@@ -17,6 +17,13 @@ export default function ContentTitle(
     <Center h="20vh" px="2" flexShrink="0">
       <VStack textAlign="center" whiteSpace="pre-wrap">
         <Heading textStyle="title">
+          {reserveButtonSpace && (
+            // Make space for back button
+            <>
+              <Box w="16" h="8" float="left" alignSelf="flex-start" />
+              <Box w="16" h="8" float="right" alignSelf="flex-start" />
+            </>
+          )}
           <Markdown>{text}</Markdown>
         </Heading>
         {subtitle && (
