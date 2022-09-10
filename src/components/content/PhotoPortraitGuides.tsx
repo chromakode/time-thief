@@ -141,7 +141,7 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
       console.warn('failed to request fullscreen', err)
     }
     try {
-      await window.screen.orientation.lock('portrait')
+      await window.screen.orientation.lock('landscape')
     } catch (err) {
       console.warn('failed to lock orientation', err)
     }
