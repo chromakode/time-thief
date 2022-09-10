@@ -369,25 +369,13 @@ function CameraUI({
       <MotionBox
         display="flex"
         flex="1"
-        flexDir={isLandscape ? 'column' : 'row'}
+        flexDir={isLandscape ? 'column-reverse' : 'row'}
         justifyContent="center"
         alignItems="center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.35 }}
       >
-        <IconButton
-          onClick={onCapture}
-          aria-label="Take picture"
-          icon={<MdCamera />}
-          fontSize="3xl"
-          boxSize="16"
-          m="4"
-          variant="outline"
-          color="primary.200"
-          _hover={{ bg: 'none' }}
-          _active={{ bg: 'primary.700' }}
-        />
         <IconButton
           onClick={onCancel}
           aria-label="Cancel"
@@ -399,6 +387,18 @@ function CameraUI({
           color="primary.200"
           _hover={{ bg: 'none' }}
           _active={{ bg: 'none' }}
+        />
+        <IconButton
+          onClick={onCapture}
+          aria-label="Take picture"
+          icon={<MdCamera />}
+          fontSize="3xl"
+          boxSize="16"
+          m="4"
+          variant="outline"
+          color="primary.200"
+          _hover={{ bg: 'none' }}
+          _active={{ bg: 'primary.700' }}
         />
       </MotionBox>
     </Flex>
