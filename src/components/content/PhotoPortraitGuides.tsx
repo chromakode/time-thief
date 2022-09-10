@@ -140,6 +140,11 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
     } catch (err) {
       console.warn('failed to request fullscreen', err)
     }
+    try {
+      await window.screen.orientation.lock('portrait')
+    } catch (err) {
+      console.warn('failed to lock orientation', err)
+    }
 
     const videoTrack = stream.getVideoTracks()[0]
     const capabilities = videoTrack.getCapabilities()
@@ -164,6 +169,11 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
       await document.exitFullscreen()
     } catch (err) {
       console.warn('failed to exit fullscreen', err)
+    }
+    try {
+      await window.screen.orientation.unlock()
+    } catch (err) {
+      console.warn('failed to unlock orientation', err)
     }
   }, [stream])
 
