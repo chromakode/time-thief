@@ -86,18 +86,15 @@ export function RenderSteps(
           initial={{
             opacity: 0,
             x: step > prevStep ? 35 : -35,
-            rotate: step > prevStep ? 0 : '-2deg',
           }}
           animate={{
             opacity: 1,
             x: 0,
-            rotate: 0,
             transition: { type: 'spring', duration: 0.5 },
           }}
           exit={{
             opacity: 0,
             x: step > prevStep ? 35 : -35,
-            rotate: step > prevStep ? 0 : '-2deg',
             transition: { type: 'spring', duration: 0.5 },
           }}
         >
