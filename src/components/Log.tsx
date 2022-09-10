@@ -116,7 +116,13 @@ function LogDay({
             {chronoDocs.map((entity) => {
               const authorName = clientInfoMap[entity.client]?.authorName
               return (
-                <VStack key={entity._id} align="flex-start" w="full">
+                <VStack
+                  key={entity._id}
+                  align="flex-start"
+                  w="full"
+                  wordBreak="break-word"
+                  sx={{ hyphens: 'auto' }}
+                >
                   <HStack spacing="1.5">
                     <Text whiteSpace="nowrap" opacity=".75" userSelect="all">
                       {dayjs(entity.created).format('h:mm a')}
