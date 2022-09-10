@@ -9,6 +9,7 @@ export const baseTheme = extendTheme(
         body: {
           fontSynthesis: 'none',
           WebkitTapHighlightColor: 'transparent',
+          fontVariationSettings: '"opsz" 72',
         },
       },
     },
@@ -42,20 +43,20 @@ export const baseTheme = extendTheme(
       title: {
         fontWeight: 600,
         fontStretch: '70%',
-        fontVariationSettings: '"GRAD" -18',
+        fontVariationSettings: '"GRAD" -18, "opsz" 60',
       },
       brand: {
         fontWeight: 650,
-        fontVariationSettings: '"GRAD" 150, "slnt" -8, "YOPQ" 40',
+        fontVariationSettings: '"GRAD" 150, "slnt" -8, "YOPQ" 40, "opsz" 72',
         textTransform: 'capitalize',
       },
       brandStraight: {
         fontWeight: 650,
-        fontVariationSettings: '"GRAD" 150, "YOPQ" 40',
+        fontVariationSettings: '"GRAD" 150, "YOPQ" 40, "opsz" 72',
         textTransform: 'capitalize',
       },
       slant: {
-        fontVariationSettings: '"GRAD" 150, "slnt" -8',
+        fontVariationSettings: '"GRAD" 150, "slnt" -8, "opsz" 72',
       },
       hero: {
         letterSpacing: '-.05rem',
