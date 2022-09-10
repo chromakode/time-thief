@@ -227,10 +227,6 @@
                   {
                     "type": "title",
                     "text": "What's one thing you're happy about?"
-                  },
-                  {
-                    "type": "title",
-                    "text": "What are you grateful for?"
                   }
                 ]
               },
@@ -392,6 +388,25 @@
           "type": "title",
           "text": "What would you like to accomplish tomorrow?",
           "frequency": "day"
+        },
+        {
+          "type": "input/multi-line",
+          "field": "content"
+        }
+      ],
+      "entity": {
+        "type": "journal"
+      }
+    },
+    {
+      "id": "journal-gratitude",
+      "conditions": {
+        "frequency": "day"
+      },
+      "content": [
+        {
+          "type": "title",
+          "text": "What are you grateful for?"
         },
         {
           "type": "input/multi-line",
