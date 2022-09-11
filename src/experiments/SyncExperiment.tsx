@@ -62,6 +62,7 @@ export default function SyncExperiment() {
             placeholder="https://..."
             variant="filled"
             w="full"
+            pr="12"
             onChange={handleSyncEndpointChanged}
             defaultValue={storedSyncEndpoint}
             isInvalid={!syncEndpointValid}
