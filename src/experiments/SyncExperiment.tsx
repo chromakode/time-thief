@@ -1,7 +1,16 @@
-import { Button, Heading, Input, Text, VStack } from '@chakra-ui/react'
+import {
+  Button,
+  Heading,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { useAtomValue } from 'jotai'
 import React, { useCallback, useState } from 'react'
-import { MdRefresh } from 'react-icons/md'
+import { MdRefresh, MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import { syncStateAtom } from '../components/useActivityDB'
 
 function isValidSyncEndpoint(url: string) {
@@ -34,21 +43,41 @@ export default function SyncExperiment() {
     window.location.reload()
   }, [])
 
+  const [showSyncEndpoint, setShowSyncEndpoint] = useState(false)
+  const handleToggleShowSyncEndpoint = useCallback(() => {
+    setShowSyncEndpoint((val) => !val)
+  }, [setShowSyncEndpoint])
+
   const syncState = useAtomValue(syncStateAtom)
   return (
     <VStack spacing="4">
       <VStack alignItems="flex-start">
         <Heading size="lg">Sync &amp; Backup</Heading>
         <Text>Automatically back up your journal to a remote server.</Text>
-        <Input
-          type="url"
-          placeholder="https://..."
-          variant="filled"
-          w="full"
-          onChange={handleSyncEndpointChanged}
-          defaultValue={storedSyncEndpoint}
-          isInvalid={!syncEndpointValid}
-        />
+        <InputGroup>
+          <Input
+            flex="1"
+            type={showSyncEndpoint ? 'text' : 'password'}
+            inputMode="url"
+            placeholder="https://..."
+            variant="filled"
+            w="full"
+            onChange={handleSyncEndpointChanged}
+            defaultValue={storedSyncEndpoint}
+            isInvalid={!syncEndpointValid}
+          />
+          <InputRightElement mx="2">
+            <IconButton
+              onClick={handleToggleShowSyncEndpoint}
+              fontSize="2xl"
+              size="sm"
+              icon={showSyncEndpoint ? <MdVisibilityOff /> : <MdVisibility />}
+              _hover={{ bg: 'transparent' }}
+              variant="ghost"
+              aria-label={`${showSyncEndpoint ? 'Hide' : 'Show'} sync URL`}
+            />
+          </InputRightElement>
+        </InputGroup>
         <Text fontSize="md" fontWeight="medium">
           Warning: the remote server will be able to read your notes. In the
           future, encryption will be added.
