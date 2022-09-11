@@ -12,11 +12,17 @@ import {
   Text,
   Heading,
   Container,
+  Spinner,
+  Center,
 } from '@chakra-ui/react'
+import React, { Suspense } from 'react'
 import { MdArrowBack } from 'react-icons/md'
-import CustomActivitiesExperiment from './CustomActivitiesExperiment'
 import MultiplayerExperiment from './MultiplayerExperiment'
 import SyncExperiment from './SyncExperiment'
+
+const LazyCustomActivities = React.lazy(
+  () => import('./CustomActivitiesExperiment'),
+)
 
 export default function Settings({
   isShowing,
@@ -47,7 +53,7 @@ export default function Settings({
         <ModalBody display="flex" flexDir="column" alignItems="center">
           <Container maxW="container.lg">
             <VStack
-              my="8"
+              mt="8"
               w="full"
               fontSize="lg"
               alignItems="stretch"
@@ -70,7 +76,15 @@ export default function Settings({
               </VStack>
               <SyncExperiment />
               <MultiplayerExperiment />
-              <CustomActivitiesExperiment />
+              <Suspense
+                fallback={
+                  <Center>
+                    <Spinner />
+                  </Center>
+                }
+              >
+                <LazyCustomActivities />
+              </Suspense>
             </VStack>
           </Container>
         </ModalBody>

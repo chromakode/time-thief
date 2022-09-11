@@ -1,5 +1,5 @@
 import dayjs, { ManipulateType } from 'dayjs'
-import { isArray, isPlainObject, map, mapValues } from 'lodash'
+import { isArray, isPlainObject, map, mapValues, uniqBy } from 'lodash'
 import seedrandom from 'seedrandom'
 import weightedChoice from './utils/weightedChoice'
 
@@ -37,11 +37,26 @@ function seedFromTimestamp(ts: number) {
   return Math.floor(ts / SEED_DURATION).toString()
 }
 
+function mergeData(
+  activityData: ActivityData,
+  updateData: ActivityData,
+): ActivityData {
+  return {
+    ...activityData,
+    ...updateData,
+    config: { ...activityData.config, ...updateData.config },
+    activities: uniqBy(
+      [...(updateData?.activities ?? []), ...(activityData?.activities ?? [])],
+      'id',
+    ),
+  }
+}
+
 class Activities {
   data: ActivityData
 
-  constructor(activityData: ActivityData) {
-    this.data = activityData
+  constructor(activityData: ActivityData, customData: ActivityData = {}) {
+    this.data = mergeData(activityData, customData)
   }
 
   getSeed() {

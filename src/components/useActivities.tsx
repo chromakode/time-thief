@@ -1,10 +1,10 @@
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { atomWithReducer } from 'jotai/utils'
 import { useEffect, useRef, useState } from 'react'
 import { usePouch } from 'use-pouchdb'
 import Activities, { ActivityDefinition } from '../Activities'
 import activityData from '../activities.json'
-import { getLastActivityTimes } from './useActivityDB'
+import { customDataAtom, getLastActivityTimes } from './useActivityDB'
 
 export interface ActivityState {
   activities: Array<ActivityDefinition>
@@ -37,7 +37,8 @@ export const pageVisibleIdxAtom = atomWithReducer(0, (prev) => prev + 1)
 
 export function useActivities(): ActivityState {
   const db = usePouch()
-  const [activities] = useState(() => new Activities(activityData))
+  const customData = useAtomValue(customDataAtom)
+  const [activities] = useState(() => new Activities(activityData, customData))
   const setNow = useSetAtom(nowAtom)
   const [activityState, setActivityState] = useAtom(activityStateAtom)
   const incPageVisibleIdx = useSetAtom(pageVisibleIdxAtom)

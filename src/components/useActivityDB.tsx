@@ -1,9 +1,11 @@
 import { useAsyncEffect } from '@react-hook/async'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
+import json5 from 'json5'
 import PouchDB from 'pouchdb'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import slugify from 'slugify'
 import { useAllDocs, useDoc, usePouch } from 'use-pouchdb'
+import { ActivityData } from '../Activities'
 import { getClientId } from '../utils/getClientId'
 
 export const syncStateAtom = atom<
@@ -19,11 +21,14 @@ export const authorSuffixAtom = atom<string>((get) => {
   return '@' + slugify(name)
 })
 
+export const customDataAtom = atom<ActivityData>(null)
+
 export function useSetupDB() {
   const db = usePouch<any>()
 
   const setSyncState = useSetAtom(syncStateAtom)
   const setAuthorName = useSetAtom(authorNameAtom)
+  const setCustomData = useSetAtom(customDataAtom)
 
   const { status } = useAsyncEffect(async () => {
     const appDesignDoc = {
@@ -47,6 +52,13 @@ export function useSetupDB() {
       clientInfo = await db.get(`$client/${getClientId()}`)
     } catch {}
     setAuthorName(clientInfo?.authorName ?? null)
+
+    let customData = {}
+    try {
+      const customDataDoc = await db.get('$custom')
+      customData = json5.parse(customDataDoc.json5)
+    } catch (err) {}
+    setCustomData(customData)
 
     const syncEndpoint = localStorage['syncEndpoint']
     if (syncEndpoint && syncEndpoint.startsWith('https://')) {
@@ -195,6 +207,23 @@ export function useManualEntities({
     createManualDraft,
   }
 }
+
+export function useSetCustomData() {
+  const db = usePouch()
+  const { doc: customDataDoc } = useDoc<{ json5: string }>('$custom')
+  const { json5: customDataSource } = customDataDoc ?? {}
+
+  const setCustomData = useCallback(
+    (code: string) => {
+      db.upsert('$custom', () => ({ json5: code }))
+    },
+    [db],
+  )
+
+  return { customDataSource, setCustomData }
+}
+
+export function getCustomData() {}
 
 export async function getLastActivityTimes(db: PouchDB.Database<any>) {
   const { rows } = await db.query('app/activityTimes', {
