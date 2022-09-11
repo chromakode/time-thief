@@ -214,8 +214,8 @@ export function useSetCustomData() {
   const { json5: customDataSource } = customDataDoc ?? {}
 
   const setCustomData = useCallback(
-    (code: string) => {
-      db.upsert('$custom', () => ({ json5: code }))
+    async (code: string) => {
+      await db.upsert('$custom', () => ({ json5: code }))
     },
     [db],
   )

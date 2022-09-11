@@ -105,8 +105,8 @@ export default function CustomActivitiesExperiment() {
     [origSource],
   )
 
-  const handleApply = useCallback(() => {
-    setCustomData(sourceRef.current)
+  const handleApply = useCallback(async () => {
+    await setCustomData(sourceRef.current)
     window.location.reload()
   }, [setCustomData])
 
