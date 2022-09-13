@@ -166,14 +166,12 @@ function useCamera(cameraUIRef: React.RefObject<HTMLElement>) {
       track.stop()
     }
     try {
-      await window.screen.orientation.unlock()
+      await Promise.all([
+        window.screen.orientation.unlock(),
+        document.exitFullscreen(),
+      ])
     } catch (err) {
-      console.warn('failed to unlock orientation', err)
-    }
-    try {
-      await document.exitFullscreen()
-    } catch (err) {
-      console.warn('failed to exit fullscreen', err)
+      console.warn('failed to exit fullscreen / orientation lock', err)
     }
   }, [stream])
 
