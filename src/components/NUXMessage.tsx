@@ -74,7 +74,7 @@ function useNUXSeen(
     setReady(false)
     const timeout = setTimeout(() => {
       setReady(true)
-    }, Math.max(minDelay, lastNUXSeen + delaySinceLastNUX - Date.now()))
+    }, Math.max(100, lastNUXSeen + delaySinceLastNUX - Date.now()))
     return () => clearTimeout(timeout)
   }, [delaySinceLastNUX, lastNUXSeen, minDelay])
 
