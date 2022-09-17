@@ -229,7 +229,6 @@ export async function getLastActivityTimes(db: PouchDB.Database<any>) {
   const { rows } = await db.query('app/activityTimes', {
     group: true,
     group_level: 1,
-    stale: 'update_after',
   })
 
   return Object.fromEntries(rows.map(({ key, value }) => [key, value]))
