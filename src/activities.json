@@ -57,8 +57,7 @@
               "type": "input/photo",
               "field": "photo",
               "capture": "environment",
-              "placeholder": "sky-doodle",
-              "autostart": true
+              "placeholder": "sky-doodle"
             }
           ]
         }
