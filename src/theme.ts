@@ -83,11 +83,6 @@ export const baseTheme = extendTheme(
           }),
         },
       },
-      StackDivider: {
-        baseStyle: ({ colorMode }: StyleFunctionProps) => ({
-          color: colorMode === 'dark' ? 'primary.600' : 'primary.200',
-        }),
-      },
       Textarea: {
         variants: {
           filled: ({ colorMode }: StyleFunctionProps) => ({

@@ -1,4 +1,10 @@
-import { Icon, IconButton, StackDivider, VStack } from '@chakra-ui/react'
+import {
+  Icon,
+  IconButton,
+  StackDivider,
+  useColorMode,
+  VStack,
+} from '@chakra-ui/react'
 import React, { Ref, useCallback } from 'react'
 import { IconType } from 'react-icons'
 import {
@@ -25,6 +31,9 @@ export default function SelectOption(
   { entityDoc, field, spec, set }: ContentComponentProps,
   ref: Ref<ContentComponentRef>,
 ) {
+  const { colorMode } = useColorMode()
+  const dividerColor = colorMode === 'dark' ? 'primary.600' : 'primary.200'
+
   const handleButtonClick = useCallback(
     (ev: React.MouseEvent) => {
       if (!(ev.currentTarget instanceof HTMLButtonElement)) {
@@ -42,7 +51,7 @@ export default function SelectOption(
       alignItems="center"
       justifyContent="center"
       spacing="8"
-      divider={<StackDivider />}
+      divider={<StackDivider borderColor={dividerColor} />}
     >
       {spec.options.map((option: any) => (
         <IconButton
