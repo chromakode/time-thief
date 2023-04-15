@@ -149,7 +149,7 @@ function LogDay({
                       {entity.content}
                     </Text>
                   )}
-                  {entity._attachments?.['photo'] && (
+                  {entity._attachments?.['photo'] && entity.photo && (
                     <AspectRatio
                       ratio={entity.photo.width / entity.photo.height}
                       w="full"
