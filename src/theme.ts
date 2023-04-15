@@ -68,6 +68,9 @@ export const baseTheme = extendTheme(
         fontWeight: 600,
         fontVariationSettings: '"GRAD" 75, "opsz" 28',
       },
+      input: {
+        fontVariationSettings: '"opsz" 72',
+      },
     },
     sizes: {
       container: {

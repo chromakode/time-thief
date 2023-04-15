@@ -24,6 +24,7 @@ export default function MultilineInput(
         h="full"
         variant="filled"
         fontSize="xl"
+        textStyle="input"
         resize="none"
         defaultValue={storedValue}
         onChange={handleChange}
